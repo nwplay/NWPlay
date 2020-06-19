@@ -1,0 +1,217 @@
+<div class="toolbar {{ platform }} unfocus">
+  <div *ngIf="platform !== 'windows' && !isFullscreen && showWindowButtons" class="window_buttons macos">
+    <div (click)="close(false)" class="close" style="background-color: #ef6a5e;">
+      <svg data-radium="true" height="10px" viewBox="0 0 20 20" width="10px" x="0px" y="0px">
+        <polygon
+          fill="#4d0000"
+          points="15.9,5.2 14.8,4.1 10,8.9 5.2,4.1 4.1,5.2 8.9,10 4.1,14.8 5.2,15.9 10,11.1 14.8,15.9 15.9,14.8 11.1,10 "
+        ></polygon>
+      </svg>
+    </div>
+    <div (click)="minimize()" class="minimize" style="background-color: #f7be4f;">
+      <svg data-radium="true" height="10px" viewBox="0 0 20 20" width="10px" x="0px" y="0px">
+        <rect fill="#995700" height="2" width="15.1" x="2.4" y="9"></rect>
+      </svg>
+    </div>
+    <div (click)="maximize()" class="maximize" style="background-color: #5fc454;">
+      <svg data-radium="true" height="10px" viewBox="0 0 20 20" width="10px" x="0px" y="0px">
+        <path d="M5.3,16H13L4,7v7.7C4.6,14.7,5.3,15.4,5.3,16z" fill="#006400"></path>
+        <path d="M14.7,4H7l9,9V5.3C15.4,5.3,14.7,4.6,14.7,4z" fill="#006400"></path>
+      </svg>
+    </div>
+  </div>
+  <button
+    (click)="back()"
+    *ngIf="appService.history.length > 1"
+    class="item back"
+    mat-button
+    matTooltip="{{ 'back' | translate }}"
+    matTooltipPosition="below"
+    tabindex="1"
+  >
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <ng-container *ngIf="platform == 'windows'">
+    <button
+      *ngIf="!isSmall"
+      [matMenuTriggerFor]="appMenu"
+      class="item"
+      mat-icon-button
+      matTooltip="{{ 'show_more' | translate }}"
+      matTooltipPosition="below"
+      tabindex="1"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <ng-container *ngTemplateOutlet="searchInput"></ng-container>
+  </ng-container>
+  <div class="spacer"></div>
+  <ng-container *ngIf="providers.length > 0">
+    <button
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="item"
+      mat-button
+      matTooltip="{{ 'home' | translate }}"
+      matTooltipPosition="below"
+      routerLink="/home"
+      routerLinkActive="active"
+      tabindex="1"
+    >
+      <ng-container>{{ 'home' | translate }}</ng-container>
+    </button>
+    <ng-container *ngFor="let p of providers">
+      <button
+        *ngIf="!p.disabled && (!p.isAdult || settings.showAdult)"
+        class="item"
+        mat-button
+        matTooltip="{{ p.name }} - {{p.version}}"
+        matTooltipPosition="below"
+        routerLink="/{{ p.id }}"
+        routerLinkActive="active"
+        tabindex="1"
+      >
+        {{ p.name_translations[settings.defaultLang] || p.name }}
+      </button>
+    </ng-container>
+    <button
+      class="item"
+      mat-button
+      matTooltip="{{ 'watchlist' | translate }}"
+      matTooltipPosition="below"
+      routerLink="/watchlist"
+      routerLinkActive="active"
+    >
+      <ng-container>{{ 'watchlist' | translate }}</ng-container>
+    </button>
+  </ng-container>
+
+  <div class="spacer"></div>
+  <ng-container *ngIf="platform != 'windows'">
+    <ng-container *ngTemplateOutlet="searchInput"></ng-container>
+    <button
+      *ngIf="!isSmall && !isMobile"
+      [matMenuTriggerFor]="appMenu"
+      class="item"
+      mat-icon-button
+      matTooltip="{{ 'show_more' | translate }}"
+      matTooltipPosition="below"
+      tabindex="1"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </ng-container>
+
+  <div *ngIf="!isFullscreen && platform == 'windows' && showWindowButtons" class="window_buttons windows">
+    <div (click)="minimize()" class="minimize">
+      <svg data-radium="true" viewBox="0 0 10.2 1" x="0px" y="0px">
+        <rect fill="rgba(0, 0, 0, .4)" height="1" width="10.2"></rect>
+      </svg>
+    </div>
+    <div (click)="maximize()" class="maximize">
+      <svg data-radium="true" style="width: 10px; height: 10px;" viewBox="0 0 10.2 10.1" x="0px" y="0px">
+        <path d="M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z" fill="rgba(0, 0, 0, .4)"></path>
+      </svg>
+    </div>
+    <div (click)="close(false)" class="close">
+      <svg data-radium="true" viewBox="0 0 10.2 10.2" x="0px" y="0px">
+        <polygon
+          fill="rgba(0, 0, 0, .4)"
+          points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1 "
+        ></polygon>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isSearchOpen" class="search-container {{ platform }}">
+  <div class="sa-button-container">
+    <mat-button-toggle-group (change)="searchProvidersChange($event)" [value]="searchProviders" multiple>
+      <ng-container *ngFor="let p of providers">
+        <mat-button-toggle *ngIf="!p.disabled && (!p.isAdult || settings.showAdult)" [value]="p" title="{{ p.name }}">
+          <mat-icon>{{ p.icon || 'movie' }}</mat-icon>
+        </mat-button-toggle>
+      </ng-container>
+    </mat-button-toggle-group>
+  </div>
+  <p *ngIf="searchResults.length === 0" class="no-results">
+    {{ 'no_results' | translate }}
+  </p>
+  <mat-list>
+    <ng-container *ngFor="let item of searchResults; let i = index">
+      <mat-divider></mat-divider>
+      <h3
+        (click)="showMore(item.provider)"
+        *ngIf="i === 0 || searchResults[i - 1].provider !== item.provider"
+        mat-subheader
+        tabindex="1"
+      >
+        <span>{{ item.provider.name_translations[settings.defaultLang] || item.provider.name }} </span>
+        <span class="spacer"></span>
+        <span class="more">{{ 'show_more' | translate }}</span>
+      </h3>
+      <mat-list-item (click)="itemService.show(item, true); isSearchOpen = false" tabindex="1">
+        <mat-icon matListIcon>{{ item.type === 0 ? 'movie' : 'tv' }}</mat-icon>
+        <h3 matLine>{{ item.title }}</h3>
+        <p matLine>
+          <span>{{ item.provider?.name_translations[settings.defaultLang] || item.provider?.name }}</span>
+        </p>
+      </mat-list-item>
+    </ng-container>
+  </mat-list>
+</div>
+
+<ng-template #searchInput>
+  <div *ngIf="providers.length > 0" class="search-input {{ isSearchOpen ? 'filled' : 'empty' }}">
+    <div class="sicon">
+      <i class="material-icons">
+        search
+      </i>
+    </div>
+    <label>
+      <input
+        (click)="showSearch()"
+        (ngModelChange)="searchStringUpdate.next($event)"
+        [(ngModel)]="searchValue"
+        placeholder="{{ 'search' | translate }}…"
+        tabindex="1"
+        type="search"
+      />
+    </label>
+  </div>
+</ng-template>
+<div (click)="isSearchOpen = false" *ngIf="isSearchOpen" class="search-backdrop"></div>
+<mat-menu #appMenu="matMenu" [overlapTrigger]="false">
+  <button (click)="showSettings()" mat-menu-item>
+    <mat-icon>settings</mat-icon>
+    <span>{{ 'settings' | translate }}</span>
+  </button>
+  <button (click)="toggleFullScreen()" mat-menu-item>
+    <mat-icon>fullscreen</mat-icon>
+    <span>{{ (isFullscreen ? 'fullscreen_off' : 'fullscreen_on') | translate }}</span>
+  </button>
+  <button (click)="showPlayUrlModal()" mat-menu-item>
+    <mat-icon>link</mat-icon>
+    <span>{{ 'play_url' | translate }}</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button (click)="close(true)" mat-menu-item>
+    <mat-icon>exit_to_app</mat-icon>
+    <span>NWPlay {{ 'quit' | translate }}</span>
+  </button>
+</mat-menu>
+<ng-template #urlDialog>
+  <div mat-dialog-content>
+
+    <mat-form-field>
+      <mat-label>Url</mat-label>
+      <label>
+        <input #urlInput matInput>
+      </label>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button matDialogClose mat-button (click)="playUrl(urlInput.value)">{{'play' | translate}}</button>
+    <button matDialogClose mat-button>{{'hide' | translate}}</button>
+  </div>
+</ng-template>

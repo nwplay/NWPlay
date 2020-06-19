@@ -1,0 +1,47 @@
+<div class="bg-container">
+  <img class="bg" src="assets/bg.jpg"/>
+</div>
+<div class="container">
+  <div class="center">
+    <div class="logo">
+      <img src="assets/Icon.png"/>
+      <div class="logo-text">
+        <span class="logo-name">{{ pkg.productName }}</span>
+        <span class="logo-version">{{ pkg.version }} - (Core {{coreVersion}})</span>
+      </div>
+    </div>
+    <ng-container *ngIf="!appService.showTos && !appService.showChangelog">
+      <div class="spinner">
+        <div class="dot1"></div>
+        <div class="dot2"></div>
+      </div>
+      <ul class="loading">
+        <div *ngIf="appService.loadingMessage">
+          {{ appService.loadingMessage }}
+        </div>
+        <ng-container *ngFor="let pro of appService.providers">
+          <div *ngIf="pro.loadingProgress">{{ pro.name }}: {{ pro.loadingProgress.text }}</div>
+        </ng-container>
+      </ul>
+    </ng-container>
+
+    <ng-container *ngIf="appService.showChangelog && !appService.showTos">
+      <div [innerHTML]="changelog" class="licence"></div>
+      <button (click)="hide()" color="primary" mat-stroked-button tabindex="2">
+        {{ 'Weiter' | translate }}
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="appService.showTos">
+      <div [innerHTML]="license" class="licence" style="white-space: normal;">
+
+      </div>
+      <button (click)="close()" mat-stroked-button tabindex="2">
+        {{ 'quit' | translate }}
+      </button>
+      <button (click)="accept()" *ngIf="license" color="primary" mat-stroked-button tabindex="2">
+        {{ 'accept' | translate }}
+      </button>
+    </ng-container>
+  </div>
+</div>

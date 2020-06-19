@@ -1,0 +1,138 @@
+@import '../../../vars.scss';
+
+.spinner {
+  position: relative;
+}
+
+.loading {
+  padding-top: 50px;
+
+  div {
+    margin-bottom: 5px;
+  }
+}
+
+.bg-container {
+  overflow: hidden !important;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  z-index: -1;
+
+  .bg {
+    position: absolute;
+    left: -30px;
+    right: -30px;
+    top: -30px;
+    bottom: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
+    object-fit: cover;
+    object-position: center;
+    filter: blur(10px) saturate(1.5);
+  }
+}
+
+.container {
+  backdrop-filter: blur(15px);
+  overflow: hidden !important;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: drag;
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  .licence {
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    max-height: 35vh;
+    overflow: auto;
+    margin-bottom: 25px;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.9rem;
+    white-space: pre;
+    @include nwp-scroller();
+  }
+
+  button {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .center {
+    -webkit-app-region: no-drag;
+    padding: 30px;
+    text-align: center;
+    width: 75vw;
+    border-radius: 10px;
+    max-width: 925px;
+    @include vibrancy-dark-mixin();
+    //noinspection CssInvalidPropertyValue
+    -webkit-font-smoothing: auto;
+
+    .logo {
+      img {
+        height: 75px;
+        box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.35);
+        border-radius: 18px;
+      }
+
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin: 25px;
+
+      .logo-text {
+        text-align: left;
+        margin-left: 13px;
+        display: flex;
+        flex-direction: column;
+
+        .logo-name {
+          font-size: 2rem;
+        }
+
+        .logo-text {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}
+
+mat-selection-list {
+  text-align: start !important;
+  color: #666;
+}
+
+:host ::ng-deep {
+  .mat-list-item,
+  mat-pseudo-checkbox {
+    color: #666;
+  }
+
+  .md-t-1 {
+    font-size: 2rem !important;
+  }
+
+  .md-t-2 {
+    font-size: 1.4rem !important;
+  }
+
+  .md-t-3 {
+    font-size: 1.2rem !important;
+    font-weight: bold;
+  }
+}

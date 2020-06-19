@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta
+    content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; media-src * blob:; worker-src * blob:"
+    http-equiv="Content-Security-Policy"
+  />
+  <meta content="no-referrer" name="referrer"/>
+  <title></title>
+  <style>
+    body {
+      background-color: #3a3d42;
+    }
+
+    webview {
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+  </style>
+  <base href="index.html"/>
+  <meta
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover"
+    name="viewport"
+  />
+  <link href="favicon.ico" rel="icon" type="image/x-icon"/>
+</head>
+
+<body>
+<webview src="http://127.0.0.1:4200"></webview>
+</body>
+</html>

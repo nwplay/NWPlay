@@ -1,0 +1,6 @@
+<mat-nav-list>
+  <h3 matSubheader>Wiedergabe Quelle</h3>
+  <mat-list-item (click)="play($event, resolver)" *ngFor="let resolver of data.resolvers">
+    {{ resolver.name }}
+  </mat-list-item>
+</mat-nav-list>

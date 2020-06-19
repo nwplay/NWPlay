@@ -1,0 +1,47 @@
+@import '../../../vars.scss';
+
+.bg-container {
+  overflow: hidden !important;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  z-index: -1;
+
+  .bg {
+    position: absolute;
+    left: -30px;
+    right: -30px;
+    top: -30px;
+    bottom: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
+    object-fit: cover;
+    object-position: center;
+    filter: blur(10px) saturate(1.5);
+  }
+}
+
+.center {
+  border-radius: 10px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  text-align: center;
+  height: 200px;
+  width: 50vw;
+  max-width: 800px;
+  @include vibrancy-dark-mixin();
+  overflow: auto;
+
+  h1 {
+    font-size: 2rem;
+    color: #fff;
+  }
+
+}

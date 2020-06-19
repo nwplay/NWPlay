@@ -1,0 +1,88 @@
+<div
+  [class.fullscreen]="controlsHidden"
+  [style.display]="player.playlist.items.length > 0 ? 'inline' : 'none'"
+  class="player-container {{ platform }}"
+>
+  <vg-player
+    (contextmenu)="contextMenu($event)"
+    (dblclick)="videoClick()"
+    (mousemove)="mouseMove()"
+    (onPlayerReady)="ready = true"
+  >
+
+    <video
+      #media
+      (error)="handleVideoError()"
+      [vgDash]="player.currentSource?.source"
+      [vgHls]="player.currentSource?.source"
+      [vgMedia]="media"
+      [volume]="settings.volume"
+      id="player_video"
+      playsinline
+      preload="auto"
+    ></video>
+  </vg-player>
+
+  <div (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" *ngIf="!controlsHidden"
+       class="controls">
+    <button (click)="media.paused ? media.play() : media.pause()" mat-button>
+      <mat-icon [inline]="true">{{ media.paused ? 'play_arrow' : 'pause' }}</mat-icon>
+    </button>
+    <div class="text">{{ player.currentTime | formatTime }}</div>
+    <mat-slider
+      (ngModelChange)="player.seekToPosition($event)"
+      [max]="media.duration"
+      [ngModel]="player.currentTime"
+      min="0"
+      step="0.01"
+    ></mat-slider>
+    <div class="text">{{ media.duration || 0 | formatTime }}</div>
+
+    <button (click)="player.playNextItem()" mat-button>
+      <mat-icon [inline]="true">skip_next</mat-icon>
+    </button>
+    <button *ngIf="isDesktop" [matMenuTriggerFor]="volMenu" mat-button>
+      <mat-icon [inline]="true">{{ settings.volume === 0 ? 'volume_mute' : 'volume_up' }}</mat-icon>
+    </button>
+    <button (click)="toggleFullScreen()" *ngIf="isDesktop" mat-button>
+      <mat-icon [inline]="true">{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+    <button (click)="togglePip()" *ngIf="pipSupported" mat-button>
+      <mat-icon [inline]="true">featured_video</mat-icon>
+    </button>
+  </div>
+
+  <div (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" *ngIf="!controlsHidden"
+       class="info">
+    <button (click)="player.stop()" mat-button>
+      <mat-icon [inline]="true">close</mat-icon>
+    </button>
+    <img *ngIf="player.currentItem?.poster" [src]="player.currentItem?.poster" alt=""/>
+    <div class="text">
+      <div class="text-1">{{ player.currentItem?.title }}</div>
+      <div class="text-2">{{ player.currentItem?.subtitle }}</div>
+    </div>
+    <div class="spacer"></div>
+    <button [matMenuTriggerFor]="playlistMenu" mat-button>
+      <mat-icon [inline]="true">playlist_play</mat-icon>
+    </button>
+    <button (click)="reload()" mat-button>
+      <mat-icon [inline]="true">refresh</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-menu #volMenu="matMenu" [overlapTrigger]="false" class="vol-menu">
+  <mat-slider (ngModelChange)="settings.save()" [(ngModel)]="settings.volume" max="1" min="0" step="0.01" vertical>
+  </mat-slider>
+</mat-menu>
+
+<mat-menu #playlistMenu="matMenu">
+  <button
+    (click)="player.play(item)"
+    *ngFor="let item of player.playlist.items"
+    [disabled]="item === player.currentItem"
+    mat-menu-item
+  >
+    {{ item?.title }}
+  </button>
+</mat-menu>

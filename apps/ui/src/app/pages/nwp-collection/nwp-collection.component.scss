@@ -1,0 +1,45 @@
+@import '../../../vars.scss';
+
+:host {
+  .page-container {
+    width: 100%;
+    box-sizing: border-box;
+
+    h2 {
+      color: #fff;
+      font-weight: 500;
+      letter-spacing: 5px;
+      padding: 25px;
+      font-size: 3rem;
+      margin: 0 0 15px;
+    }
+
+    .grid-container {
+      box-sizing: border-box;
+
+      nwp-media-card {
+        display: flex;
+        justify-content: center;
+      }
+
+      display: grid;
+      grid-template-columns: repeat(auto-fit, 200px);
+      justify-content: space-evenly;
+      width: 100%;
+      row-gap: 35px;
+    }
+  }
+
+  mat-form-field {
+    position: absolute;
+    top: 16px;
+    margin-top: $toolbar-height;
+    right: 16px;
+  }
+
+  .empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: large;
+    text-align: center;
+  }
+}

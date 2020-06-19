@@ -1,0 +1,98 @@
+<div #scrollView class="page-container">
+  <ng-container *ngIf="data">
+    <h2>{{ provider?.name || 'home' | translate }}</h2>
+    <div id="main-carousel-container">
+      <div (click)="scroll(mcont, -475)" *ngIf="env.isDesktop" class="carousel-scroll-button left" matRipple>
+        <i class="material-icons">
+          chevron_left
+        </i>
+      </div>
+      <div (click)="scroll(mcont, 475)" *ngIf="env.isDesktop" class="carousel-scroll-button right" matRipple>
+        <i class="material-icons">
+          chevron_right
+        </i>
+      </div>
+      <div #mcont class="carousel {{ env.platformType }}" id="main-carousel">
+        <div
+          (click)="showItem(item)"
+          *ngFor="let item of data.features; let i = index"
+          @fadeAnimation
+          class="item-container"
+          tabindex="1"
+        >
+          <div class="item" matRipple>
+            <img
+              (error)="data.features.splice(i, 1)"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              src="{{ item.image }}"
+            />
+            <div class="overlay">
+              <div class="text">{{ item.title }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div *ngIf="historyItems.length > 0" class="sub-container">
+      <div class="title"><span>Weiter Schauen</span></div>
+      <div class="carousel {{ env.platformType }}">
+        <div #scont class="carousel {{ env.platformType }}">
+          <nwp-media-card
+            *ngFor="let item of historyItems"
+            @fadeAnimation
+            [item]="item"
+            [showAsModal]="false"
+            matRipple
+            tabIndex="{{ idx + 10 }}"
+          ></nwp-media-card>
+        </div>
+      </div>
+    </div>
+
+    <div *ngFor="let row of data.rows; let idx = index" class="sub-container">
+      <div @fadeAnimation class="title {{ env.platformType }}">
+        <span
+          (keyup.enter)="$event.target.click()"
+          [routerLink]="['/', row.collection.provider, 'collection', row.collection.id]"
+          tabindex="{{ idx + 10 }}"
+        >{{ row.collection.title }}</span
+        >
+        <div class="spacer"></div>
+        <div
+          *ngIf="row.collection.id"
+          [routerLink]="['/', row.collection.provider.id, 'collection', row.collection.id]"
+          class="more"
+        >
+          {{ 'show_more' | translate }}
+        </div>
+      </div>
+      <div (click)="scroll(scont, -195)" *ngIf="env.isDesktop" class="carousel-scroll-button left" matRipple>
+        <i class="material-icons">
+          chevron_left
+        </i>
+      </div>
+      <div (click)="scroll(scont, 195)" *ngIf="env.isDesktop" class="carousel-scroll-button right" matRipple>
+        <i class="material-icons">
+          chevron_right
+        </i>
+      </div>
+      <div #scont class="carousel {{ env.platformType }}">
+        <nwp-media-card
+          *ngFor="let item of row.items"
+          @fadeAnimation
+          [item]="item"
+          [showAsModal]="false"
+          matRipple
+          tabIndex="{{ idx + 10 }}"
+        ></nwp-media-card>
+      </div>
+    </div>
+    <div class="footer">{{ env.pkg.productName }} - {{ env.pkg.version }}</div>
+  </ng-container>
+</div>
+<div *ngIf="loading" class="page-container loading-container">
+  <mat-spinner></mat-spinner>
+</div>

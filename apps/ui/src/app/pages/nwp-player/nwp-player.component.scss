@@ -1,0 +1,159 @@
+@import '../../../vars.scss';
+
+.player-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  transition: top 0.3s ease-in-out;
+  z-index: 300;
+
+  &.fullscreen {
+    z-index: 1000;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  vg-buffering {
+    z-index: 10 !important;
+  }
+
+  .loading {
+    text-align: center;
+    width: 100%;
+    padding: 32px;
+    color: #fff;
+    box-sizing: content-box;
+    position: absolute;
+    left: 0;
+    bottom: 125px;
+    background-color: #000000b3;
+    font-size: 16pt;
+  }
+
+  video {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    object-fit: contain;
+  }
+
+  .controls {
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+    right: 32px;
+    background-color: rgba(85, 85, 85, 0.85);
+    border-radius: 8px;
+    overflow: visible;
+    height: 48px;
+    display: flex;
+    z-index: 20;
+    transition: all 0.6s;
+    @include vibrancy-dark-mixin();
+
+    button {
+      height: 100%;
+      color: #fff;
+      font-size: 28px;
+      min-width: initial;
+    }
+
+    .text {
+      align-self: center;
+      position: relative;
+      padding-left: 8px;
+      padding-right: 8px;
+      color: #fff;
+    }
+
+    mat-slider {
+      flex-grow: 1;
+      justify-self: center;
+      align-self: center;
+    }
+  }
+
+  .info {
+    position: absolute;
+    top: 32px + $toolbar-height;
+    left: 32px;
+    right: 32px;
+    background-color: rgba(85, 85, 85, 0.85);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 96px;
+    display: flex;
+    z-index: 20;
+    transition: all 0.6s;
+    @include vibrancy-dark-mixin();
+
+    img {
+      height: 100%;
+      pointer-events: none;
+      @media only screen and (max-width: 768px) {
+        display: none;
+      }
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+      color: #fff;
+      margin-left: 16px;
+
+      .text-1 {
+        font-weight: 500;
+        font-size: 21px;
+      }
+    }
+
+    button {
+      height: 100%;
+      color: #fff;
+      font-size: 28px;
+    }
+
+    mat-form-field {
+      align-self: center;
+      margin-right: 16px;
+    }
+  }
+}
+
+:host {
+  display: contents;
+
+  .mat-menu-content {
+    height: 500px;
+  }
+}
+
+.player-fab {
+  width: 55px;
+  height: 55px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: $accent-color;
+  z-index: 999;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: default;
+}
+

@@ -1,0 +1,172 @@
+<img *ngIf="item?.backdrop" alt="" class="backdrop-cover" src="{{item.backdrop}}"/>
+
+<div class="page-container">
+  <audio #yaudiohack [muted]="settings.autoplayTrailerMuted"></audio>
+  <div *ngIf="item" class="left">
+    <img @fadeAnimation [src]="currentSeason?.poster || item.poster" alt="" class="cover"
+         referrerpolicy="no-referrer"/>
+    <mat-form-field *ngIf="seasons && type === MEDIA_TYPE.TV_SHOW">
+      <mat-select (ngModelChange)="showSeason($event)" [(ngModel)]="currentSeason" [disabled]="seasons.length <= 1"
+                  placeholder="{{'season' | translate}}">
+        <mat-option *ngFor="let season of seasons" [value]="season">{{season.title}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button (click)="playMovie(item)" *ngIf="type === MEDIA_TYPE.MOVIE" color="primary" mat-stroked-button>
+      {{'play' | translate}}
+    </button>
+    <button (click)="showInBrowser(item.url)" *ngIf="item.url" color="accent" mat-stroked-button>
+      {{'open_in_browser' | translate}}
+    </button>
+    <button (click)="toggleFavorite()" color="accent" mat-stroked-button>
+      <mat-icon>{{isFavorite ? 'star' : 'star_border'}}</mat-icon>
+    </button>
+
+    <button (click)="toggleNotify()" *ngIf="isFavorite" color="accent" mat-stroked-button
+            title="Über neue folgen benachrichtigen.">
+      <mat-icon>{{isNotify ? 'notifications' : 'notifications_none'}}</mat-icon>
+    </button>
+  </div>
+  <div #rightContainer class="{{item ? 'right' : ''}} {{env.platformType}}">
+    <ng-container *ngIf="item">
+      <div (keyup.enter)="playBackdrop()"
+           *ngIf="(type === MEDIA_TYPE.TV_SHOW || type === MEDIA_TYPE.MOVIE) && item.backdrop"
+           class="backdrop {{trailerSrc ? 'backdrop-t' : 'backdrop-t'}}"
+           tabindex="1">
+        <div class="video-container">
+          <img (load)="bgImageLoad($event)" *ngIf="!trailerSrc" [src]="item.backdrop"
+               referrerpolicy="no-referrer" style="visibility: hidden;">
+          <ng-container *ngIf="!trailerSrc">
+            <div @fadeAnimation class="video-controlls">
+              <div (click)="playTrailer()" *ngIf="item.trailer" title="Play Trailer">
+                <mat-icon>play_arrow</mat-icon>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="trailerSrc && visible">
+            <div @fadeAnimation [hidden]="trailerLoading" class="video-controlls">
+              <div (click)="trailerSrc = null;ref.detectChanges();trailerPaused()" title="Stop Trailer">
+                <mat-icon>close</mat-icon>
+              </div>
+              <div (click)="toggleFullscreen()">
+                <mat-icon>fullscreen</mat-icon>
+              </div>
+              <div (click)="toggleTrailerMuted()">
+                <mat-icon>{{settings.autoplayTrailerMuted ? 'volume_mute' : 'volume_up'}}</mat-icon>
+              </div>
+            </div>
+            <video (ended)="trailerSrc = null;"
+                   (error)="trailerError()" (pause)="trailerPaused()" (play)="trailerLoaded()"
+                   (timeupdate)="trailerTimeUpdate($event)"
+                   (volumechange)="ref.detectChanges()" [muted]="settings.autoplayTrailerMuted" autoplay class="trailer"
+                   src="{{trailerSrc}}"
+                   tabindex="-1"></video>
+          </ng-container>
+        </div>
+      </div>
+      <h1 class="name headline">{{item?.title}}</h1>
+      <div class="tags" *ngIf="item.tags">
+        <ng-container *ngFor="let tag of item.tags">
+          <div class="tag" *ngIf="tag.id"
+               [routerLink]="['/', provider.id, 'collection', tag.id]"
+          >{{tag?.name}}</div>
+          <div class="tag" *ngIf="!tag.id">{{tag?.name}}</div>
+        </ng-container>
+
+      </div>
+      <p class="desc">{{item?.overview}}</p>
+      <div class="mobile-bar-container">
+        <button (click)="play(episodes[0], episodes)"
+                *ngIf="type === MEDIA_TYPE.TV_SHOW" color="primary" mat-raised-button>
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+
+        <button (click)="playMovie(item)" *ngIf="type === MEDIA_TYPE.MOVIE" color="primary" mat-raised-button>
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+
+        <button (click)="toggleFavorite()" color="primary" mat-raised-button>
+          <mat-icon>{{isFavorite ? 'star' : 'star_border'}}</mat-icon>
+        </button>
+
+        <button (click)="showInBrowser(item.url)" *ngIf="item.url" color="primary" mat-raised-button>
+          <mat-icon>open_in_browser</mat-icon>
+        </button>
+        <div class="spacer"></div>
+        <mat-form-field *ngIf="type === MEDIA_TYPE.TV_SHOW">
+          <mat-select (ngModelChange)="showSeason($event)" [(ngModel)]="currentSeason" [disabled]="seasons.length <= 1"
+                      placeholder="{{'season' | translate}}">
+            <mat-option *ngFor="let season of seasons" [value]="season">{{season.title}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="type === MEDIA_TYPE.TV_SHOW && currentSeason" class="list_wraper">
+        <div class="nlist">
+          <div *ngIf="loadingSeason" class="cab">
+            <mat-spinner diameter="50"></mat-spinner>
+          </div>
+          <ul *ngIf="!loadingSeason && episodes" @fadeAnimation>
+            <li id="{{episode.id}}" *ngFor="let episode of episodes" [ngClass]="{'disabled': episode.disabled}"
+                class="episode">
+              <div (click)="play(episode, episodes)" class="image" tabindex="3"
+                   title="{{'play' | translate}} {{episode.title}}">
+                <mat-icon class="play">play_arrow</mat-icon>
+                <div class="progress">
+                  <div [style.width.%]="newHistory.getProgress(episode) * 100"></div>
+                </div>
+                <img *ngIf="episode.poster" [src]="episode.poster" alt="" loading="lazy" referrerpolicy="no-referrer">
+              </div>
+              <div class="info">
+                <button (click)="showSitemPopup(episode, $event, episodes)" mat-icon-button>
+                  <mat-icon>more_horizontal</mat-icon>
+                </button>
+                <div class="name" title="{{episode.title}}">{{episode.title}}</div>
+                <p *ngIf="episode.overview" class="desc" title="{{episode.overview}}">{{episode?.overview}}</p>
+                <p *ngIf="!episode.overview" class="desc">{{'no_description' | translate}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <table *ngIf="item.info">
+        <tr *ngFor="let info of item.info | keyvalue">
+          <td>{{info.key}}</td>
+          <td>{{info.value}}</td>
+        </tr>
+      </table>
+      <ul *ngIf="cast.length > 0" @fadeAnimation class="cast justify">
+        <h2>{{'cast' | translate}}</h2>
+        <div class="carousel {{env.isDesktop ? 'desktop' : 'mobile'}}">
+          <li *ngFor="let person of cast">
+            <div *ngIf="person.id" class="cast-container" routerLink="/{{provider.id}}/collection/{{person.id}}">
+              <div class="name">{{person.name}}</div>
+              <img (error)="cast.splice(cast.indexOf(person), 1)" src="{{person.image}}"/>
+            </div>
+            <div *ngIf="!person.id" class="cast-container">
+              <div class="name">{{person.name}}</div>
+              <img (error)="cast.splice(cast.indexOf(person), 1)" src="{{person.image}}"/>
+            </div>
+          </li>
+        </div>
+      </ul>
+      <ul *ngIf="item.suggestions" @fadeAnimation class="justify" id="suggestions">
+        <h2>{{'you_may_also_like' | translate}}</h2>
+        <div *ngIf="suggestions && suggestions.length > 0" @fadeAnimation
+             class="carousel desktop">
+          <nwp-media-card *ngFor="let suggestion of suggestions" [item]="suggestion" [showAsModal]="true"
+                          tabIndex="4"></nwp-media-card>
+        </div>
+      </ul>
+      <div class="footer">
+
+        <ng-container *ngIf="item && item.provider.customFooter">
+          <span [innerHTML]="item.provider.customFooter"></span>
+          <br>•<br>
+        </ng-container>
+        {{env.pkg.productName}} {{env.pkg.version}}
+
+      </div>
+    </ng-container>
+  </div>
+  <mat-spinner *ngIf="!item" class="center-loading" diameter="50"></mat-spinner>
+</div>
+

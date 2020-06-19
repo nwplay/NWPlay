@@ -1,0 +1,201 @@
+import { ChangeDetectorRef, Component, Input, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Environment, providers, SearchResult } from '@nwplay/core';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { MatMenu } from '@angular/material/menu';
+import { SettingsService } from '../../services/settings.service';
+import { Hotkey, HotkeysService } from 'angular2-hotkeys';
+import { ItemService } from '../../services/item.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { AppService } from '../../app.service';
+import { MatDialog } from '@angular/material/dialog';
+
+declare var chrome: any;
+declare var nw: any;
+
+@Component({
+  selector: 'nwplay-toolbar',
+  templateUrl: './nwp-toolbar.component.html',
+  styleUrls: ['./nwp-toolbar.component.scss']
+})
+export class NwpToolbarComponent implements OnInit {
+  @Input() public title: string;
+  @Input() public provider: any;
+  @Input() public tabIndex: number;
+  @Input() public isRoot = false;
+  @Input() public isPlayer = false;
+  @ViewChild('searchMenu', { static: false }) public popover: MatMenu;
+  @ViewChild('urlDialog', { static: false }) public urlDialogTemplate: TemplateRef<any>;
+
+  public searchStringUpdate = new Subject<string>();
+  public providers = providers;
+  public platform = Environment.default.platform;
+  public isMobile = Environment.default.isMobile;
+  public env = Environment.default;
+
+  public searchProviders: any[] = [];
+  public position = 'left';
+  public searching = false;
+  public isSearchOpen = false;
+  public isSmall = false;
+  public searchValue = '';
+  public searchResults: SearchResult[] = [];
+  public isFullscreen = false;
+  public showWindowButtons = true;
+
+  constructor(
+    private hotKeysService: HotkeysService,
+    public settings: SettingsService,
+    public zone: NgZone,
+    public location: Location,
+    public router: Router,
+    public itemService: ItemService,
+    private ref: ChangeDetectorRef,
+    public appService: AppService,
+    private matDialog: MatDialog
+  ) {
+    this.hotKeysService.reset();
+    this.hotKeysService.add(
+      new Hotkey(['meta+,', 'ctrl+.'], (): boolean => {
+        this.showSettings();
+        return false; // Prevent bubbling
+      })
+    );
+    this.hotKeysService.add(
+      new Hotkey(['meta+f', 'ctrl+f'], (): boolean => {
+        (document.querySelector('.toolbar input') as any).click();
+        (document.querySelector('.toolbar input') as any).focus();
+        return false; // Prevent bubbling
+      })
+    );
+    this.hotKeysService.add(
+      new Hotkey(['meta+r', 'ctrl+r'], (): boolean => {
+        window.location.reload();
+        return false; // Prevent bubbling
+      })
+    );
+  }
+
+  public showSettings() {
+    this.router.navigateByUrl('/settings').catch(console.error);
+  }
+
+  ngOnInit() {
+    const win = nw.Window.get();
+    win.onFullscreen.addListener(() => {
+      this.isFullscreen = true;
+    });
+    win.onRestore.addListener(() => {
+      this.isFullscreen = false;
+    });
+    this.searchStringUpdate.pipe(debounceTime(400), distinctUntilChanged()).subscribe((value) => {
+      this.search(value).catch(console.error);
+    });
+  }
+
+  public maximize(): void {
+    if (this.env.platform === 'macos') {
+      this.toggleFullScreen();
+    } else {
+      const chromeWindow = chrome.app.window.current();
+      if (window['nw']) {
+        if (chromeWindow.isMaximized()) {
+          nw.Window.get().restore();
+        } else {
+          nw.Window.get().maximize();
+        }
+      } else {
+        if (chromeWindow.isMaximized()) {
+          chromeWindow.restore();
+        } else {
+          chromeWindow.maximize();
+        }
+      }
+    }
+  }
+
+  public toggleFullScreen() {
+    const win = nw.Window.get();
+    win.toggleFullscreen();
+  }
+
+  public minimize(): void {
+    if (window['nw']) {
+      nw.Window.get().minimize();
+    } else {
+      chrome.app.window.current().minimize();
+    }
+  }
+
+  public close(force: boolean): void {
+    if (this.platform === 'macos' && !force) {
+      if (window['nw']) {
+        nw.Window.get().hide();
+      } else {
+        chrome.app.window.current().hide();
+      }
+    } else {
+      if (window['nw']) {
+        nw.Window.get().close();
+      } else {
+        chrome.app.window.current().close();
+      }
+    }
+  }
+
+  public async back() {
+    this.appService.history.pop();
+    const url = this.appService.history.pop();
+    await this.router.navigateByUrl(url.url);
+  }
+
+  public async showMore(provider: any) {
+    await this.router.navigate(['/search'], {
+      queryParams: {
+        provider: provider.id,
+        q: this.searchValue
+      }
+    });
+  }
+
+  public showSearch() {
+    this.isSearchOpen = true;
+  }
+
+  public async searchProvidersChange(e: any) {
+    this.searchProviders = e.value;
+    await this.search();
+  }
+
+  public showPlayUrlModal() {
+    this.matDialog.open(this.urlDialogTemplate);
+  }
+
+  public playUrl(url: string) {
+
+    alert(url);
+  }
+
+  public async search(qry?: string): Promise<void> {
+    qry = qry || this.searchValue;
+    this.searching = true;
+    this.isSearchOpen = true;
+    this.searchResults = [];
+    if (!this.searchValue || this.searchValue.length === 0) {
+      this.searching = false;
+      if (!this.ref['destroyed']) {
+        this.ref.detectChanges();
+      }
+      return;
+    }
+    await Promise.all(
+      providers.map(async (p) => {
+        const result = p.search ? await p.search({ query: qry, take: 15, offset: 0 }) : null;
+        if (qry === this.searchValue) {
+          this.searchResults = [...this.searchResults, ...result];
+        }
+      })
+    );
+  }
+}

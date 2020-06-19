@@ -21,9 +21,32 @@
             "polyfills": "apps/ui/src/polyfills.ts",
             "tsConfig": "apps/ui/tsconfig.app.json",
             "aot": true,
-            "assets": ["apps/ui/src/favicon.ico", "apps/ui/src/assets"],
-            "styles": ["apps/ui/src/styles.scss"],
-            "scripts": []
+            "assets": [
+              "apps/ui/src/assets",
+              "apps/ui/src/favicon.ico",
+              {
+                "glob": "Changelog",
+                "input": "./",
+                "output": "/assets"
+              },
+              {
+                "glob": "LICENSE",
+                "input": "./",
+                "output": "/assets"
+              }
+            ],
+            "styles": [
+              "node_modules/videogular2/fonts/videogular.css",
+              "node_modules/material-design-icons-iconfont/dist/material-design-icons.css",
+              "apps/ui/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/systemjs/dist/system.js",
+              "node_modules/systemjs/dist/extras/named-register.js",
+              "node_modules/systemjs/dist/extras/amd.js",
+              "node_modules/hls.js/dist/hls.min.js",
+              "node_modules/dashjs/dist/dash.all.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -80,7 +103,10 @@
               "apps/ui/tsconfig.app.json",
               "apps/ui/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/ui/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/ui/**/*"
+            ]
           }
         },
         "test": {
@@ -115,9 +141,61 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["apps/ui-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/ui-e2e/**/*"]
+            "tsConfig": [
+              "apps/ui-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/ui-e2e/**/*"
+            ]
           }
+        }
+      }
+    },
+    "core": {
+      "projectType": "library",
+      "root": "libs/core",
+      "sourceRoot": "libs/core/src",
+      "prefix": "nwplay",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "libs/core/tsconfig.lib.json",
+            "project": "libs/core/package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/core/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/core/tsconfig.lib.json",
+              "libs/core/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/core/**/*"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/core/jest.config.js",
+            "tsConfig": "libs/core/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/core/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
         }
       }
     }

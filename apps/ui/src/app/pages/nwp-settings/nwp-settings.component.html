@@ -1,0 +1,179 @@
+<div class="settings-container">
+
+  <h2>{{ 'settings' | translate }}</h2>
+  <mat-tab-group [dynamicHeight]="true">
+    <mat-tab label="{{ 'generally' | translate }}">
+      <mat-selection-list (selectionChange)="setValue($event)">
+        <mat-list-option [selected]="settingsService.autoplayTrailer" value="autoplayTrailer">
+          {{ 'trailer_autoplay' | translate }}
+        </mat-list-option>
+        <mat-list-option [selected]="settingsService.autoCropTrailer" value="autoCropTrailer">
+          {{ 'trailer_autocrop' | translate }}
+        </mat-list-option>
+
+        <mat-list-option [selected]="settingsService.showAdult" value="showAdult">
+          {{ 'show_adult_content' | translate }}
+        </mat-list-option>
+
+        <mat-list-item>
+          <div class="mat-list-text">{{ 'language' | translate }}</div>
+          <mat-select
+            (ngModelChange)="settingsService.save(); translate.use($event)"
+            [(ngModel)]="settingsService.defaultLang"
+            placeholder="Sprache"
+          >
+            <mat-option *ngFor="let lang of translate.langs" [value]="lang">
+              {{ lang | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-list-item>
+
+        <mat-list-item>
+          <div class="mat-list-text">{{ 'prefered_quality' | translate }}</div>
+          <mat-select
+            (ngModelChange)="settingsService.save()"
+            [(ngModel)]="settingsService.preferredVideoQuality"
+            placeholder="{{ 'language' | translate }}"
+          >
+            <mat-option [value]="VIDEO_QUALITY.HD">{{ 'high' | translate }}</mat-option>
+            <mat-option [value]="VIDEO_QUALITY.MD">{{ 'medium' | translate }}</mat-option>
+            <mat-option [value]="VIDEO_QUALITY.SD">{{ 'low' | translate }}</mat-option>
+          </mat-select>
+        </mat-list-item>
+        <!--<mat-list-item>
+          <div class="mat-list-text">Dropbox Sync</div>
+          <mat-form-field>
+            <input
+              (ngModelChange)="settingsService.save(); reloadApp()"
+              [(ngModel)]="settingsService.dropbox"
+              matInput
+              placeholder="API Key"
+            />
+          </mat-form-field>
+        </mat-list-item>!-->
+        <mat-list-item>
+          <button (click)="clearCache()" color="primary" mat-raised-button style="margin-left: 15px;">
+            {{ 'clear_application_cache' | translate }}
+          </button>
+          <button (click)="resetApp()" color="primary" mat-raised-button style="margin-left: 15px;">
+            {{ 'reset' | translate }}
+          </button>
+        </mat-list-item>
+      </mat-selection-list>
+    </mat-tab>
+    <mat-tab label="{{ 'playback' | translate }}">
+      <mat-selection-list (selectionChange)="setValue($event)">
+        <mat-list-option [selected]="settingsService.autoplay" value="autoplay">
+          {{ 'autoplay' | translate }}
+        </mat-list-option>
+        <mat-list-option
+          (selectionChange)="settingsService.save()"
+          [(selected)]="settingsService.scrollVol"
+          value="scrollVol"
+        >
+          {{ 'scroll_to_change_volume' | translate }}
+        </mat-list-option>
+
+        <mat-list-option
+          (selectionChange)="settingsService.save()"
+          [(selected)]="settingsService.continue"
+          value="continue"
+        >
+          {{ 'player_autoresume' | translate }}
+        </mat-list-option>
+
+        <mat-list-item>
+          <div class="mat-list-text">{{ 'subtitle_language' | translate }}</div>
+          <mat-select
+            (ngModelChange)="settingsService.save()"
+            [(ngModel)]="settingsService.subtitleLanguage"
+            placeholder="{{ 'language' | translate }}"
+          >
+            <mat-option *ngFor="let lang of translate.langs" [value]="lang">
+              {{ lang | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-list-item>
+        <mat-list-item>
+          <div class="mat-list-text">{{ 'audio_language' | translate }}</div>
+          <mat-select
+            (ngModelChange)="settingsService.save()"
+            [(ngModel)]="settingsService.audioLanguage"
+            placeholder="{{ 'language' | translate }}"
+          >
+            <mat-option *ngFor="let lang of translate.langs" [value]="lang">
+              {{ lang | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-list-item>
+      </mat-selection-list>
+    </mat-tab>
+
+    <mat-tab label="{{ 'sources' | translate }}">
+      <ul class="settings-list">
+        <li title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of providers">
+          <div class="name">{{provider.name}}</div>
+          <div class="actions">
+            <button (click)="showPluginSettings(provider)">Einstellungen</button>
+          </div>
+        </li>
+      </ul>
+    </mat-tab>
+    <mat-tab label="{{ 'resolver' | translate }}">
+      <table mat-table [dataSource]="extractors" class="mat-elevation-z8">
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef> No.</th>
+          <td mat-cell *matCellDef="let element"> 0</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.name}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="info">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element"></td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-tab>
+    <mat-tab label="{{ 'about' | translate }}">
+      <p style="text-align: center;">{{ env.pkg.productName }} is a OpenSource Cross-platform Cloud Media Player.</p>
+      <p style="text-align: center;">
+        <img alt="" height="45px" src="https://blockchain.info/Resources/buttons/donate_64.png"/>
+        <br/>
+        {{ 'donate_bitcoin' | translate }} 1CuFoBLNFkpGztptEf3bnavyT8JsmRerhb
+      </p>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<ng-template let-modal #pluginSettings>
+  <div class="plugin-settings">
+    <span class="plugin-name">{{modal.provider?.name}}</span>
+    <ul class="settings-list">
+      <li>
+        <div class="name">Version: {{modal.provider?.version}}</div>
+      </li>
+      <li *ngFor="let setting of modal.provider.settings">
+        <div class="name">{{setting.label}}</div>
+        <div class="actions" [ngSwitch]="setting.type">
+          <div *ngSwitchCase="'input'">
+            <input [(ngModel)]="setting.value" (ngModelChange)="saveSettings(modal.provider)"/>
+          </div>
+          <div *ngSwitchCase="'button'">
+            <button (click)="setting.click()">TEST</button>
+          </div>
+          <div *ngSwitchCase="'checkbox'">
+            <input type="checkbox" [(ngModel)]="setting.value" (ngModelChange)="saveSettings(modal.provider)"/>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <button (click)="removeProvider(modal.provider)">REMOVE</button>
+  </div>
+</ng-template>

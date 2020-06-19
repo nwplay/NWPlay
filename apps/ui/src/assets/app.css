@@ -1,0 +1,18 @@
+.far {
+  font-family: 'Font Awesome 5 Pro', fa-regular-400;
+  font-weight: 400;
+}
+
+.fas {
+  font-family: 'Font Awesome 5 Pro', fa-solid-900;
+  font-weight: 900;
+}
+
+.fal {
+  font-family: 'Font Awesome 5 Pro', fa-solid-300;
+  font-weight: 300;
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(15px);
+}

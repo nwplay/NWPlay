@@ -1,0 +1,66 @@
+$accent-color: #c2185b;
+$primary-color: #151515;
+$primary-text-color: #151515;
+$toolbar-height: 39px;
+$secondary-color: rgba(0, 0, 0, 0.5);
+$background-alpha: 0.7;
+$default-icon-size: 16px;
+$selected-background-color: rgba(0, 0, 0, 0.2);
+$item-shadow: 3px 3px 3px rgba(0, 0, 0, 0.05);
+$item-border-radius: 7px;
+$x-small-text-size: 0.8rem;
+$small-text-size: 0.9rem;
+$medium-text-size: 1rem;
+$large-text-size: 1.15rem;
+$x-large-text-size: x-large;
+$xx-large-text-size: xx-large;
+$xxx-large-text-size: xx-large;
+$font-smoothing: antialiased;
+$hover-background-color: rgba(255, 255, 255, 0.1);
+$primary-text-color: #000;
+$toolbar-background-color: #121212;
+$toolbar-text-color: #fff;
+$media-item-background-color: rgba(255, 255, 255, 0.85);
+$media-item-text-color: #151515;
+$secondary-text-color: rgba(0, 0, 0, 0.5);
+$primary-background-color: #ffffff;
+$secondary-background-color: rgba(255, 255, 255, 0.1);
+$tertiary-background-color: rgba(255, 255, 255, 0.4);
+
+@mixin vibrancy-dark-mixin($color: rgba(0, 0, 0, 0.45)) {
+  background-color: $color;
+  backdrop-filter: saturate(1.2) blur(15px);
+  color: #fff;
+}
+
+@mixin nwp-scroller() {
+  will-change: transform;
+  &::-webkit-scrollbar,
+  .right::-webkit-scrollbar {
+    margin-top: $toolbar-height;
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track,
+  .right::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb,
+  .right::-webkit-scrollbar-thumb {
+    background: $accent-color;
+    border-radius: 3px;
+    content: 'TEST';
+
+    &::after {
+      background: red;
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:hover,
+  .right::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+}

@@ -1,0 +1,384 @@
+@import '../../../vars.scss';
+
+:host {
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .sub-toolbar {
+    margin-top: $toolbar-height;
+    margin-bottom: ($toolbar-height * -1) - 1;
+    position: relative;
+    z-index: 200;
+    width: 100%;
+    float: left;
+    @include vibrancy-dark-mixin();
+
+    button {
+      margin-left: 15px;
+    }
+
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    box-shadow: 0 0 15px #00000085;
+  }
+
+  display: contents;
+
+  .toolbar {
+    user-select: none;
+    -webkit-app-region: drag;
+    height: $toolbar-height;
+    width: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    order: 0;
+    z-index: 800;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    @include vibrancy-dark-mixin();
+
+    .item {
+      margin-left: 8px;
+      margin-right: 8px;
+      color: #fff;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+
+      .mat-icon {
+        font-size: 18px;
+        height: auto !important;
+        width: auto !important;
+      }
+
+      min-width: 0;
+      line-height: 22px !important;
+
+      &.active {
+        //background-color: #ffffff15;
+        background-color: rgba($accent-color, 0.5);
+      }
+
+      -webkit-app-region: no-drag;
+    }
+
+    .back {
+      justify-self: start;
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+
+    .window_buttons {
+      flex-shrink: 0;
+      flex-grow: 0;
+
+      &.macos {
+        margin: 0 0 0 12px;
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+          div svg {
+            opacity: 1;
+          }
+        }
+
+        div {
+          -webkit-app-region: no-drag;
+          width: 12px;
+          height: 12px;
+          overflow: hidden;
+          border-radius: 100%;
+          float: left;
+          margin-right: 7px;
+          position: relative;
+
+          svg {
+            margin: auto;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            opacity: 0;
+          }
+        }
+      }
+
+      &.windows {
+        position: relative;
+        display: flex;
+        height: 100%;
+
+        div {
+          width: 60px;
+          height: 100%;
+          float: right;
+          position: relative;
+          -webkit-app-region: no-drag;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+
+          &.close:hover {
+            background-color: rgb(232, 17, 35);
+          }
+
+          svg {
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            float: right;
+
+            rect,
+            path,
+            polygon {
+              fill: #ffffff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.macos {
+  .search-input {
+    border-radius: 4px;
+    height: calc(100% - 16px);
+    margin-left: 16px;
+    line-height: calc(100% - 16px);
+
+    input {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 0;
+      padding: 0 0 0 12px;
+      box-sizing: border-box;
+      width: auto;
+    }
+  }
+}
+
+.search-container {
+  position: absolute;
+  top: $toolbar-height;
+  max-height: 70vh;
+  min-width: 250px;
+  z-index: 799;
+  overflow: auto;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-shadow: 0 0 15px #00000085;
+  -webkit-overflow-scrolling: touch;
+  -webkit-app-region: no-drag;
+  @include vibrancy-dark-mixin();
+  @include nwp-scroller();
+  margin: 15px;
+  border-radius: 7px;
+
+  .sa-button-container {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    border-bottom: rgba(255, 255, 255, 0.1) 1px solid;
+  }
+
+  mat-form-field {
+    width: 100%;
+    padding-right: 8px;
+    padding-left: 8px;
+    box-sizing: border-box;
+  }
+
+  ::ng-deep {
+    .mat-button-toggle-label-content {
+      line-height: normal;
+      margin: initial;
+    }
+
+    .mat-button-toggle-appearance-standard {
+      background-color: transparent;
+    }
+  }
+
+  mat-button-toggle-group {
+    align-self: center;
+    flex-shrink: 0;
+
+    .mat-button-toggle-checked {
+      color: $accent-color;
+    }
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  mat-list {
+    max-height: 75vh;
+    @include nwp-scroller();
+    padding-top: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  p {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  mat-list-item {
+    cursor: pointer;
+    position: relative;
+
+    &::after {
+      transition: opacity 0.2s ease-out;
+      content: '';
+      bottom: 0;
+      top: 0;
+      right: 0;
+      left: 0;
+      position: absolute;
+      background-color: #fff;
+      z-index: -1;
+      opacity: 0;
+    }
+  }
+
+  mat-list-item:hover {
+    &::after {
+      opacity: 0.2;
+    }
+  }
+
+  h3 {
+    cursor: pointer;
+  }
+
+  p.no-results {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    text-align: center;
+    color: #aaa;
+    font-size: small;
+  }
+
+  &.windows {
+    left: 0;
+  }
+
+  &.macos {
+    right: 0;
+  }
+}
+
+.search-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 798;
+  -webkit-app-region: no-drag;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.search-input {
+  width: 125px;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  -webkit-app-region: no-drag;
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  .sicon {
+    display: none;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+
+    i {
+      color: #fff;
+    }
+  }
+
+  &.ios {
+    color: transparent;
+
+    &:focus {
+      color: #fff;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    width: 45px;
+    background-color: transparent;
+    input {
+      padding: 8px;
+    }
+    &.filled,
+    &:focus-within {
+      width: 175px;
+
+      .sicon {
+        display: none;
+      }
+
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .sicon {
+      display: flex;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+  }
+  @media only screen and (max-width: 480px) {
+    input {
+      padding: 0;
+    }
+  }
+
+  input {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    padding: 16px;
+    border: none;
+    color: #fff;
+    user-select: text;
+
+    &::placeholder {
+      color: rgba(#fff, 0.8);
+
+    }
+  }
+}
+
+.url_icon {
+  height: 22px;
+  mix-blend-mode: lighten;
+}

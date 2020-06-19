@@ -1,0 +1,71 @@
+h2 {
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 5px;
+  padding: 25px;
+  font-size: 3rem;
+  margin: 0 0 15px;
+}
+
+h3 {
+  width: 100%;
+  padding-left: 16px;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+p {
+  width: 100%;
+  padding: 15px;
+  color: #909090;
+  box-sizing: border-box;
+}
+
+mat-radio-button {
+  margin-right: 16px;
+}
+
+:host ::ng-deep .mat-list-item .mat-select,
+:host ::ng-deep .mat-list-item .mat-input-element {
+  flex-shrink: 3;
+}
+
+.dynamic_delete {
+  position: absolute;
+  right: 48px;
+  top: 7px;
+  bottom: 7px;
+}
+
+.settings-list {
+  li {
+    color: #fff;
+    background-color: red;
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+
+    .name {
+      flex-grow: 1;
+    }
+
+    .actions {
+      * {
+        margin-left: 7px;
+      }
+    }
+  }
+}
+
+.settings-container {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.plugin-settings {
+  .plugin-name {
+    font-size: 1.5rem;
+    padding: 15px;
+  }
+}

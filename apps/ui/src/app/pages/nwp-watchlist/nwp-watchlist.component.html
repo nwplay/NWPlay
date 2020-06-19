@@ -1,0 +1,31 @@
+<div class="page-container">
+  <h2>{{ 'watchlist' | translate }}</h2>
+  <mat-form-field>
+    <mat-select
+      (ngModelChange)="settings.save()"
+      [(ngModel)]="selectedProvider"
+      placeholder="{{ 'provider' | translate }}"
+    >
+      <mat-option [value]="null">{{ 'show_all' | translate }}</mat-option>
+      <ng-container *ngFor="let p of providers">
+        <mat-option *ngIf="!p.disabled && (!p.isAdult || settings.showAdult)" [value]="p">
+          {{ p.name }}
+        </mat-option>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+  <div class="grid-container">
+    <ng-container *ngFor="let item of watchlist.items">
+      <nwp-media-card
+        *ngIf="canShowItem(item)"
+        @fadeAnimation
+        [isWatchlist]="true"
+        [item]="item"
+        [showAsModal]="false"
+      ></nwp-media-card>
+    </ng-container>
+  </div>
+  <div *ngIf="watchlist.items.length === 0" class="empty">
+    {{ 'empty_watchlist' | translate }}
+  </div>
+</div>

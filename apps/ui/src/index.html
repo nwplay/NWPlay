@@ -1,13 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Ui</title>
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  </head>
-  <body>
-    <nwplay-root></nwplay-root>
-  </body>
+<head>
+  <meta charset="utf-8"/>
+  <meta
+    content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; media-src * blob:; worker-src * blob:"
+    http-equiv="Content-Security-Policy"
+  />
+  <meta content="no-referrer" name="referrer"/>
+  <link href="https://unpkg.com/pattern.css" rel="stylesheet"/>
+  <title>NWPlay</title>
+  <style>
+    body {
+      background-color: #151515;
+    }
+
+    .spinner {
+      width: 64px;
+      height: 64px;
+      text-align: center;
+      position: fixed;
+      z-index: 999999;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      -webkit-animation: sk-rotate 2s infinite linear;
+      animation: sk-rotate 2s infinite linear;
+    }
+
+    .dot1,
+    .dot2 {
+      width: 60%;
+      height: 60%;
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      background-color: #c2185b;
+      border-radius: 100%;
+      -webkit-animation: sk-bounce 2s infinite ease-out;
+      animation: sk-bounce 2s infinite ease-out;
+    }
+
+    .dot2 {
+      top: auto;
+      bottom: 0;
+      -webkit-animation-delay: -1s;
+      animation-delay: -1s;
+    }
+
+    @-webkit-keyframes sk-rotate {
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes sk-rotate {
+      100% {
+        transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-webkit-keyframes sk-bounce {
+      0%,
+      100% {
+        -webkit-transform: scale(0);
+      }
+      50% {
+        -webkit-transform: scale(1);
+      }
+    }
+
+    @keyframes sk-bounce {
+      0%,
+      100% {
+        transform: scale(0);
+        -webkit-transform: scale(0);
+      }
+      50% {
+        transform: scale(1);
+        -webkit-transform: scale(1);
+      }
+    }
+  </style>
+  <base href="index.html"/>
+  <meta
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover"
+    name="viewport"
+  />
+  <link href="favicon.ico" rel="icon" type="image/x-icon"/>
+</head>
+
+<body>
+<nwplay-app-root></nwplay-app-root>
+<div class="spinner" id="main-spinner">
+  <div class="dot1"></div>
+  <div class="dot2"></div>
+</div>
+</body>
 </html>

@@ -1,7 +1,14 @@
 {
+  "productName": "NWPlay",
+  "version": "4.0.0-alpha.1",
+  "license": "AGPL-3.0-or-later",
+  "identifier": "org.nwplay.ui",
+  "description": "A Cross-platform Cloud Media Player",
   "name": "nwplay",
-  "version": "0.0.0",
-  "license": "MIT",
+  "chromium-args": "--mixed-context --disable-web-security",
+  "main": "http://localhost:4200",
+  "node-remote": "<all_urls>",
+  "nodejs": true,
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
@@ -25,43 +32,108 @@
     "update": "ng update @nrwl/workspace",
     "workspace-schematic": "nx workspace-schematic",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "build:ng": "ng build -c production",
+    "build:post": "node ./tools/post.build.js",
+    "build:nw": "node node_modules/nwjs-builder-phoenix/dist/bin/build.js --tasks mac-x64,win-x86,win-x64,linux-x86,linux-x64 ./dist/apps/ui",
+    "dist": "npx npm-run-all build:ng build:post build:nw"
+  },
+  "window": {
+    "frame": false,
+    "width": 900,
+    "height": 550,
+    "show": true,
+    "position": "center",
+    "resizable": true,
+    "id": "main",
+    "icon": "./assets/Icon.png"
+  },
+  "build": {
+    "appId": "org.nwplay.ui",
+    "packed": false,
+    "targets": [
+      "zip"
+    ],
+    "overriddenProperties": {
+      "main": "index.html"
+    },
+    "nwVersion": "0.44.6",
+    "ffmpegIntegration": true,
+    "output": "../dist",
+    "win": {
+      "icon": "./assets/Icon.ico",
+      "productName": "NWPlay"
+    },
+    "mac": {
+      "icon": "./assets/Icon.icns"
+    },
+    "nsis": {
+      "icon": "./assets/Icon.ico"
+    }
   },
   "private": true,
+  "distDependencies": [
+    "youtube-dl",
+    "cheerio"
+  ],
   "dependencies": {
-    "@nrwl/angular": "9.4.3",
     "@angular/animations": "^9.1.0",
+    "@angular/cdk": "^9.2.4",
     "@angular/common": "^9.1.0",
     "@angular/compiler": "^9.1.0",
     "@angular/core": "^9.1.0",
     "@angular/forms": "^9.1.0",
+    "@angular/material": "^9.2.4",
     "@angular/platform-browser": "^9.1.0",
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/router": "^9.1.0",
+    "@ncstate/sat-popover": "^4.0.0",
+    "@ngx-translate/core": "^12.1.2",
+    "@nrwl/angular": "9.4.3",
+    "angular2-hotkeys": "^2.2.0",
+    "cheerio": "^1.0.0-rc.3",
+    "class-transformer": "^0.2.3",
+    "dashjs": "^3.1.1",
+    "dropbox": "^5.1.0",
+    "hls.js": "^0.13.2",
+    "lodash": "^4.17.15",
+    "material-design-icons-iconfont": "^5.0.1",
+    "ng2-right-click-menu": "^1.1.3",
+    "ngx-pipes": "^2.7.3",
+    "overlayscrollbars": "^1.12.0",
+    "overlayscrollbars-ngx": "^0.2.2",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.4",
+    "sortablejs": "^1.10.2",
+    "systemjs": "^6.3.2",
+    "videogular2": "^7.0.2",
+    "youtube-dl": "^3.0.2",
     "zone.js": "^0.10.2"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "0.901.0",
+    "@angular-devkit/build-ng-packagr": "^0.901.8",
     "@angular/cli": "9.1.0",
-    "@nrwl/workspace": "9.4.3",
-    "@types/node": "~8.9.4",
-    "dotenv": "6.2.0",
-    "ts-node": "~7.0.0",
-    "tslint": "~6.0.0",
-    "eslint": "6.8.0",
-    "typescript": "~3.8.3",
-    "prettier": "2.0.4",
-    "@nrwl/nx-cloud": "latest",
     "@angular/compiler-cli": "^9.1.0",
     "@angular/language-service": "^9.1.0",
-    "@angular-devkit/build-angular": "0.901.0",
-    "codelyzer": "~5.0.1",
-    "jest-preset-angular": "8.1.2",
+    "@nrwl/cypress": "9.4.3",
     "@nrwl/jest": "9.4.3",
-    "jest": "25.2.3",
+    "@nrwl/nx-cloud": "latest",
+    "@nrwl/workspace": "9.4.3",
     "@types/jest": "25.1.4",
-    "ts-jest": "25.2.1",
+    "@types/node": "^8.9.5",
+    "codelyzer": "~5.0.1",
     "cypress": "^4.1.0",
-    "@nrwl/cypress": "9.4.3"
+    "dotenv": "6.2.0",
+    "eslint": "6.8.0",
+    "jest": "25.2.3",
+    "jest-preset-angular": "8.1.2",
+    "ng-packagr": "^9.1.5",
+    "nwjs-builder-phoenix": "^1.15.0",
+    "prettier": "2.0.4",
+    "ts-jest": "25.2.1",
+    "ts-node": "~7.0.0",
+    "tslint": "~6.0.0",
+    "typescript": "~3.8.3"
   }
 }

@@ -1,1 +1,325 @@
-/* You can add global styles to this file, and also import other style files */
+@import './reset.scss';
+@import './vars.scss';
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+@import '~overlayscrollbars/css/OverlayScrollbars.css';
+
+html,
+body {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+}
+
+.page-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: $toolbar-height * -1;
+  padding-top: $toolbar-height;
+  bottom: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  //@include nwp-scroller();
+}
+
+.webview {
+  position: absolute;
+  width: calc(100% - 50px);
+  height: calc(100% - 50px - 75px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: #fff;
+  -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+  top: 25px;
+  z-index: 10;
+  max-width: 1024px;
+}
+
+.popover {
+  position: fixed;
+}
+
+.webview_container {
+  background-color: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  bottom: 75px;
+  left: 75px;
+  right: 75px;
+  top: 75px;
+  z-index: 99999;
+  display: none;
+
+  webview {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    bottom: 0;
+    background-color: #fff;
+  }
+}
+
+.webview_nav {
+  height: 50px;
+  background-color: #ffffff;
+  z-index: 100;
+  position: absolute;
+  right: 0;
+  top: 0;
+  left: 0;
+}
+
+.webview_nav input {
+  float: left;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-style: none;
+  outline: none;
+  width: calc(100% - 150px);
+  text-indent: 25px;
+  font-size: 14px;
+  color: #999;
+}
+
+.webview_nav input:focus {
+  background-color: #eee;
+}
+
+.webview_nav button {
+  width: 50px;
+  height: 50px;
+  border-style: none;
+  margin: 0;
+  padding: 0;
+  float: left;
+  background-color: #fff;
+  color: #999;
+}
+
+.webview_nav button:hover {
+  color: #1979ca;
+}
+
+.page--material .media-card {
+  border-radius: 0 !important;
+}
+
+.page__content {
+  scroll-behavior: smooth;
+}
+
+.button--material {
+  border-radius: 0;
+}
+
+.back-button--material {
+  line-height: initial;
+}
+
+.carousel {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.desktop {
+    &::-webkit-scrollbar {
+      height: 3px;
+      display: initial;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #555;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #888;
+    }
+  }
+
+  nwp-media-card {
+    flex: 0 0 auto;
+    margin-left: 20px;
+    scroll-margin-left: 20px;
+    scroll-snap-align: start;
+
+    &:last-child {
+      .media-card {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .item-container {
+    flex: 0 0 auto;
+    overflow: hidden;
+    width: 475px;
+    height: 100%;
+
+    .item {
+      position: relative;
+      float: left;
+      height: 100%;
+      width: 100%;
+
+      img {
+        object-fit: cover;
+        object-position: top center;
+        width: 100%;
+        height: 100%;
+        transition: all 0.25s ease;
+        z-index: 50;
+      }
+
+      .overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-image: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+        text-align: center;
+        z-index: 99;
+
+        .text {
+          text-align: center;
+          bottom: 20px;
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          color: #fff;
+          font-size: 1.5rem;
+          letter-spacing: 1px;
+          font-weight: 500;
+          line-height: normal;
+        }
+      }
+    }
+  }
+}
+
+body {
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.mat-tab-labels {
+  flex-grow: 1 !important;
+}
+
+.vol-menu {
+  min-width: 0 !important;
+}
+
+.max-h-menu {
+  max-height: 325px !important;
+}
+
+h1 {
+  font-size: 4.2rem;
+  line-height: 110%;
+  margin: 2.8rem 0 1.68rem 0;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 3.56rem;
+  line-height: 110%;
+  margin: 2.3733333333rem 0 1.424rem 0;
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 2.92rem;
+  line-height: 110%;
+  margin: 1.9466666667rem 0 1.168rem 0;
+  font-weight: 400;
+}
+
+.mat-menu-item.active {
+  color: $accent-color;
+}
+
+.item-popover-cls {
+  .mat-dialog-container {
+    padding: 0;
+    position: relative;
+  }
+}
+
+.item-popover-cls {
+  margin-top: 42px;
+}
+
+.cdk-overlay-dark-backdrop {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.mat-dialog-container {
+  -webkit-overflow-scrolling: touch;
+  padding: 0 !important;
+}
+
+.sh-context-menu {
+  background-color: #151515 !important;
+  color: #fff !important;
+
+  .sh-context-menu--item {
+    &:hover {
+      background-color: $accent-color !important;
+    }
+  }
+}
+
+.footer {
+  float: left;
+  width: 100%;
+  padding-top: 35px;
+  padding-bottom: 35px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(15px);
+}
+
+.mat-chip {
+  background-color: transparent !important;
+  border: 1px solid !important;
+  backdrop-filter: blur(15px) !important;
+
+  &.mat-accent {
+    border-color: $accent-color !important;
+    color: #fff !important;
+  }
+}
+
+.mat-button[disabled] {
+  opacity: 0.5;
+}

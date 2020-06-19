@@ -1,0 +1,22 @@
+{
+  "extends": "../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "nwplay",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "nwplay",
+      "kebab-case"
+    ]
+  },
+  "linterOptions": {
+    "exclude": [
+      "!**/*"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+<div #content class="page-container">
+  <h1>{{ item?.provider?.name }} - {{ 'search' | translate }}: ({{ item?.query }})</h1>
+  {{item?.items?.length}}
+  <div class="grid-container" *ngIf="item">
+    <nwp-media-card *ngFor="let item of item.items" [isWatchlist]="false" [item]="item"></nwp-media-card>
+  </div>
+</div>
