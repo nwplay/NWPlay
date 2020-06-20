@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 
 export { LANGUAGE, isoLangs } from './languages';
 
+// @dynamic
 export class NWPlaySettings {
 
   public get preferredUiLanguage() {
@@ -20,7 +21,7 @@ export class NWPlaySettings {
   public preferredSubtitleLanguages: LANGUAGE[] = [];
   public preferredVideoQuality: VIDEO_QUALITY = VIDEO_QUALITY.HD;
   public autoplayTrailer = true;
-  public showAdultContent = true;
+  public showAdultContent = false;
   public autoplay = true;
   public volume = 1;
   public cropTrailers = true;

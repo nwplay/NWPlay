@@ -2,6 +2,7 @@ import { getProviderById, PlayProvider, MediaProvider, TvEpisode, TvShow } from 
 import { deserializeArray, serialize, Transform, Type } from 'class-transformer';
 import { TransformationType } from 'class-transformer/TransformOperationExecutor';
 
+// @dynamic
 export class HistoryItem {
   public id: string;
   public poster?: string = null;
