@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/  
-      - run: npx ng build core
+      - run: npx nx ng build core
       - run: cd dist/nwplay-core
       - run: npm ci
       - run: npm publish
