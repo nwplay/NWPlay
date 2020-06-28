@@ -7,15 +7,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: sudo dpkg --add-architecture i386
+      - run: sudo dpkg --add-architecture i386focal
       - run: wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
-      - run: sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
+      - run: sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
       - run: sudo apt update
       - run: sudo apt install --install-recommends winehq-stable
       - run: npm i
