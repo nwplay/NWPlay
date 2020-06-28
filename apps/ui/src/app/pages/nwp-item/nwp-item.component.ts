@@ -181,6 +181,9 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       this.trailerLoading = true;
       try {
         const res: MediaSource = await this.item.trailer();
+        if(this.player.playlist.items.length > 0) {
+          return;
+        }
         if (res && res.source) {
           this.trailerSrc = res.source;
           if (res.audio_track) {
@@ -211,10 +214,14 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   public trailerTimeUpdate({ target }) {
     if (this.yaudiohackEle && this.yaudiohackEle.nativeElement.src) {
       if (this.trailerSyncFc > 7) {
+        if(this.player.playlist.items.length > 0) {
+          this.trailerSrc = null;
+          return;
+        }
         const ctm = target.currentTime;
         const xth = this.yaudiohackEle.nativeElement.currentTime;
         if ((ctm > xth + 0.3 || ctm < xth - 0.3)) {
-          console.log('NEED AUDIO SYNC ' + (ctm - xth));
+          console.log('AUDIO OUT OF SYNC ' + (ctm - xth));
           this.yaudiohackEle.nativeElement.currentTime = ctm + 0.1;
         }
         this.trailerSyncFc = 0;
