@@ -13,9 +13,26 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      - run: apt-get install wine -y
       - run: npm i
       - run: npm run dist
       - uses: actions/upload-artifact@v2
         with:
-          name: dist
-          path: dist/apps/dist/*.zip
+          name: macos-x64
+          path: dist/apps/dist/*mac*.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-x86
+          path: dist/apps/dist/*linux-x86*.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-x64
+          path: dist/apps/dist/*linux-x64*.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-x86
+          path: dist/apps/dist/*win-x86*.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-x64
+          path: dist/apps/dist/*win-x64*.zip
