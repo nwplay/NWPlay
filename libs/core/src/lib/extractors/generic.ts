@@ -1,5 +1,5 @@
 import { Extractor, MediaSource, SOURCE_TYPE } from '../nwp-media';
-import { extractorService } from '../../index';
+import { Environment, extractorService } from '../../index';
 import { v5 as uuidV5 } from 'uuid';
 
 let updated = false;
@@ -19,7 +19,7 @@ export class GenericExtractor implements Extractor {
     const path = (window as any).nw.require('path');
     this.binPath = path.join(dataPath, `ydl`);
     this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
-    if (process.platform === 'win32') {
+    if (Environment.default.platform === 'windows') {
       this.url += '.exe';
       this.binPath += '.exe';
     }
@@ -30,7 +30,7 @@ export class GenericExtractor implements Extractor {
   public hidden?: boolean;
 
   async exec(cmd: string) {
-    const isWindows = process.platform === 'win32';
+    const isWindows = Environment.default.platform === 'windows';
     const util = (window as any).nw.require('util');
     const exec = util.promisify((window as any).nw.require('child_process').exec);
     const cmdArray: string[] = [];
