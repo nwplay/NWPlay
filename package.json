@@ -1,6 +1,6 @@
 {
   "productName": "NWPlay",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "license": "AGPL-3.0-or-later",
   "identifier": "org.nwplay.ui",
   "description": "A Cross-platform Cloud Media Player",
@@ -52,8 +52,7 @@
     "appId": "org.nwplay.ui",
     "packed": false,
     "targets": [
-      "zip",
-      "nsis"
+      "zip"
     ],
     "overriddenProperties": {
       "main": "index.html"
