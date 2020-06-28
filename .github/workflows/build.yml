@@ -13,11 +13,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: sudo dpkg --add-architecture i386focal
+      - run: sudo dpkg --add-architecture i386
       - run: wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
       - run: sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
       - run: sudo apt update
-      - run: sudo apt install wine-stable
+      - run: sudo apt install -y -o APT::Immediate-Configure=false --install-recommends winehq-stable -y
       - run: npm i
       - run: npm run dist
       - uses: actions/upload-artifact@v2
