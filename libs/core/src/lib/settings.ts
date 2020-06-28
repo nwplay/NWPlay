@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 
 export { LANGUAGE, isoLangs } from './languages';
 
+// @dynamic
 export class NWPlaySettings {
 
   public get preferredUiLanguage() {

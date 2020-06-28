@@ -2,6 +2,7 @@ import { getProviderById, PlayProvider, MediaProvider, TvEpisode, TvShow } from 
 import { deserializeArray, serialize, Transform, Type } from 'class-transformer';
 import { TransformationType } from 'class-transformer/TransformOperationExecutor';
 
+// @dynamic
 export class HistoryItem {
   public id: string;
   public poster?: string = null;
@@ -18,7 +19,6 @@ export class HistoryItem {
     }
   })
   public provider: MediaProvider;
-
 }
 
 export class History {
@@ -52,7 +52,6 @@ export class History {
       }
       this.items.push(historyItem);
     }
-    console.log(item);
     historyItem.id = item.id;
     historyItem.poster = item.poster;
     historyItem.title = item.title;

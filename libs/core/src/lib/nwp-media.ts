@@ -98,6 +98,7 @@ export abstract class PlayProvider {
   abstract play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource>;
 }
 
+// @dynamic
 export class SearchResult<Provider extends MediaProvider = MediaProvider> {
   type: MEDIA_TYPE = MEDIA_TYPE.MOVIE;
   title: string;
