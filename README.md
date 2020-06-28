@@ -1,5 +1,7 @@
 # NWPlay
 
+![NWPlay](https://github.com/nwplay/NWPlay/workflows/NWPlay/badge.svg?branch=master)
+
 NWPlay is a OpenSource Cross-platform Cloud Media Player based on [nw.js](http://nwjs.io) & Angular.
 
 ## Features
