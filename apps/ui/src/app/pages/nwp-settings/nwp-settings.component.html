@@ -40,17 +40,6 @@
             <mat-option [value]="VIDEO_QUALITY.SD">{{ 'low' | translate }}</mat-option>
           </mat-select>
         </mat-list-item>
-        <!--<mat-list-item>
-          <div class="mat-list-text">Dropbox Sync</div>
-          <mat-form-field>
-            <input
-              (ngModelChange)="settingsService.save(); reloadApp()"
-              [(ngModel)]="settingsService.dropbox"
-              matInput
-              placeholder="API Key"
-            />
-          </mat-form-field>
-        </mat-list-item>!-->
         <mat-list-item>
           <button (click)="clearCache()" color="primary" mat-raised-button style="margin-left: 15px;">
             {{ 'clear_application_cache' | translate }}
@@ -120,27 +109,23 @@
       </ul>
     </mat-tab>
     <mat-tab label="{{ 'resolver' | translate }}">
-      <table mat-table [dataSource]="extractors" class="mat-elevation-z8">
+      <label>
+        <input (input)="filterExtractors($event)">
+      </label>
+      <ul class="settings-list">
+        <li title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of extractors">
+          <div class="name">{{provider.name}}</div>
+          <div class="actions">
+            <ng-container *ngIf="extractorService.checkIfIsFavorite(provider); else elseBlock">
+              <button (click)="extractorService.removeFavorite(provider)">Unfav</button>
+            </ng-container>
+            <ng-template #elseBlock>
+              <button (click)="extractorService.addFavorite(provider)">Fav</button>
+            </ng-template>
+          </div>
+        </li>
+      </ul>
 
-        <!-- Position Column -->
-        <ng-container matColumnDef="position">
-          <th mat-header-cell *matHeaderCellDef> No.</th>
-          <td mat-cell *matCellDef="let element"> 0</td>
-        </ng-container>
-
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Name</th>
-          <td mat-cell *matCellDef="let element"> {{element.name}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="info">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let element"></td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
     </mat-tab>
     <mat-tab label="{{ 'about' | translate }}">
       <p style="text-align: center;">{{ env.pkg.productName }} is a OpenSource Cross-platform Cloud Media Player.</p>
