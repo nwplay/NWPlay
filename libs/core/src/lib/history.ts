@@ -19,7 +19,6 @@ export class HistoryItem {
     }
   })
   public provider: MediaProvider;
-
 }
 
 export class History {
@@ -53,7 +52,6 @@ export class History {
       }
       this.items.push(historyItem);
     }
-    console.log(item);
     historyItem.id = item.id;
     historyItem.poster = item.poster;
     historyItem.title = item.title;

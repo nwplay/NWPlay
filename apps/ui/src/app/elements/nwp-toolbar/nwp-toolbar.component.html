@@ -201,7 +201,6 @@
   </button>
 </mat-menu>
 <ng-template #urlDialog>
-  <div mat-dialog-content>
 
     <mat-form-field>
       <mat-label>Url</mat-label>
@@ -209,9 +208,6 @@
         <input #urlInput matInput>
       </label>
     </mat-form-field>
-  </div>
-  <div mat-dialog-actions>
     <button matDialogClose mat-button (click)="playUrl(urlInput.value)">{{'play' | translate}}</button>
     <button matDialogClose mat-button>{{'hide' | translate}}</button>
-  </div>
 </ng-template>

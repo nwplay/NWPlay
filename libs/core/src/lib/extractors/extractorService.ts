@@ -1,13 +1,43 @@
-import * as ext from './index';
 import { Extractor } from '../nwp-media';
 
 class ExtractorService {
   public readonly extractors: Extractor[] = [];
+  public readonly favorites = new Set<Extractor>();
+  private readonly favoriteIds = new Set<string>();
 
   constructor() {
-    for (const e of Object.values(ext)) {
-      this.addExtractor(new e());
+    try {
+      this.favoriteIds = new Set(JSON.parse(localStorage['extractorFavorites']));
+    } catch (e) {
     }
+    this.updateFavorites();
+  }
+
+  private updateFavorites() {
+    this.favorites.clear();
+    Array.from(this.favoriteIds)
+      .map(id => this.extractors.find(e => e.id === id))
+      .forEach(e => this.favorites.add(e));
+  }
+
+  private saveFavorites() {
+    localStorage['extractorFavorites'] = JSON.stringify(Array.from(this.favoriteIds));
+  }
+
+  public checkIfIsFavorite(extractor: Extractor) {
+    return this.favorites.has(extractor);
+  }
+
+  public addFavorite(extractor: Extractor) {
+    this.favorites.add(extractor);
+    this.favoriteIds.add(extractor.id);
+    this.saveFavorites();
+  }
+
+  public removeFavorite(extractor: Extractor) {
+    this.favorites.delete(extractor);
+    this.favoriteIds.delete(extractor.id);
+    this.saveFavorites();
   }
 
   public test(url: string): boolean {
@@ -24,6 +54,7 @@ class ExtractorService {
 
   public addExtractor<T extends Extractor>(extractor: T) {
     this.extractors.push(extractor);
+    this.updateFavorites();
   }
 }
 

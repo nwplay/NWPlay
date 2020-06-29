@@ -15,9 +15,8 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class NwpSettingsComponent {
   public extractorFavorites: Set<Extractor> = new Set<Extractor>();
-
-  public extractors = new MatTableDataSource<Extractor>(extractorService.extractors);
-  public displayedColumns: string[] = ['position', 'name', 'info'];
+  public extractorService = extractorService;
+  public extractors = extractorService.extractors;
 
   public settingsService: SettingsService = null;
   public VIDEO_QUALITY = VIDEO_QUALITY;
@@ -35,6 +34,11 @@ export class NwpSettingsComponent {
   ) {
     this.settingsService = _settings;
     this.dialog = _dialog;
+  }
+
+  public filterExtractors(v: Event) {
+    const value = (v.target as any).value
+    this.extractors = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value));
   }
 
   public showPluginSettings(provider: MediaProvider) {

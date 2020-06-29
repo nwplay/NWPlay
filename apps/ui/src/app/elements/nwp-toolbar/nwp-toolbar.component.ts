@@ -1,5 +1,20 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Environment, providers, SearchResult } from '@nwplay/core';
+import {
+  Environment,
+  Extractor,
+  extractorService,
+  ISearchOptions,
+  MediaCollection,
+  MediaProvider,
+  MediaSource,
+  Movie,
+  Player,
+  providers,
+  SearchResult,
+  TvEpisode,
+  TvSeason,
+  TvShow
+} from '@nwplay/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { MatMenu } from '@angular/material/menu';
@@ -11,8 +26,49 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AppService } from '../../app.service';
 import { MatDialog } from '@angular/material/dialog';
 
-declare var chrome: any;
 declare var nw: any;
+
+class UrlProvider extends MediaProvider {
+  id = 'cca3cf09-1be0-4d36-9f56-c6c6a6f263d0';
+  name = 'Url Provider';
+
+  feature(limit?: number, isHome?: boolean): Promise<SearchResult<MediaProvider>[]> {
+    return Promise.resolve([]);
+  }
+
+  get(id: string): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any>> {
+    return Promise.resolve(undefined);
+  }
+
+  home(isHome?: boolean): Promise<MediaCollection<MediaProvider>[]> {
+    return Promise.resolve([]);
+  }
+
+  init(): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  search(options: ISearchOptions): Promise<SearchResult<MediaProvider>[]> {
+    return Promise.resolve([]);
+  }
+
+  toolbar(): Promise<any[]> {
+    return Promise.resolve([]);
+  }
+
+}
+
+class UrlMovie extends Movie<any> {
+  constructor(private videoUrl: string) {
+    super(new UrlProvider());
+    this.title = videoUrl;
+    this.id = videoUrl;
+  }
+
+  async play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource> {
+    return await extractorService.extract(this.videoUrl);
+  }
+}
 
 @Component({
   selector: 'nwplay-toolbar',
@@ -98,49 +154,23 @@ export class NwpToolbarComponent implements OnInit {
     if (this.env.platform === 'macos') {
       this.toggleFullScreen();
     } else {
-      const chromeWindow = chrome.app.window.current();
-      if (window['nw']) {
-        if (chromeWindow.isMaximized()) {
-          nw.Window.get().restore();
-        } else {
-          nw.Window.get().maximize();
-        }
-      } else {
-        if (chromeWindow.isMaximized()) {
-          chromeWindow.restore();
-        } else {
-          chromeWindow.maximize();
-        }
-      }
+      nw.Window.get().maximize();
     }
   }
 
   public toggleFullScreen() {
-    const win = nw.Window.get();
-    win.toggleFullscreen();
+    nw.Window.get().toggleFullscreen();
   }
 
   public minimize(): void {
-    if (window['nw']) {
-      nw.Window.get().minimize();
-    } else {
-      chrome.app.window.current().minimize();
-    }
+    nw.Window.get().minimize();
   }
 
   public close(force: boolean): void {
     if (this.platform === 'macos' && !force) {
-      if (window['nw']) {
-        nw.Window.get().hide();
-      } else {
-        chrome.app.window.current().hide();
-      }
+      nw.Window.get().hide();
     } else {
-      if (window['nw']) {
-        nw.Window.get().close();
-      } else {
-        chrome.app.window.current().close();
-      }
+      nw.Window.get().close();
     }
   }
 
@@ -173,8 +203,9 @@ export class NwpToolbarComponent implements OnInit {
   }
 
   public playUrl(url: string) {
-
-    alert(url);
+    const movie = new UrlMovie(url);
+    Player.default.playlist.add(movie);
+    Player.default.play(movie);
   }
 
   public async search(qry?: string): Promise<void> {

@@ -1,6 +1,7 @@
-import { MediaSource, Extractor, SOURCE_TYPE } from '../nwp-media';
-import { extractorService } from '../../index';
+import { Extractor, MediaSource, SOURCE_TYPE } from '../nwp-media';
+import { Environment } from '../environment';
 import { v5 as uuidV5 } from 'uuid';
+import { extractorService } from './extractorService';
 
 let updated = false;
 const dataPath = window['nw']['App'].dataPath;
@@ -9,34 +10,51 @@ export class GenericExtractor implements Extractor {
   public id = '28B302E7-CDEB-4364-94C9-22407C8B7C2D';
   public name = 'Generic (youtube-dl)';
   public isAdult = false;
+  private readonly binPath: string = null;
+  private readonly ydlUrl: string = null;
 
   constructor() {
     if (!updated) {
       updated = true;
     }
+    const path = (window as any).nw.require('path');
+    this.binPath = path.join(dataPath, `ydl`);
+    this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
+    if (Environment.default.platform === 'windows') {
+      this.ydlUrl += '.exe';
+      this.binPath += '.exe';
+    }
+
   }
 
   public version?: string;
   public url?: string;
   public hidden?: boolean;
 
+  async exec(cmd: string) {
+    const isWindows = Environment.default.platform === 'windows';
+    const util = (window as any).nw.require('util');
+    const exec = util.promisify((window as any).nw.require('child_process').exec);
+    const cmdArray: string[] = [];
+    if (!isWindows) {
+      cmdArray.push('python');
+    }
+    cmdArray.push(`"${this.binPath}"`);
+    cmdArray.push(cmd);
+    return await exec(cmdArray.join(' '));
+  }
+
   async init(): Promise<void> {
+    console.log('LOLOL');
+
     if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
       await this.updateBin();
-
-      const mdl = (window as any).nw.require('youtube-dl');
-      const res: any = await new Promise((resolve, reject) => {
-        mdl.getExtractors(true, (err, info) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(info);
-        });
-      });
-      for (const reso of res) {
-        const id = uuidV5(reso, '28B302E7-CDEB-4364-94C9-22407C8B7C2D');
+      const res = await this.exec('--list-extractors --print-json --encoding utf8');
+      const extractors = res.stdout.trim().split('\n').filter(e => !e.includes(':'));
+      for (const extractor of extractors) {
+        const id = uuidV5(extractor, '28B302E7-CDEB-4364-94C9-22407C8B7C2D');
         const aliasExtractorInstance = new GenericExtractor();
-        aliasExtractorInstance.name = reso;
+        aliasExtractorInstance.name = extractor;
         aliasExtractorInstance.id = id;
         extractorService.addExtractor(aliasExtractorInstance as any);
       }
@@ -48,51 +66,27 @@ export class GenericExtractor implements Extractor {
   }
 
   public async updateBin() {
-    try {
-      const fs = (window as any).nw.require('fs');
-      const youtubedl = (window as any).nw.require('youtube-dl');
-      const downloader = (window as any).nw.require('youtube-dl/lib/downloader');
-      const path = (window as any).nw.require('path');
-      const binPath = youtubedl.getYtdlBinary();
-      const ydlPath = path.join(dataPath, binPath.split('/').pop());
-      if (fs.existsSync(ydlPath)) {
-        youtubedl.setYtdlBinary(ydlPath);
-      }
+    const fs = (window as any).nw.require('fs');
+    if (fs.existsSync(this.binPath)) {
       if (window.localStorage.ydld && parseInt(window.localStorage.ydld, 10) > Date.now()) {
         return;
       }
-      try {
-        fs.unlinkSync(ydlPath);
-      } catch (e) {
-      }
-      await new Promise((resolve, reject) => {
-        downloader(dataPath, function error(err, done) {
-          if (err) {
-            console.error(err);
-            return reject(err);
-          }
-          window.localStorage.ydld = Date.now() + 1000 * 60 * 60 * 24;
-          youtubedl.setYtdlBinary(ydlPath);
-          resolve(done);
-        });
-      });
-    } catch (e) {
-      console.error(e);
     }
+    const res = await fetch(this.ydlUrl);
+    try {
+      fs.unlinkSync(this.binPath);
+    } catch (e) {
+    }
+    fs.writeFileSync(this.binPath, Buffer.from(await res.arrayBuffer()));
+    fs.chmodSync(this.binPath, 777);
+    window.localStorage.ydld = Date.now() + 1000 * 60 * 60 * 24;
   }
 
 
   public async extract(url: string): Promise<MediaSource> {
     const self = this;
-    const mdl = (window as any).nw.require('youtube-dl');
-    const res: any = await new Promise((resolve, reject) => {
-      mdl.getInfo(url, [], (err, info) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(info);
-      });
-    });
+    let res = await this.exec(`--dump-json -f best "${url}"`);
+    res = JSON.parse(res.stdout.trim());
     if (!res) {
       throw new Error('not supported');
     }
@@ -118,3 +112,5 @@ export class GenericExtractor implements Extractor {
     throw new Error('not supported');
   }
 }
+
+extractorService.addExtractor(new GenericExtractor());

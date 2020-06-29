@@ -41,11 +41,11 @@
               "apps/ui/src/styles.scss"
             ],
             "scripts": [
+              "node_modules/hls.js/dist/hls.min.js",
+              "node_modules/dashjs/dist/dash.all.min.js",
               "node_modules/systemjs/dist/system.js",
               "node_modules/systemjs/dist/extras/named-register.js",
-              "node_modules/systemjs/dist/extras/amd.js",
-              "node_modules/hls.js/dist/hls.min.js",
-              "node_modules/dashjs/dist/dash.all.min.js"
+              "node_modules/systemjs/dist/extras/amd.js"
             ]
           },
           "configurations": {
