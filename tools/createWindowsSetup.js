@@ -9,20 +9,16 @@ const pipeline = promisify(stream.pipeline);
 process.chdir(__dirname);
 fs.ensureDirSync('../dist');
 fs.ensureDirSync('../.cache');
-
-process.chdir('../dist');
+process.chdir('../dist/apps/dist');
 
 async function createIssFile(ta = 'x64') {
-  if (!fs.existsSync('../.cache/vcredist_x86.exe')) {
+  if (!fs.existsSync('../../../.cache/vcredist_x86.exe')) {
     console.log('Downloading vcredist_x86');
-    await pipeline(
-      got.stream('https://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe'),
-      fs.createWriteStream('../.cache/vcredist_x86.exe')
-    );
+    await pipeline(got.stream('https://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe'), fs.createWriteStream('../../../.cache/vcredist_x86.exe'));
   }
 
   const filesToCopy = [
-    '../.cache/vcredist_x86.exe',
+    '../../../.cache/vcredist_x86.exe',
     ...(await fs.readdir(`NWPlay-${pkg.version}-win-${ta}`)).map((e) =>
       path.join(`NWPlay-${pkg.version}-win-${ta}`, e)
     )
@@ -82,12 +78,24 @@ Name: "{autodesktop}\\{#MyAppName}"; Filename: "{app}\\{#MyAppExeName}"; Tasks: 
 }
 
 async function createBatFile() {
-  return `
-  "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" "setup.iss"
-  `.trim();
+  return `   "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" "setup.iss"   `.trim();
+}
+
+async function installInoSetup() {
+  if (!fs.existsSync('../.cache/is.exe')) {
+    console.log('Downloading is');
+    await pipeline(got.stream('https://jrsoftware.org/download.php/is.exe'), fs.createWriteStream('../.cache/is.exe'));
+  }
+  const util = require('util');
+  const exec = util.promisify(require('child_process').exec);
+  const pwd = process.cwd();
+  process.chdir('../.cache/');
+  await exec('is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART');
+  process.chdir(pwd);
 }
 
 async function main() {
+  // await installInoSetup();
   await fs.writeFile('setup.iss', await createIssFile());
   await fs.writeFile('setup.bat', await createBatFile());
   const child = execFile('setup.bat', (error, stdout, stderr) => {
@@ -101,4 +109,4 @@ async function main() {
   });
 }
 
-main().catch(console.error);
+main().catch(console.error); 
