@@ -1,6 +1,7 @@
 import { Extractor, MediaSource, SOURCE_TYPE } from '../nwp-media';
-import { Environment, extractorService } from '../../index';
+import { Environment } from '../environment';
 import { v5 as uuidV5 } from 'uuid';
+import { extractorService } from './extractorService';
 
 let updated = false;
 const dataPath = window['nw']['App'].dataPath;
