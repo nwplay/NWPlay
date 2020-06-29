@@ -1,4 +1,3 @@
-import * as ext from './index';
 import { Extractor } from '../nwp-media';
 
 class ExtractorService {
@@ -7,9 +6,6 @@ class ExtractorService {
   private readonly favoriteIds = new Set<string>();
 
   constructor() {
-    for (const e of Object.values(ext)) {
-      this.addExtractor(new e());
-    }
     try {
       this.favoriteIds = new Set(JSON.parse(localStorage['extractorFavorites']));
     } catch (e) {
@@ -21,7 +17,6 @@ class ExtractorService {
     this.favorites.clear();
     Array.from(this.favoriteIds)
       .map(id => this.extractors.find(e => e.id === id))
-      .filter(e => e!!)
       .forEach(e => this.favorites.add(e));
   }
 

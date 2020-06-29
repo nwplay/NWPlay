@@ -21,9 +21,10 @@ export class GenericExtractor implements Extractor {
     this.binPath = path.join(dataPath, `ydl`);
     this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
     if (Environment.default.platform === 'windows') {
-      this.url += '.exe';
+      this.ydlUrl += '.exe';
       this.binPath += '.exe';
     }
+
   }
 
   public version?: string;
@@ -44,6 +45,8 @@ export class GenericExtractor implements Extractor {
   }
 
   async init(): Promise<void> {
+    console.log('LOLOL');
+
     if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
       await this.updateBin();
       const res = await this.exec('--list-extractors --print-json --encoding utf8');
@@ -109,3 +112,5 @@ export class GenericExtractor implements Extractor {
     throw new Error('not supported');
   }
 }
+
+extractorService.addExtractor(new GenericExtractor());
