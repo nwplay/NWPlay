@@ -1,7 +1,9 @@
-<h2>{{ collection?.title }}</h2>
 
 <div #content class="page-container">
+  <h2>{{ collection?.title }}</h2>
+
   <div class="grid-container">
+
     <nwp-media-card *ngFor="let item of items" [isWatchlist]="false" [item]="item"></nwp-media-card>
   </div>
 </div>

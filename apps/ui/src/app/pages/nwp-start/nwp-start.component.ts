@@ -187,7 +187,7 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (!this.provider) {
       data.rows = _.shuffle(data.rows);
       const newItemsCollection = new NewItemsPersonalCollection(null);
-      const newItems = await newItemsCollection.items({ limit: 12, offset: 0 });
+      const newItems = await newItemsCollection.items({ limit: 12, offset: 0, random: true });
       if (newItems.length > 0) {
         this.data.rows.unshift({
           collection: newItemsCollection,

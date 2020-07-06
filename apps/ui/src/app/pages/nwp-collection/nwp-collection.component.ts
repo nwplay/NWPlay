@@ -38,6 +38,10 @@ export class NwpCollectionComponent implements OnInit, OnDestroy {
         return;
       }
       this.collection = await this.provider.get(this.route.snapshot.params.id);
+      if(!this.collection) {
+        alert('Error loading collection');
+        return;
+      }
       if (NwpCollectionComponent.CACHE[this.collection.id]) {
         this.items = NwpCollectionComponent.CACHE[this.collection.id].items;
         this.offset = NwpCollectionComponent.CACHE[this.collection.id].offset;

@@ -288,7 +288,7 @@ export abstract class MediaProvider {
 
   abstract get(
     id: string
-  ): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any>>;
+  ): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any> |  MediaCollection<any>>;
 
   abstract init(): Promise<void>;
 

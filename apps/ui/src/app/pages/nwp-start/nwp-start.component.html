@@ -54,12 +54,13 @@
 
     <div *ngFor="let row of data.rows; let idx = index" class="sub-container">
       <div @fadeAnimation class="title {{ env.platformType }}">
-        <span
-          (keyup.enter)="$event.target.click()"
-          [routerLink]="['/', row.collection.provider, 'collection', row.collection.id]"
-          tabindex="{{ idx + 10 }}"
-        >{{ row.collection.title }}</span
-        >
+        <span *ngIf="row.collection.id"
+              (keyup.enter)="$event.target.click()"
+              [routerLink]="['/', row.collection.provider.id, 'collection', row.collection.id]"
+              tabindex="{{ idx + 10 }}"
+        >{{ row.collection.title }}</span>
+        <span *ngIf="!row.collection.id"
+        >{{ row.collection.title }}</span>
         <div class="spacer"></div>
         <div
           *ngIf="row.collection.id"

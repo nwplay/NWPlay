@@ -4,6 +4,8 @@
   .page-container {
     width: 100%;
     box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
 
     h2 {
       color: #fff;
