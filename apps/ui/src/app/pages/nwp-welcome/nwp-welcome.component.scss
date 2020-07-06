@@ -24,20 +24,18 @@
 
   .bg {
     position: absolute;
-    left: -30px;
-    right: -30px;
-    top: -30px;
-    bottom: -30px;
-    width: calc(100% + 60px);
-    height: calc(100% + 60px);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     object-fit: cover;
     object-position: center;
-    filter: blur(10px) saturate(1.5);
+    height: 100%;
+    width: 100%;
   }
 }
 
 .container {
-  backdrop-filter: blur(15px);
   overflow: hidden !important;
   position: absolute;
   left: 0;
@@ -76,9 +74,11 @@
     padding: 30px;
     text-align: center;
     width: 75vw;
-    border-radius: 10px;
+    border-radius: 12px;
     max-width: 925px;
-    @include vibrancy-dark-mixin();
+    backdrop-filter: blur(15px);
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #fff;
     //noinspection CssInvalidPropertyValue
     -webkit-font-smoothing: auto;
 

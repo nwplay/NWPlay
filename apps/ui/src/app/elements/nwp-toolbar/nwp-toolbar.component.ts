@@ -63,10 +63,14 @@ class UrlMovie extends Movie<any> {
     super(new UrlProvider());
     this.title = videoUrl;
     this.id = videoUrl;
+    this.url = videoUrl;
   }
 
   async play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource> {
-    return await extractorService.extract(this.videoUrl);
+    const res = await extractorService.extract(this.videoUrl);
+    this.title = res.title;
+    this.poster = res.image;
+    return res;
   }
 }
 

@@ -1,4 +1,4 @@
-$accent-color: #c2185b;
+$accent-color: #D180F8;
 $primary-color: #151515;
 $primary-text-color: #151515;
 $toolbar-height: 39px;
@@ -27,9 +27,13 @@ $primary-background-color: #ffffff;
 $secondary-background-color: rgba(255, 255, 255, 0.1);
 $tertiary-background-color: rgba(255, 255, 255, 0.4);
 
-@mixin vibrancy-dark-mixin($color: rgba(0, 0, 0, 0.45)) {
+body {
+  --vibrancy-backdrop-filter: saturate(1.2) blur(15px);
+}
+
+@mixin vibrancy-dark-mixin($color: rgba(0, 0, 0, 0.75)) {
   background-color: $color;
-  backdrop-filter: saturate(1.2) blur(15px);
+  backdrop-filter: var(--vibrancy-backdrop-filter);
   color: #fff;
 }
 
@@ -50,13 +54,6 @@ $tertiary-background-color: rgba(255, 255, 255, 0.4);
   .right::-webkit-scrollbar-thumb {
     background: $accent-color;
     border-radius: 3px;
-    content: 'TEST';
-
-    &::after {
-      background: red;
-      width: 10px;
-      height: 10px;
-    }
   }
 
   &::-webkit-scrollbar-thumb:hover,

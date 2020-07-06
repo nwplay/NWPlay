@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - master
-
+env:
+  CYPRESS_INSTALL_BINARY: 0
 jobs:
   build-ui:
     runs-on: ubuntu-latest
