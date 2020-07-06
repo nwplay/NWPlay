@@ -3,23 +3,55 @@ name: NWPlay
 on:
   push:
     branches:
-    - master
+      - master
 
 jobs:
-  build:
-    runs-on: windows-2019
+  build-ui:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 12
       - run: npm i
-      - run: npm run dist
-      - run: node tools/createWindowsSetup
+      - run: npm run build:ng
+      - run: node ./tools/post.build.js
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app-ui
+          path: dist/apps/ui/**
+  build-macos:
+    needs: [build-ui]
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-ui
+          path: dist/apps/ui
+      - run: npm i nwjs-builder-phoenix
+      - run: node node_modules/nwjs-builder-phoenix/dist/bin/build.js --tasks mac-x64 ./dist/apps/ui
       - uses: actions/upload-artifact@v2
         with:
           name: macos-x64
           path: dist/apps/dist/*mac*.zip
+  build-linux:
+    needs: [build-ui]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-ui
+          path: dist/apps/ui
+      - run: npm i nwjs-builder-phoenix
+      - run: node node_modules/nwjs-builder-phoenix/dist/bin/build.js --tasks linux-x86,linux-x64 ./dist/apps/ui
       - uses: actions/upload-artifact@v2
         with:
           name: linux-x86
@@ -28,6 +60,21 @@ jobs:
         with:
           name: linux-x64
           path: dist/apps/dist/*linux-x64*.zip
+  build-win:
+    needs: [build-ui]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-ui
+          path: dist/apps/ui
+      - run: npm i
+      - run: node node_modules/nwjs-builder-phoenix/dist/bin/build.js --tasks win-x86,win-x64 ./dist/apps/ui
+      - run: node tools/createWindowsSetup
       - uses: actions/upload-artifact@v2
         with:
           name: windows-x86
