@@ -252,7 +252,7 @@ Mochtest du ihn ersetzen?
     }
     this.providers = providers;
     this.loadingMessage = `Built in Extractor werden geladen.`;
-    for (const extractor of extractorService.extractors) {
+    for (const extractor of extractorService.extractors.slice(0)) {
       if (extractor.init) {
         await extractor.init();
       }

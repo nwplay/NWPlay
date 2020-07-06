@@ -23,6 +23,9 @@ export class SettingsService {
   public audioLanguage = 'en';
   public subtitleLanguage: string = null;
   public autoCropTrailer = true;
+  public disableVibrancy = true;
+
+
 
   private KEYS = [
     'searchFilter',
@@ -41,11 +44,21 @@ export class SettingsService {
     'showAsPopup',
     'audioLanguage',
     'subtitleLanguage',
-    'autoCropTrailer'
+    'autoCropTrailer',
+    'disableVibrancy'
   ];
 
   constructor(private readonly router: Router, private readonly matDialog: MatDialog) {
     this.load();
+    this.updateCssVars();
+  }
+
+  public updateCssVars() {
+    if(this.disableVibrancy) {
+      document.body.style.setProperty('--vibrancy-backdrop-filter', 'none')
+    }else {
+      document.body.style.setProperty('--vibrancy-backdrop-filter', null);
+    }
   }
 
   public async clearCache(): Promise<void> {
@@ -61,6 +74,7 @@ export class SettingsService {
       data[k] = this[k];
     }
     localStorage['settings'] = JSON.stringify(data);
+    this.updateCssVars();
   }
 
   public load(): void {

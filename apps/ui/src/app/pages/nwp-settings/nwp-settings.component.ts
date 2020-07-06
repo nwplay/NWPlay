@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppService } from '../../app.service';
 import { MatTableDataSource } from '@angular/material/table';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'nwp-page-settings',
@@ -17,6 +18,7 @@ export class NwpSettingsComponent {
   public extractorFavorites: Set<Extractor> = new Set<Extractor>();
   public extractorService = extractorService;
   public extractors = extractorService.extractors;
+  public extractorsFiltered = extractorService.extractors;
 
   public settingsService: SettingsService = null;
   public VIDEO_QUALITY = VIDEO_QUALITY;
@@ -38,7 +40,7 @@ export class NwpSettingsComponent {
 
   public filterExtractors(v: Event) {
     const value = (v.target as any).value
-    this.extractors = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value));
+    this.extractorsFiltered = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value));
   }
 
   public showPluginSettings(provider: MediaProvider) {
@@ -93,6 +95,16 @@ export class NwpSettingsComponent {
         window.location.reload();
       }
     }
+  }
+
+  moveToTop(e: Extractor) {
+    moveItemInArray(this.extractors, this.extractors.indexOf(e), 0);
+    extractorService.saveSort()
+  }
+
+  drop(event: CdkDragDrop<Extractor[]>) {
+    moveItemInArray(this.extractors, event.previousIndex, event.currentIndex);
+    extractorService.saveSort()
   }
 
   public log(data: any) {

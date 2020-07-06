@@ -68,6 +68,7 @@ export interface MediaSource {
   resolver?: Extractor;
   start?: number;
   image?: string;
+  title?: string;
   audio_track?: string;
   info?: any;
 }

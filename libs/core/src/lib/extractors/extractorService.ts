@@ -20,6 +20,23 @@ class ExtractorService {
       .forEach(e => this.favorites.add(e));
   }
 
+  public saveSort() {
+    window.localStorage['extractor_sort'] = JSON.stringify(this.extractors.map(e => e.id));
+  }
+
+  public restoreSort() {
+    console.log('RESTORE')
+    try {
+      const ids = JSON.parse(window.localStorage['extractor_sort']);
+      if(Array.isArray(ids)) {
+        const newSort = this.extractors.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+        this.extractors.splice(0, this.extractors.length, ...newSort);//this.extractors.push(...newSort);
+      }
+    }catch (e) {
+
+    }
+  }
+
   private saveFavorites() {
     localStorage['extractorFavorites'] = JSON.stringify(Array.from(this.favoriteIds));
   }
@@ -52,9 +69,13 @@ class ExtractorService {
     return await extractor.extract(url);
   }
 
-  public addExtractor<T extends Extractor>(extractor: T) {
+  public addExtractor<T extends Extractor>(extractor: T, batch = false) {
     this.extractors.push(extractor);
+    if(batch) {
+      return;
+    }
     this.updateFavorites();
+    this.restoreSort();
   }
 }
 

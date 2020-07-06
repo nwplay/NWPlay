@@ -45,8 +45,6 @@ export class GenericExtractor implements Extractor {
   }
 
   async init(): Promise<void> {
-    console.log('LOLOL');
-
     if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
       await this.updateBin();
       const res = await this.exec('--list-extractors --print-json --encoding utf8');
@@ -56,8 +54,9 @@ export class GenericExtractor implements Extractor {
         const aliasExtractorInstance = new GenericExtractor();
         aliasExtractorInstance.name = extractor;
         aliasExtractorInstance.id = id;
-        extractorService.addExtractor(aliasExtractorInstance as any);
+        extractorService.addExtractor(aliasExtractorInstance as any, true);
       }
+      extractorService.restoreSort();
     }
   }
 
@@ -94,19 +93,25 @@ export class GenericExtractor implements Extractor {
       return {
         source: res.manifest_url,
         type: SOURCE_TYPE.DASH,
-        resolver: self
+        resolver: self,
+        title: res.title,
+        image: res.thumbnail
       };
     } else if (res.protocol === 'm3u8') {
       return {
         source: res.manifest_url,
         type: SOURCE_TYPE.HLS,
-        resolver: self
+        resolver: self,
+        title: res.title,
+        image: res.thumbnail
       };
     } else if (res.url) {
       return {
         source: res.url,
         type: SOURCE_TYPE.HTTP,
-        resolver: self
+        resolver: self,
+        title: res.title,
+        image: res.thumbnail
       };
     }
     throw new Error('not supported');

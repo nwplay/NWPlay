@@ -15,6 +15,10 @@
           {{ 'show_adult_content' | translate }}
         </mat-list-option>
 
+        <mat-list-option [selected]="settingsService.disableVibrancy" value="disableVibrancy">
+          {{ 'disableVibrancy' | translate }}
+        </mat-list-option>
+
         <mat-list-item>
           <div class="mat-list-text">{{ 'language' | translate }}</div>
           <mat-select
@@ -107,21 +111,20 @@
           </div>
         </li>
       </ul>
+      <button (click)="installProvider()" color="primary" mat-raised-button style="margin-left: 15px;">
+        {{ 'add_provider' | translate }}
+      </button>
     </mat-tab>
     <mat-tab label="{{ 'resolver' | translate }}">
       <label>
         <input (input)="filterExtractors($event)">
       </label>
-      <ul class="settings-list">
-        <li title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of extractors">
+      <ul cdkDropList (cdkDropListDropped)="drop($event)" class="settings-list">
+        <li [style.display]="extractorsFiltered.includes(provider) ? 'flex' : 'none'"
+            title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of extractors" cdkDrag>
           <div class="name">{{provider.name}}</div>
           <div class="actions">
-            <ng-container *ngIf="extractorService.checkIfIsFavorite(provider); else elseBlock">
-              <button (click)="extractorService.removeFavorite(provider)">Unfav</button>
-            </ng-container>
-            <ng-template #elseBlock>
-              <button (click)="extractorService.addFavorite(provider)">Fav</button>
-            </ng-template>
+            <button (click)="moveToTop(provider)">move to top</button>
           </div>
         </li>
       </ul>
