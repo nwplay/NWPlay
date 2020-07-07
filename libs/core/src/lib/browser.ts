@@ -39,6 +39,7 @@ export interface BrowserCookieSet extends BrowserCookie {
 
 export interface BrowserConfig {
   loadImages?: boolean;
+  partition?: string;
 }
 
 export type BrowserRedirectTestCallback = (e: BrowserRedirectEvent) => boolean;
@@ -93,8 +94,7 @@ export class Browser {
         this.ref.instance.webview.nativeElement.loadUrl(url);
       });
     } else {
-      const webview = window.document.createElement('webview');
-
+      const webview = window.document.createElement('webview') as any;
       (webview as any).addContentScripts([
         {
           name: 'no_images',
@@ -110,7 +110,9 @@ export class Browser {
           run_at: 'document_start'
         }
       ]);
-
+      if(config && config.partition) {
+        webview.partition = 'persist:' + config.partition;
+      }
       const urlInput = window.document.createElement('input');
       // Fired when the guest window fires a load event, i.e., when a new document is loaded.
       // This does not include page navigation within the current document or asynchronous resource loads.
