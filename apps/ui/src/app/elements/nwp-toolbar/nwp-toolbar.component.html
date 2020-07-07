@@ -35,7 +35,7 @@
   <ng-container *ngIf="platform == 'windows'">
     <button
       *ngIf="!isSmall"
-      [matMenuTriggerFor]="appMenu"
+      (click)="showMenu($event)"
       class="item"
       mat-icon-button
       matTooltip="{{ 'show_more' | translate }}"
@@ -91,7 +91,7 @@
     <ng-container *ngTemplateOutlet="searchInput"></ng-container>
     <button
       *ngIf="!isSmall && !isMobile"
-      [matMenuTriggerFor]="appMenu"
+      (click)="showMenu($event)"
       class="item"
       mat-icon-button
       matTooltip="{{ 'show_more' | translate }}"

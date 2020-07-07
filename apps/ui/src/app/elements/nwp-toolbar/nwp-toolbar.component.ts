@@ -25,6 +25,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AppService } from '../../app.service';
 import { MatDialog } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
+import { environment } from '../../environment';
 
 declare var nw: any;
 
@@ -113,7 +115,8 @@ export class NwpToolbarComponent implements OnInit {
     public itemService: ItemService,
     private ref: ChangeDetectorRef,
     public appService: AppService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    public translateService: TranslateService
   ) {
     this.hotKeysService.reset();
     this.hotKeysService.add(
@@ -210,6 +213,67 @@ export class NwpToolbarComponent implements OnInit {
     const movie = new UrlMovie(url);
     Player.default.playlist.add(movie);
     Player.default.play(movie);
+  }
+
+  public showMenu(ev: MouseEvent) {
+    const menu: any = new nw.Menu();
+    menu.append(
+      new nw.MenuItem({
+        label: `NWPlay ${environment.pkg.version}`,
+        enabled: false
+      })
+    );
+    menu.append(new nw.MenuItem({ type: 'separator' }));
+
+    menu.append(
+      new nw.MenuItem({
+        label: this.translateService.instant('settings'),
+        click: () => {
+          this.showSettings();
+        },
+        enabled: true,
+        ...(environment.platform === 'macos' ? {
+          modifiers: 'cmd',
+          key: ','
+        } : {})
+      })
+    );
+    menu.append(
+      new nw.MenuItem({
+        label: this.translateService.instant(this.isFullscreen ? 'fullscreen_off' : 'fullscreen_on'),
+        enabled: true,
+        click: () => {
+          this.toggleFullScreen();
+        }
+      })
+    );
+    menu.append(
+      new nw.MenuItem({
+        label: this.translateService.instant('play_url'),
+        enabled: true,
+        click: () => {
+          this.showPlayUrlModal();
+        }
+      })
+    );
+
+    menu.append(new nw.MenuItem({ type: 'separator' }));
+    menu.append(
+      new nw.MenuItem({
+        label: `NWPlay ${this.translateService.instant('quit')}`,
+        click: () => {
+          this.close(true);
+        },
+        enabled: true,
+        ...(environment.platform === 'macos' ? {
+          modifiers: 'cmd',
+          key: 'q'
+        } : {})
+      })
+    );
+    ev.preventDefault();
+    menu.popup(ev.x, ev.y);
+    return false;
   }
 
   public async search(qry?: string): Promise<void> {

@@ -1,6 +1,5 @@
 <div #scrollView class="page-container">
   <ng-container *ngIf="data">
-    <h2>{{ provider?.name || 'home' | translate }}</h2>
     <div id="main-carousel-container">
       <div (click)="scroll(mcont, -475)" *ngIf="env.isDesktop" class="carousel-scroll-button left" matRipple>
         <i class="material-icons">

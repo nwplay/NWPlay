@@ -206,15 +206,15 @@ export interface ISearchOptions {
   offset: number;
 }
 
-export abstract class MediaProviderSetting<T = any> {
+export abstract class PluginSetting<T = any> {
   label: string;
   value: T;
   id: string;
   public abstract type: string;
 }
 
-export class MediaProviderInputSetting extends MediaProviderSetting<string> {
-  constructor(options: Partial<MediaProviderInputSetting>) {
+export class PluginInputSetting extends PluginSetting<string> {
+  constructor(options: Partial<PluginInputSetting>) {
     super();
     Object.assign(this, options);
   }
@@ -222,8 +222,8 @@ export class MediaProviderInputSetting extends MediaProviderSetting<string> {
   type = 'input';
 }
 
-export class MediaProviderButtonSetting extends MediaProviderSetting<string> {
-  constructor(options: Partial<MediaProviderInputSetting>) {
+export class PluginButtonSetting extends PluginSetting<string> {
+  constructor(options: Partial<PluginButtonSetting>) {
     super();
     Object.assign(this, options);
   }
@@ -233,8 +233,8 @@ export class MediaProviderButtonSetting extends MediaProviderSetting<string> {
 }
 
 
-export class MediaProviderCheckboxSetting extends MediaProviderSetting<boolean> {
-  constructor(options: Partial<MediaProviderCheckboxSetting>) {
+export class PluginCheckboxSetting extends PluginSetting<boolean> {
+  constructor(options: Partial<PluginCheckboxSetting>) {
     super();
     Object.assign(this, options);
   }
@@ -242,29 +242,29 @@ export class MediaProviderCheckboxSetting extends MediaProviderSetting<boolean> 
   type = 'checkbox';
 }
 
-export interface MediaProviderSelectItem {
+export interface PluginSettingSelectItem {
   value: any;
   label: string;
 }
 
-export class MediaProviderSelectSetting extends MediaProviderSetting<any> {
-  constructor(options: Partial<MediaProviderSelectSetting>) {
+export class PluginSelectSetting extends PluginSetting<any> {
+  constructor(options: Partial<PluginSelectSetting>) {
     super();
     Object.assign(this, options);
   }
 
   type = 'select';
-  public items: MediaProviderSelectItem[];
+  public items: PluginSettingSelectItem[];
 }
 
-export class MediaProviderMultiSelectSetting extends MediaProviderSetting<any> {
-  constructor(options: Partial<MediaProviderMultiSelectSetting>) {
+export class PluginMultiSelectSetting extends PluginSetting<any> {
+  constructor(options: Partial<PluginMultiSelectSetting>) {
     super();
     Object.assign(this, options);
   }
 
   type = 'multi-select';
-  public items: MediaProviderSelectItem[];
+  public items: PluginSettingSelectItem[];
 }
 
 export abstract class MediaProvider {
@@ -276,7 +276,7 @@ export abstract class MediaProvider {
   abstract name: string;
   customFooter: string;
   name_translations: { [key: string]: string } = {};
-  settings: MediaProviderSetting[] = [];
+  settings: PluginSetting[] = [];
   isAdult?: boolean;
   dynamic?: boolean;
   description?: string;
@@ -288,7 +288,7 @@ export abstract class MediaProvider {
 
   abstract get(
     id: string
-  ): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any> |  MediaCollection<any>>;
+  ): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>;
 
   abstract init(): Promise<void>;
 
@@ -333,6 +333,7 @@ export abstract class Extractor {
   public url?: string;
   public hidden?: boolean;
   public isAdult = false;
+  public settings?: PluginSetting[] = [];
 
   abstract test(url: string): boolean;
 
@@ -432,7 +433,7 @@ export abstract class Plugin {
   public abstract version: string;
   public description: string;
   public disabled = false;
-  public settings: MediaProviderSetting[] = [];
+  public settings: PluginSetting[] = [];
 
   public async init() {
   }

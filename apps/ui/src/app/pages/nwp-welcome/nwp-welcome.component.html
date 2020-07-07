@@ -27,7 +27,7 @@
 
     <ng-container *ngIf="appService.showChangelog && !appService.showTos">
       <div [innerHTML]="changelog" class="licence"></div>
-      <button (click)="hide()" color="primary" mat-stroked-button tabindex="2">
+      <button (click)="hide()" mat-stroked-button tabindex="2">
         {{ 'Weiter' | translate }}
       </button>
     </ng-container>
@@ -39,7 +39,7 @@
       <button (click)="close()" mat-stroked-button tabindex="2">
         {{ 'quit' | translate }}
       </button>
-      <button (click)="accept()" *ngIf="license" color="primary" mat-stroked-button tabindex="2">
+      <button (click)="accept()" *ngIf="license"  mat-stroked-button tabindex="2">
         {{ 'accept' | translate }}
       </button>
     </ng-container>

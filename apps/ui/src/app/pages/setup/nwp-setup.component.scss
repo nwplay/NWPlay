@@ -32,13 +32,21 @@
   bottom: 0;
   margin: auto;
   text-align: center;
-  height: 200px;
+  height: min-content;
+  max-height: 75vh;
   width: 50vw;
   max-width: 800px;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.25);
+  padding: 25px;
+  background-color: rgba(0, 0, 0, 0.5);
   h1 {
+    padding: 25px;
+    margin: 0;
     font-size: 2rem;
+    color: #fff;
+  }
+  p {
+    margin-bottom: 25px;
     color: #fff;
   }
 

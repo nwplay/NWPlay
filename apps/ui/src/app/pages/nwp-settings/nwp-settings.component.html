@@ -102,12 +102,12 @@
       </mat-selection-list>
     </mat-tab>
 
-    <mat-tab label="{{ 'sources' | translate }}">
+    <mat-tab label="{{ 'plugins' | translate }}">
       <ul class="settings-list">
-        <li title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of providers">
-          <div class="name">{{provider.name}}</div>
+        <li title="{{plugin.name}} - {{plugin.version}}" *ngFor="let plugin of appService.installedPlugins">
+          <div class="name">{{plugin.name}}</div>
           <div class="actions">
-            <button (click)="showPluginSettings(provider)">Einstellungen</button>
+            <button (click)="showPluginSettings(plugin)">Einstellungen</button>
           </div>
         </li>
       </ul>
@@ -140,28 +140,44 @@
     </mat-tab>
   </mat-tab-group>
 </div>
+
+<ng-template let-plugin #pluginSettingItem>
+  <li *ngFor="let setting of plugin.settings">
+    <div class="name">{{setting.label}}</div>
+    <div class="actions" [ngSwitch]="setting.type">
+      <div *ngSwitchCase="'input'">
+        <input [(ngModel)]="setting.value" />
+      </div>
+      <div *ngSwitchCase="'button'">
+        <button (click)="setting.click()">TEST</button>
+      </div>
+      <div *ngSwitchCase="'checkbox'">
+        <input type="checkbox" [(ngModel)]="setting.value"/>
+      </div>
+    </div>
+  </li>
+</ng-template>
+
 <ng-template let-modal #pluginSettings>
   <div class="plugin-settings">
-    <span class="plugin-name">{{modal.provider?.name}}</span>
+    <span class="plugin-name">{{modal.pluginInfo?.name}}</span>
     <ul class="settings-list">
       <li>
-        <div class="name">Version: {{modal.provider?.version}}</div>
+        <div class="name">Version: {{modal.pluginInfo?.version}}</div>
       </li>
-      <li *ngFor="let setting of modal.provider.settings">
-        <div class="name">{{setting.label}}</div>
-        <div class="actions" [ngSwitch]="setting.type">
-          <div *ngSwitchCase="'input'">
-            <input [(ngModel)]="setting.value" (ngModelChange)="saveSettings(modal.provider)"/>
-          </div>
-          <div *ngSwitchCase="'button'">
-            <button (click)="setting.click()">TEST</button>
-          </div>
-          <div *ngSwitchCase="'checkbox'">
-            <input type="checkbox" [(ngModel)]="setting.value" (ngModelChange)="saveSettings(modal.provider)"/>
-          </div>
-        </div>
-      </li>
+      <ng-container *ngFor="let provider of modal.pluginInfo.providers">
+        <h3>Provider: {{provider.name}}</h3>
+        <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
+      </ng-container>
+      <ng-container *ngFor="let provider of modal.pluginInfo.extensions">
+        <h3>Extension: {{provider.name}}</h3>
+        <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
+      </ng-container>
+      <ng-container *ngFor="let provider of modal.pluginInfo.extractors">
+        <h3>Extractor: {{provider.name}}</h3>
+        <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
+      </ng-container>
     </ul>
-    <button (click)="removeProvider(modal.provider)">REMOVE</button>
+    <button (click)="removeProvider(modal.pluginInfo)">Uninstall</button>
   </div>
 </ng-template>

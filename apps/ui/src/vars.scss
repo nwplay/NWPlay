@@ -1,4 +1,4 @@
-$accent-color: #D180F8;
+$accent-color: #9c27b0;
 $primary-color: #151515;
 $primary-text-color: #151515;
 $toolbar-height: 39px;
@@ -42,7 +42,7 @@ body {
   &::-webkit-scrollbar,
   .right::-webkit-scrollbar {
     margin-top: $toolbar-height;
-    width: 6px;
+    width: 5px;
   }
 
   &::-webkit-scrollbar-track,
@@ -53,7 +53,7 @@ body {
   &::-webkit-scrollbar-thumb,
   .right::-webkit-scrollbar-thumb {
     background: $accent-color;
-    border-radius: 3px;
+    border-radius: 5px;
   }
 
   &::-webkit-scrollbar-thumb:hover,

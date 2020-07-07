@@ -7,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-declare var chrome: any;
 declare var nw: any;
 
 

@@ -10,8 +10,8 @@ export class NwpSetupComponent {
   constructor(private readonly appService: AppService) {
   }
 
-  public installProvider() {
-    this.appService.installProvider();
+  public installPlugin() {
+    this.appService.installPlugin();
   }
 
 }

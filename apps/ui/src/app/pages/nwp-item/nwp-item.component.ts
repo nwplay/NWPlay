@@ -436,10 +436,6 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       if (typeof window !== 'undefined') {
         this.pageContainer.nativeElement.scrollTop = 0;
       }
-      if (this.item instanceof Movie && this.item.autoplay) {
-        await this.playMovie(this.item);
-        return;
-      }
       if (this.settings.autoplayTrailer) {
         await this.playTrailer();
       }
@@ -453,11 +449,10 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   private async load(id: string): Promise<void> {
     let item = await this.provider.get(id);
     if (!item) {
-      throw new Error('Item nicht gefunden');
+      throw new Error('Item not found');
     }
     let season: TvSeason<any>;
     let episode: TvEpisode<any>;
-
     if (item instanceof TvEpisode) {
       season = item.parent;
       episode = item;
@@ -467,7 +462,6 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       item = item.parent;
     }
     this.isFavorite = this.newWatchlist.checkItem(item);
-    //this.isNotify = this.watchlist.isNotify(item);
     this.item = item;
     if (item instanceof TvShow) {
       this.type = MEDIA_TYPE.TV_SHOW;
@@ -481,6 +475,13 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     } else {
       this.type = MEDIA_TYPE.MOVIE;
     }
+
+      if(episode && item instanceof TvShow && item.autoplay) {
+        this.play(episode, await season.episodes());
+      }else if(item instanceof Movie && item.autoplay) {
+        this.play(item, [item]);
+      }
+
     if (item.suggestions) {
       item.suggestions().then((suggestions: SearchResult[]) => {
         this.suggestions = suggestions;

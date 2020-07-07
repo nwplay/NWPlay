@@ -22,12 +22,12 @@
   position: absolute;
   z-index: 100;
   bottom: 0;
+  right: 0;
   left: 0;
   color: #fff;
   padding: 15px 25px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-  border-top-right-radius: 12px;
   pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.75);
 
   &:empty {
     display: none;

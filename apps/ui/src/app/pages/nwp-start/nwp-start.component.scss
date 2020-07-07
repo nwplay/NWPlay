@@ -6,7 +6,7 @@ h2 {
   letter-spacing: 5px;
   padding: 25px;
   margin: 0;
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 #main-carousel-container {
@@ -14,7 +14,10 @@ h2 {
   width: 100%;
   float: left;
   user-select: none;
-
+  margin-bottom: 25px;
+  ::-webkit-scrollbar {
+    height: 0;
+  }
   #main-carousel {
     height: 275px;
     padding: 0;
@@ -90,7 +93,9 @@ h2 {
   width: 100%;
   user-select: none;
   scroll-snap-type: x mandatory;
-
+  ::-webkit-scrollbar {
+    height: 0;
+  }
   &:hover {
     .carousel-scroll-button {
       opacity: 1;
@@ -102,7 +107,6 @@ h2 {
   }
 
   .title {
-    padding-top: 15px;
     padding-left: 20px;
     padding-right: 20px;
     display: flex;
@@ -111,12 +115,13 @@ h2 {
     color: #a4a4a4;
 
     span {
-      font-weight: 500;
-      font-size: 2rem;
+      font-weight: 400;
+      font-size: 1.5rem;
       color: #fff;
       flex-grow: 1;
       outline: none;
       transition: color 0.3s ease-out;
+      letter-spacing: 1px;
     }
 
     .more {
@@ -170,7 +175,7 @@ h2 {
   bottom: 115px;
   align-content: center;
   justify-content: center;
-  @include vibrancy-dark-mixin(rgba($accent-color, 0.25));
+  @include vibrancy-dark-mixin(rgba($accent-color, 0.75));
 
   i {
     font-size: 32px;

@@ -1,7 +1,24 @@
 @import './reset.scss';
 @import './vars.scss';
-@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+@import '~@angular/material/theming';
 @import '~overlayscrollbars/css/OverlayScrollbars.css';
+@include mat-core();
+
+
+$candy-app-primary: mat-palette($mat-purple);
+$candy-app-accent:  mat-palette($mat-purple, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$candy-app-warn:    mat-palette($mat-red);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as `color` or `typography`.
+$candy-app-theme: mat-dark-theme($candy-app-primary, $candy-app-accent);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($candy-app-theme);
 
 html,
 body {

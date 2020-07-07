@@ -5,7 +5,7 @@ import { SettingsService } from '../../services/settings.service';
 import { MediaProvider, providers, extractorService, VIDEO_QUALITY, Extractor } from '@nwplay/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AppService } from '../../app.service';
+import { AppService, IInstalledPluginInfo } from '../../app.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -32,7 +32,7 @@ export class NwpSettingsComponent {
     public _dialog: MatDialog,
     public ref: ChangeDetectorRef,
     private _settings: SettingsService,
-    private readonly appService: AppService
+    public readonly appService: AppService
   ) {
     this.settingsService = _settings;
     this.dialog = _dialog;
@@ -43,10 +43,10 @@ export class NwpSettingsComponent {
     this.extractorsFiltered = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value));
   }
 
-  public showPluginSettings(provider: MediaProvider) {
+  public showPluginSettings(pluginInfo: IInstalledPluginInfo) {
     this.dialog.open(this.pluginSettingsTemplate, {
       data: {
-        provider
+        pluginInfo
       }
     });
   }
@@ -59,7 +59,7 @@ export class NwpSettingsComponent {
     }
   }
 
-  public removeProvider(provider: MediaProvider) {
+  public removeProvider(provider: IInstalledPluginInfo) {
     this.appService.removeProvider(provider);
   }
 
@@ -72,7 +72,7 @@ export class NwpSettingsComponent {
 
 
   public installProvider() {
-    this.appService.installProvider();
+    this.appService.installPlugin();
   }
 
   public async clearCache() {

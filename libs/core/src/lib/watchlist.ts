@@ -71,7 +71,7 @@ export class Watchlist {
   }
 
   public checkItem(item: SearchResult | Movie | TvShow) {
-    const i = this.items.findIndex((w) => w.provider.id === item.provider.id && w.id === item.id);
+    const i = this.items.findIndex((w) => item.provider && w.provider && w.provider.id === item.provider.id && w.id === item.id);
     return i !== -1;
   }
 }

@@ -6,7 +6,7 @@ import {
   MediaProvider,
   providers,
   Extractor,
-  extractorService, Watchlist, History, WatchlistItem, MEDIA_TYPE
+  extractorService, Watchlist, History, WatchlistItem, MEDIA_TYPE, version as coreVersion
 } from '@nwplay/core';
 import { environment } from './environment';
 import { NavigationStart, Router } from '@angular/router';
@@ -14,8 +14,23 @@ import { throttleTime } from 'rxjs/operators';
 import { asyncScheduler } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { v5 as uuidv5 } from 'uuid';
+import * as semver from 'semver';
 
 declare var nw: any;
+
+export interface IInstalledPluginInfo {
+  name: string;
+  version: string;
+  description: string;
+  path?: string;
+  providers: MediaProvider[];
+  extensions: Extension[];
+  extractors: Extractor[];
+  minCoreVersion: string;
+  object: any;
+  id: string;
+}
 
 @Injectable()
 export class AppService {
@@ -67,8 +82,7 @@ export class AppService {
   public showChangelog = false;
   public history: { url: string }[] = [];
   public loadingProgress: string[] = [];
-
-  public pluginPathMap = new Map<any, any>();
+  public installedPlugins: IInstalledPluginInfo[] = [];
   private devPluginData: string;
 
   public async watchlistAddItem(item: WatchlistItem) {
@@ -98,22 +112,19 @@ export class AppService {
     });
   }
 
-  public async removeProvider(provider: MediaProvider) {
+  public async removeProvider(p: IInstalledPluginInfo) {
     try {
       const fs = nw.require('fs').promises;
-      const providersPath = this.pluginPathMap.get(provider);
-      await fs.unlink(providersPath);
-      const index = providers.indexOf(provider);
-      if (index !== -1) {
-        providers.splice(index, 1);
+      if (p.path) {
+        await fs.unlink(p.path);
+        window.location.reload();
       }
     } catch (e) {
       alert('Fehler beim entfernen des Providers.');
     }
-    window.location.reload();
   }
 
-  public async installProvider() {
+  public async installPlugin() {
     const self = this;
     const input = document.createElement('input');
     input.type = 'file';
@@ -139,7 +150,7 @@ export class AppService {
             window.location.reload();
             return;
           } else {
-            await this.loadPluginFromBuffer(Buffer.from(data), 'dev');
+            await this.loadPluginFromBuffer(Buffer.from(data));
             this.devPluginData = data;
           }
         }
@@ -157,31 +168,40 @@ export class AppService {
     const providersPath = path.join(dataPath, 'providers');
     const buff = window['Buffer'].from(data);
     const module = await window['System'].import('data:text/javascript;base64,' + buff.toString('base64'));
-    const info = {
+    const info: IInstalledPluginInfo = {
+      extensions: [],
+      extractors: [],
+      minCoreVersion: module.default.pluginRequiredCoreVersion,
+      object: undefined,
+      providers: [],
       name: module.default.pluginName,
       version: module.default.pluginVersion,
       id: module.default.pluginId,
       description: module.default.pluginDescription
     };
-    const message = `Möchtest du das Plugin ${info.name} (${info.version}) installieren?\n\n${info.description}`.trim();
+    const message = `Möchtest du das Plugin ${info.name} (${info.version}) installieren?`.trim();
     if (!confirm(message)) {
       return;
     }
-    const oldProvider = providers.find((e) => e.id === info.id);
-    if (oldProvider) {
+    if (info.minCoreVersion && !semver.satisfies(semver.coerce(info.minCoreVersion), `>=${coreVersion}`)) {
+      alert(`Das Plugin ist nicht mit mit dieser NWPlay version kompatible.`);
+      return;
+    }
+    const oldPlugin = this.installedPlugins.find((e) => e.id === info.id);
+    if (oldPlugin) {
       if (
         !confirm(
           `
-Ein Provider mit der gleichen id ist bereits installiert!
-${oldProvider.name} (${oldProvider.version}) >>>> ${info.name} (${info.version})
-Mochtest du ihn ersetzen?
+Ein Plugin mit der gleichen id ist bereits installiert!
+${oldPlugin.name} (${oldPlugin.version}) >>>> ${info.name} (${info.version})
+Mochtest du es ersetzen?
 `.trim()
         )
       ) {
         return;
       }
     }
-    const destFile = path.join(providersPath, info.id + '.nwp');
+    const destFile = path.join(providersPath, (info.id || info.name.replace(/\W/, '_')) + '.nwp');
     await fs.writeFile(destFile, data);
     localStorage['route'] = '/';
     window.location.reload();
@@ -278,7 +298,6 @@ Mochtest du ihn ersetzen?
     }
     this.loaded = true;
     this.loading = false;
-
     setTimeout(() => {
       this.router.navigateByUrl(localStorage['route'] || '/', {
         replaceUrl: true
@@ -286,44 +305,71 @@ Mochtest du ihn ersetzen?
     });
   }
 
-  private async loadPluginFromBuffer(moduleData: Buffer, path?: string) {
-    const module = await window['System'].import('data:text/javascript;base64,' + moduleData.toString('base64'));
-    const mediaProviders = Object.values(module.default).filter(e => e['prototype'] instanceof MediaProvider);
-    const mediaExtractors = Object.values(module.default).filter(e => e['prototype'] instanceof Extractor);
-    const extensions = Object.values(module.default).filter(e => e['prototype'] instanceof Extension);
-    for (const item of mediaProviders) {
-      const provider = new (item as any)() as MediaProvider;
-      if (localStorage[provider.id + '_settings']) {
-        const data = JSON.parse(localStorage[provider.id + '_settings']);
-        for (const s of data) {
-          const setting = provider.settings.find(e => e.id === s.id);
-          if (setting) {
-            setting.value = s.value;
-          }
+  private restoreSetting(item: Extension | Extractor | MediaProvider) {
+    if (localStorage[item.id + '_settings'] && Array.isArray(item.settings)) {
+      const data = JSON.parse(localStorage[item.id + '_settings']);
+      for (const s of data) {
+        const setting = item.settings.find(e => e.id === s.id);
+        if (setting) {
+          setting.value = s.value;
         }
       }
+    }
+  }
 
+  private async loadPluginFromBuffer(moduleData: Buffer, path?: string) {
+    const module = await window['System'].import('data:text/javascript;base64,' + moduleData.toString('base64'));
+    const mediaProviders = Object.values(module.default).filter(e => e['prototype'] instanceof MediaProvider) as typeof MediaProvider[];
+    const mediaExtractors = Object.values(module.default).filter(e => e['prototype'] instanceof Extractor) as typeof Extractor[];
+    const extensions = Object.values(module.default).filter(e => e['prototype'] instanceof Extension) as typeof Extension[];
+    const pluginInfo: IInstalledPluginInfo = {
+      minCoreVersion: module.default.pluginRequiredCoreVersion,
+      name: module.default.pluginName,
+      version: module.default.pluginVersion,
+      description: module.default.pluginDescription,
+      id: module.default.pluginId,
+      path,
+      extractors: [],
+      providers: [],
+      extensions: [],
+      object: module.default
+    };
+    for (const item of mediaProviders) {
+      const provider = new (item as any)() as MediaProvider;
+      if (!provider.id) {
+        provider.id = uuidv5(item.name, pluginInfo.id);
+      }
+      this.restoreSetting(provider);
       if (provider.init) {
         await provider.init();
       }
-      this.pluginPathMap.set(provider, path);
       addProvider(provider);
+      pluginInfo.providers.push(provider);
     }
     for (const item of mediaExtractors) {
       const extractor = new (item as any)() as Extractor;
+      if (!extractor.id) {
+        extractor.id = uuidv5(item.name, pluginInfo.id);
+      }
+      this.restoreSetting(extractor);
       if (extractor.init) {
         await extractor.init();
       }
-      this.pluginPathMap.set(extractor, path);
       extractorService.addExtractor(extractor);
+      pluginInfo.extractors.push(extractor);
     }
     for (const item of extensions) {
       const extension = new (item as any)() as Extension;
+      if (!extension.id) {
+        extension.id = uuidv5(item.name, pluginInfo.id);
+      }
+      this.restoreSetting(extension);
       if (extension.init) {
         await extension.init();
       }
-      this.pluginPathMap.set(extension, path);
+      pluginInfo.extensions.push(extension);
     }
+    this.installedPlugins.push(pluginInfo);
   }
 
   private async loadPlugin(path: string): Promise<void> {

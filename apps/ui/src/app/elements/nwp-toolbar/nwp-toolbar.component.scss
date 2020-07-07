@@ -189,7 +189,7 @@
   box-shadow: 0 0 15px #00000085;
   -webkit-overflow-scrolling: touch;
   -webkit-app-region: no-drag;
-  @include vibrancy-dark-mixin();
+  @include vibrancy-dark-mixin(rgba(0, 0, 0, 0.9));
   @include nwp-scroller();
   margin: 15px;
   border-radius: 7px;
@@ -262,6 +262,7 @@
   }
 
   mat-list-item:hover {
+    background-color: $accent-color;
     &::after {
       opacity: 0.2;
     }
@@ -296,7 +297,6 @@
   bottom: 0;
   z-index: 798;
   -webkit-app-region: no-drag;
-  background-color: rgba(0, 0, 0, 0.85);
 }
 
 .search-input {

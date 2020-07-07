@@ -1,4 +1,5 @@
 import pkg from '../../../../package.json';
+import {version} from '@nwplay/core';
 
 const env = {
   isMobile: false,
@@ -7,6 +8,7 @@ const env = {
   platform: null,
   engine: null,
   pkg: pkg as any,
+  coreVersion: version,
   platformType: null,
   accepted: true,
   footer: `${(pkg as any).name}(${(pkg as any).version})`,
