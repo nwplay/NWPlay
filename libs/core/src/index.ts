@@ -2,7 +2,6 @@
  * Public API Surface of nwplay-core
  */
 declare var nw: any;
-import {version as coreVersion} from '../package.json';
 
 export * from './lib/nwp-media';
 export * from './lib/browser';
@@ -16,7 +15,7 @@ export * from './lib/history';
 export * from './lib/environment';
 export * from './lib/cookies';
 export * from './lib/storage';
-export const version = coreVersion;
+export const version = '0.0.1-alpha.6';
 export const cheerio = nw.require('cheerio');
 
 
