@@ -168,11 +168,9 @@ export class Browser {
       container.appendChild(webview);
       window.document.body.appendChild(container);
       setTimeout(() => {
-        if (!Browser.nativeComponent) {
-          (webview as any).setUserAgentOverride(navigator.userAgent);
-        }
-      });
-      setTimeout(() => (this.url = url), 50);
+        (webview as any).setUserAgentOverride(navigator.userAgent);
+        this.url = url;
+      }, 50);
     }
   }
 
@@ -315,9 +313,9 @@ export class Browser {
   public executeScript(input: any): Promise<any> {
     let obj = null;
     if (typeof input === 'function') {
-      obj = { code: '(' + input.toString() + ')()' };
+      obj = { code: '(' + input.toString() + ')()', mainWorld: true };
     } else if (typeof input === 'string') {
-      obj = { code: input };
+      obj = { code: input, mainWorld: true };
     } else {
       obj = input;
     }

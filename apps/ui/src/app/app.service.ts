@@ -132,21 +132,21 @@ export class AppService {
   public async checkPluginDev() {
     const devUrl = localStorage['plugin_dev_url'];
     if (devUrl && devUrl.length > 0) {
-      const data = await fetch(devUrl).then(e => e.text());
-      if (this.devPluginData !== data) {
-        if (this.devPluginData) {
-          window.location.reload();
-          return;
-        } else {
-          try {
+      try {
+        const data = await fetch(devUrl).then(e => e.text());
+        if (this.devPluginData !== data) {
+          if (this.devPluginData) {
+            window.location.reload();
+            return;
+          } else {
             await this.loadPluginFromBuffer(Buffer.from(data), 'dev');
             this.devPluginData = data;
-          } catch (e) {
-            console.error(e);
           }
         }
+        setTimeout(() => this.checkPluginDev(), 2500);
+      } catch (e) {
+        console.error(e);
       }
-      setTimeout(() => this.checkPluginDev(), 2500);
     }
   }
 
