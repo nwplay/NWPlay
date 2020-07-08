@@ -399,7 +399,7 @@ export abstract class TvEpisode<Parent extends TvSeason<any>> extends PlayProvid
   public subtitle?: string;
   public poster?: string;
   public date?: Date;
-
+  public episode: number;
   public hosters: any[] = [];
 
   constructor(public parent: Parent, data?: Partial<TvEpisode<any>>) {
