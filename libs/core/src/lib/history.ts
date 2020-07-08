@@ -47,14 +47,16 @@ export class History {
     let historyItem = this.itemIndex[item.id] || this.items.find(e => e.id === item.id);
     if (!historyItem) {
       historyItem = new HistoryItem();
+      historyItem.title = item.title;
       if (item instanceof TvEpisode) {
-        historyItem.provider = (item.parent.parent as TvShow).provider;
+        const show = item.parent.parent as TvShow;
+        historyItem.provider = show.provider;
+        historyItem.title = `${show.title} - ${historyItem.title}`
       }
       this.items.push(historyItem);
     }
     historyItem.id = item.id;
     historyItem.poster = item.poster;
-    historyItem.title = item.title;
     historyItem.progress = progress;
     historyItem.date = new Date();
     this.itemIndex[item.id] = historyItem;

@@ -36,9 +36,9 @@
 
 
     <div *ngIf="historyItems.length > 0" class="sub-container">
-      <div class="title"><span>Weiter Schauen</span></div>
+      <div class="title"><span>{{'continue_watching' | translate}}</span></div>
       <div class="carousel {{ env.platformType }}">
-        <div #scont class="carousel {{ env.platformType }}">
+        <div class="carousel {{ env.platformType }}">
           <nwp-media-card
             *ngFor="let item of historyItems"
             @fadeAnimation

@@ -90,9 +90,9 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   public loadWatchHistory() {
     this.historyItems = History.default.items
-      .filter(e => e.progress && e.progress > 0.05 && e.progress < 0.9)
-      .sort((a, b) => a.date.getDate() - b.date.getDate())
-      .slice(0, 10)
+      .filter(e => (!this.provider || this.provider === e.provider) && e.progress && e.progress > 0.05 && e.progress < 0.9)
+      .sort((a, b) => b.date.getDate() - a.date.getDate())
+      .slice(0, 12)
       .map(e => {
         const r = new SearchResult(e.provider);
         r.type = MEDIA_TYPE.TV_EPISODE;
@@ -101,6 +101,7 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
         r.id = e.id;
         r.title = e.title;
         r.progress = e.progress;
+        r.hideContext = true;
         return r;
       });
   }

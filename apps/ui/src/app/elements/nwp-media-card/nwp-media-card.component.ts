@@ -26,6 +26,7 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   public environment = environment;
   private watchlist = Watchlist.default;
   private subs: Subscription[] = [];
+
   constructor(
     private ref: ChangeDetectorRef,
     public router: Router,
@@ -63,6 +64,9 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   }
 
   public async showContextMenu(ev: MouseEvent) {
+    if (this.item.hideContext) {
+      return;
+    }
     const menu = new nw.Menu();
 
     menu.append(
@@ -80,14 +84,6 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
         label: this.translate.instant(this.isFavorite ? 'remove_from_watchlist' : 'add_to_watchlist'),
         click: () => {
           this.watchlistToggle();
-        }
-      })
-    );
-    menu.append(
-      new nw.MenuItem({
-        label: this.translate.instant('hide'),
-        click: () => {
-          this.itemService.hideItem(this.item);
         }
       })
     );

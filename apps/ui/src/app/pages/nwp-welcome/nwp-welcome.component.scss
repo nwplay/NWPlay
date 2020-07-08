@@ -62,6 +62,9 @@
     font-size: 0.9rem;
     white-space: pre;
     @include nwp-scroller();
+    ::ng-deep li {
+      display: inline;
+    }
   }
 
   button {

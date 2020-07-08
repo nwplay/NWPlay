@@ -40,8 +40,11 @@
 
 
 <mat-menu #menu="matMenu">
+  <button disabled mat-menu-item>
+    <span>{{item.title}}</span>
+  </button>
   <button (click)="itemService.show(item)" mat-menu-item>
-    <mat-icon>voicemail</mat-icon>
+    <mat-icon>video_label</mat-icon>
     <span>{{ 'show' | translate }}</span>
   </button>
   <button (click)="watchlistToggle()" *ngIf="isFavorite" mat-menu-item>
