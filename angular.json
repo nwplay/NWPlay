@@ -49,6 +49,14 @@
             ]
           },
           "configurations": {
+            "capacitor": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/ui/src/platform.nwjs.ts",
+                  "with": "apps/ui/src/platform.capacitor.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -63,30 +71,22 @@
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ]
+              "buildOptimizer": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ui:build"
+            "browserTarget": "ui:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
               "browserTarget": "ui:build:production"
+            },
+            "capacitor": {
+              "browserTarget": "ui:build:capacitor"
             }
           }
         },

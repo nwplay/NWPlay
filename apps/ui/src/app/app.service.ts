@@ -6,7 +6,7 @@ import {
   MediaProvider,
   providers,
   Extractor,
-  extractorService, Watchlist, History, WatchlistItem, MEDIA_TYPE, version as coreVersion
+  extractorService, Watchlist, History, WatchlistItem, MEDIA_TYPE, version as coreVersion, Platform
 } from '@nwplay/core';
 import { environment } from './environment';
 import { NavigationStart, Router } from '@angular/router';
@@ -141,23 +141,18 @@ export class AppService {
   }
 
   public async checkPluginDev() {
-    const devUrl = localStorage['plugin_dev_url'];
-    if (devUrl && devUrl.length > 0) {
-      try {
-        const data = await fetch(devUrl).then(e => e.text());
-        if (this.devPluginData !== data) {
-          if (this.devPluginData) {
-            window.location.reload();
-            return;
-          } else {
-            await this.loadPluginFromBuffer(Buffer.from(data));
-            this.devPluginData = data;
-          }
-        }
-        setTimeout(() => this.checkPluginDev(), 2500);
-      } catch (e) {
-        console.error(e);
-      }
+    const devUrl = '/plugin-dev/plugin.js'
+    const res = await fetch(devUrl);
+    if(!res.ok) {
+      return ;
+    }
+    const data = await res.text();
+    if(this.devPluginData && this.devPluginData !== data) {
+      window.location.reload();
+      return;
+    }else {
+      await this.loadPluginFromUrl(devUrl);
+      this.devPluginData = data;
     }
   }
 
@@ -219,7 +214,7 @@ Mochtest du es ersetzen?
     } catch (e) {
       /*IGNORE*/
     }
-    if (nw && environment.platform === 'macos') {
+    if (Platform.default.type === 'nwjs' && environment.platform === 'macos') {
       nw.App.on('reopen', function() {
         nw.Window.get(window).show();
         nw.Window.get(window).focus();
@@ -317,8 +312,8 @@ Mochtest du es ersetzen?
     }
   }
 
-  private async loadPluginFromBuffer(moduleData: Buffer, path?: string) {
-    const module = await window['System'].import('data:text/javascript;base64,' + moduleData.toString('base64'));
+  private async loadPluginFromUrl(url: string, path?: string) {
+    const module = await window['System'].import(url);
     const mediaProviders = Object.values(module.default).filter(e => e['prototype'] instanceof MediaProvider) as typeof MediaProvider[];
     const mediaExtractors = Object.values(module.default).filter(e => e['prototype'] instanceof Extractor) as typeof Extractor[];
     const extensions = Object.values(module.default).filter(e => e['prototype'] instanceof Extension) as typeof Extension[];
@@ -373,25 +368,27 @@ Mochtest du es ersetzen?
   }
 
   private async loadPlugin(path: string): Promise<void> {
-    const fs = nw.require('fs').promises;
-    const moduleData = (await fs.readFile(path));
-    await this.loadPluginFromBuffer(moduleData, path);
+    const Filesystem = Platform.default.Filesystem;
+    const moduleData = await Filesystem.readFile(path);
+    await this.loadPluginFromUrl(`data:text/javascript;base64,${moduleData}`, path);
   }
 
   private async loadPlugins() {
-    const dataPath = nw.App.dataPath;
-    const fs = nw.require('fs').promises;
-    const path = nw.require('path');
-    const providersPath = path.join(dataPath, 'providers');
+    const dataPath = Platform.default.dataPath;
+    const Filesystem = Platform.default.Filesystem;
+    const providersPath = Filesystem.joinPath(dataPath, 'providers');
     try {
-      await fs.mkdir(providersPath);
+      await Filesystem.mkdir(providersPath);
     } catch (e) {
     }
-    const files = (await fs.readdir(providersPath)) as string[];
-    const jsFiles = files.filter((e) => e.split('.').pop() === 'nwp');
+    const files = await Filesystem.readdir(providersPath);
+    const jsFiles = files.filter((e) => e.split('.').pop() === 'nwp').map(e => {
+      return Filesystem.joinPath(providersPath, e);
+    });
+
     for (const file of jsFiles) {
       try {
-        await this.loadPlugin(path.join(providersPath, file));
+        await this.loadPlugin(file);
       } catch (e) {
         console.error(e);
       }

@@ -2,9 +2,9 @@ import { Extractor, MediaSource, SOURCE_TYPE } from '../nwp-media';
 import { Environment } from '../environment';
 import { v5 as uuidV5 } from 'uuid';
 import { extractorService } from './extractorService';
+import { onPlatformReady, Platform } from '../platform.abstract';
 
 let updated = false;
-const dataPath = window['nw']['App'].dataPath;
 
 export class GenericExtractor implements Extractor {
   public id = '28B302E7-CDEB-4364-94C9-22407C8B7C2D';
@@ -17,12 +17,17 @@ export class GenericExtractor implements Extractor {
     if (!updated) {
       updated = true;
     }
-    const path = (window as any).nw.require('path');
-    this.binPath = path.join(dataPath, `ydl`);
-    this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
-    if (Environment.default.platform === 'windows') {
-      this.ydlUrl += '.exe';
-      this.binPath += '.exe';
+    if(Platform.default.type === 'nwjs' ) {
+      const path = (window as any).nw.require('path');
+      const dataPath = Platform.default.dataPath;
+      this.binPath = path.join(dataPath, `ydl`);
+      this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
+      if (Environment.default.platform === 'windows') {
+        this.ydlUrl += '.exe';
+        this.binPath += '.exe';
+      }
+    }else if(Platform.default.type === 'capacitor') {
+
     }
 
   }
@@ -45,18 +50,20 @@ export class GenericExtractor implements Extractor {
   }
 
   async init(): Promise<void> {
-    if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
-      await this.updateBin();
-      const res = await this.exec('--list-extractors --print-json --encoding utf8');
-      const extractors = res.stdout.trim().split('\n').filter(e => !e.includes(':'));
-      for (const extractor of extractors) {
-        const id = uuidV5(extractor, '28B302E7-CDEB-4364-94C9-22407C8B7C2D');
-        const aliasExtractorInstance = new GenericExtractor();
-        aliasExtractorInstance.name = extractor;
-        aliasExtractorInstance.id = id;
-        extractorService.addExtractor(aliasExtractorInstance as any, true);
+    if(Platform.default.type === 'nwjs' ) {
+      if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
+        await this.updateBin();
+        const res = await this.exec('--list-extractors --print-json --encoding utf8');
+        const extractors = res.stdout.trim().split('\n').filter(e => !e.includes(':'));
+        for (const extractor of extractors) {
+          const id = uuidV5(extractor, '28B302E7-CDEB-4364-94C9-22407C8B7C2D');
+          const aliasExtractorInstance = new GenericExtractor();
+          aliasExtractorInstance.name = extractor;
+          aliasExtractorInstance.id = id;
+          extractorService.addExtractor(aliasExtractorInstance as any, true);
+        }
+        extractorService.restoreSort();
       }
-      extractorService.restoreSort();
     }
   }
 
@@ -118,4 +125,6 @@ export class GenericExtractor implements Extractor {
   }
 }
 
-extractorService.addExtractor(new GenericExtractor());
+onPlatformReady(() => {
+  extractorService.addExtractor(new GenericExtractor());
+})

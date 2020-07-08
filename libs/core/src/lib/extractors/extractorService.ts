@@ -25,14 +25,13 @@ class ExtractorService {
   }
 
   public restoreSort() {
-    console.log('RESTORE')
     try {
       const ids = JSON.parse(window.localStorage['extractor_sort']);
-      if(Array.isArray(ids)) {
+      if (Array.isArray(ids)) {
         const newSort = this.extractors.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
         this.extractors.splice(0, this.extractors.length, ...newSort);//this.extractors.push(...newSort);
       }
-    }catch (e) {
+    } catch (e) {
 
     }
   }
@@ -71,7 +70,7 @@ class ExtractorService {
 
   public addExtractor<T extends Extractor>(extractor: T, batch = false) {
     this.extractors.push(extractor);
-    if(batch) {
+    if (batch) {
       return;
     }
     this.updateFavorites();
