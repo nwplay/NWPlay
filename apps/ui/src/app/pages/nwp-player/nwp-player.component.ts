@@ -163,6 +163,10 @@ export class NwpPlayerComponent implements OnInit {
       await this.mediaEle.nativeElement.play();
     });
 
+    this.mediaEle.nativeElement.addEventListener('play', async () => {
+      this.player.onPlay.next(this.player.currentSource);
+    });
+
     window.addEventListener(
       'mousewheel',
       (e) => {

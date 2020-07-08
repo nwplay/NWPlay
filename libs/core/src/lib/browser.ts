@@ -333,7 +333,7 @@ export class Browser {
   }
 
   public async getHtml(): Promise<string> {
-    return await this.executeScript(`document.documentElement.outerHTML`);
+    return (await this.executeScript(`document.documentElement.outerHTML`))[0];
   }
 
   public async getCookies(url?: string): Promise<BrowserCookie[]> {

@@ -112,7 +112,7 @@
         </li>
       </ul>
       <button (click)="installProvider()" color="primary" mat-raised-button style="margin-left: 15px;">
-        {{ 'add_provider' | translate }}
+        {{ 'add_plugin' | translate }}
       </button>
     </mat-tab>
     <mat-tab label="{{ 'resolver' | translate }}">
@@ -149,7 +149,7 @@
         <input [(ngModel)]="setting.value" />
       </div>
       <div *ngSwitchCase="'button'">
-        <button (click)="setting.click()">TEST</button>
+        <button (click)="setting.click()">{{setting.label}}</button>
       </div>
       <div *ngSwitchCase="'checkbox'">
         <input type="checkbox" [(ngModel)]="setting.value"/>
@@ -166,15 +166,12 @@
         <div class="name">Version: {{modal.pluginInfo?.version}}</div>
       </li>
       <ng-container *ngFor="let provider of modal.pluginInfo.providers">
-        <h3>Provider: {{provider.name}}</h3>
         <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
       </ng-container>
       <ng-container *ngFor="let provider of modal.pluginInfo.extensions">
-        <h3>Extension: {{provider.name}}</h3>
         <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
       </ng-container>
       <ng-container *ngFor="let provider of modal.pluginInfo.extractors">
-        <h3>Extractor: {{provider.name}}</h3>
         <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
       </ng-container>
     </ul>

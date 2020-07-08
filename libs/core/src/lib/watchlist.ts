@@ -1,6 +1,6 @@
 import { deserializeArray, serialize } from 'class-transformer';
-import { EventEmitter } from '@angular/core';
 import { IMAGE_SIZE, MEDIA_TYPE, Movie, SearchResult, TvShow } from './nwp-media';
+import { Subject } from 'rxjs';
 
 export class WatchlistItem extends SearchResult {
   public notify = false;
@@ -14,8 +14,8 @@ export class WatchlistItem extends SearchResult {
 export class Watchlist {
   public static default = new Watchlist();
   private name = 'default_watchlist';
-  public onAddItem = new EventEmitter<WatchlistItem>();
-  public onRemoveItem = new EventEmitter<WatchlistItem>();
+  public onAddItem = new Subject<WatchlistItem>();
+  public onRemoveItem = new Subject<WatchlistItem>();
 
 
   public items: WatchlistItem[] = [];
@@ -55,7 +55,7 @@ export class Watchlist {
     }
     watchlistItem.date = new Date();
     this.items.push(watchlistItem);
-    this.onAddItem.emit(watchlistItem);
+    this.onAddItem.next(watchlistItem);
     await this.save();
     return watchlistItem;
   }
@@ -65,7 +65,7 @@ export class Watchlist {
     if (i !== -1) {
       const itemToRemove = this.items[i];
       this.items.splice(i, 1);
-      this.onRemoveItem.emit(itemToRemove);
+      this.onRemoveItem.next(itemToRemove);
       await this.save();
     }
   }
