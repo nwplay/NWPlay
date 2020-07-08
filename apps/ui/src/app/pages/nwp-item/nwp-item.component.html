@@ -116,7 +116,7 @@
                 <img *ngIf="episode.poster" [src]="episode.poster" alt="" loading="lazy" referrerpolicy="no-referrer">
               </div>
               <div class="info">
-                <button (click)="showSitemPopup(episode, $event, episodes)" mat-icon-button>
+                <button [matMenuTriggerData]="{episode: episode}" [matMenuTriggerFor]="episodeMenu" mat-icon-button>
                   <mat-icon>more_horizontal</mat-icon>
                 </button>
                 <div class="name" title="{{episode.title}}">{{episode.title}}</div>
@@ -170,3 +170,42 @@
   <mat-spinner *ngIf="!item" class="center-loading" diameter="50"></mat-spinner>
 </div>
 
+<mat-menu #episodeMenu="matMenu">
+  <ng-template matMenuContent let-episode="episode">
+    <button mat-menu-item disabled>
+      <span>{{episode.title}}</span>
+    </button>
+    <button (click)="play(episode, episodes)" mat-menu-item>
+      <mat-icon>play_arrow</mat-icon>
+      <span>{{'play' | translate}}</span>
+    </button>
+    <button *ngIf="newHistory.getProgress(episode)" (click)="reset(episode)" mat-menu-item>
+      <mat-icon>restore</mat-icon>
+      <span>{{'reset' | translate}}</span>
+    </button>
+    <button *ngIf="newHistory.getProgress(episode) < 0.9" (click)="watched(episode)" mat-menu-item>
+      <mat-icon>visibility</mat-icon>
+      <span>{{'mark_as_seen' | translate}}</span>
+    </button>
+    <button (click)="watchedAllBefore(episode)" mat-menu-item>
+      <mat-icon>featured_play_list</mat-icon>
+      <span>{{'mark_all_before_as_seen' | translate}}</span>
+    </button>
+
+    <button *ngIf="episode.resolvers" [matMenuTriggerData]="{episode: episode}" [matMenuTriggerFor]="sourceMenu"
+            mat-menu-item>
+      <mat-icon>cloud</mat-icon>
+      <span>{{'resolver' | translate}}</span>
+    </button>
+  </ng-template>
+
+</mat-menu>
+
+<mat-menu #sourceMenu="matMenu">
+  <ng-template matMenuContent let-episode="episode">
+    <button *ngFor="let reso of episode.resolvers" mat-menu-item>
+      <mat-icon>cloud</mat-icon>
+      <span>{{reso.name}}</span>
+    </button>
+  </ng-template>
+</mat-menu>

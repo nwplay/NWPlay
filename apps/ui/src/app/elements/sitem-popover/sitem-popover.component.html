@@ -1,7 +1,0 @@
-<mat-nav-list>
-  <h3 matSubheader>{{ item.title }}</h3>
-  <mat-list-item (click)="reset($event)">Zurücksetzen</mat-list-item>
-  <mat-list-item (click)="watched($event)">Als gesehen markieren</mat-list-item>
-  <mat-list-item (click)="watchedAllBefore()">Bis hier als gesehen markieren</mat-list-item>
-  <mat-list-item (click)="srp()" *ngIf="item.resolvers && item.resolvers.length > 0">Quelle Auswählen</mat-list-item>
-</mat-nav-list>

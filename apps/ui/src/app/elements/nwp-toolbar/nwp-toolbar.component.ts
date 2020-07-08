@@ -95,6 +95,7 @@ export class NwpToolbarComponent implements OnInit {
   public platform = Environment.default.platform;
   public isMobile = Environment.default.isMobile;
   public env = Environment.default;
+  public version = environment.pkg.version;
 
   public searchProviders: any[] = [];
   public position = 'left';

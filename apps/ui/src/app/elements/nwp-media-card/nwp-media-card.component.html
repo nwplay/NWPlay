@@ -9,7 +9,7 @@
   <div class="title-container {{ !isWatchlist && isFavorite ? 'fav' : '' }}">
     <div class="title">{{ item.title }}</div>
   </div>
-  <div (click)="$event.stopPropagation(); showMenu()" *ngIf="!item.hideContext" class="more">
+  <div [mat-menu-trigger-for]="menu" (click)="$event.stopPropagation();" *ngIf="!item.hideContext" class="more">
     <mat-icon>more_vert</mat-icon>
   </div>
   <img
@@ -37,3 +37,21 @@
     <div [ngStyle]="{width: (item.progress * 100) + '%'}"></div>
   </div>
 </div>
+
+
+<mat-menu #menu="matMenu">
+  <button (click)="itemService.show(item)" mat-menu-item>
+    <mat-icon>voicemail</mat-icon>
+    <span>{{ 'show' | translate }}</span>
+  </button>
+  <button (click)="watchlistToggle()" *ngIf="isFavorite" mat-menu-item>
+    <mat-icon>favorite</mat-icon>
+    <span>{{ 'remove_from_watchlist' | translate }}</span>
+  </button>
+  <button (click)="watchlistToggle()" *ngIf="!isFavorite" mat-menu-item>
+    <mat-icon>favorite_border</mat-icon>
+    <span>{{ 'add_to_watchlist' | translate }}</span>
+  </button>
+</mat-menu>
+
+

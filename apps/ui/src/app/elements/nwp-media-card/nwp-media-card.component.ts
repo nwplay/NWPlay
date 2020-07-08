@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { CardPopoverComponent } from '../card-popover/card-popover.component';
 import { SearchResult, Watchlist } from '@nwplay/core';
 import { environment } from '../../environment';
 import { Router } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ItemService } from '../../services/item.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 declare var nw: any;
 
@@ -25,7 +25,7 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   public smallImage = false;
   public environment = environment;
   private watchlist = Watchlist.default;
-
+  private subs: Subscription[] = [];
   constructor(
     private ref: ChangeDetectorRef,
     public router: Router,
@@ -36,18 +36,6 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  public showMenu() {
-    this.zone.run(() => {
-      const ref = this.bottomSheet.open(CardPopoverComponent, {
-        data: this.item
-      });
-      ref.afterDismissed().subscribe(() => {
-        if (!this.ref['destroyed']) {
-          this.ref.detectChanges();
-        }
-      });
-    });
-  }
 
   public imageErrorHandler() {
     this.noImage = true;
@@ -64,8 +52,14 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
+  public updateFavorite() {
     this.isFavorite = this.watchlist.checkItem(this.item);
+  }
+
+  ngOnInit() {
+    this.updateFavorite();
+    this.subs.push(this.watchlist.onAddItem.subscribe(e => this.updateFavorite()));
+    this.subs.push(this.watchlist.onRemoveItem.subscribe(e => this.updateFavorite()));
   }
 
   public async showContextMenu(ev: MouseEvent) {
@@ -103,5 +97,8 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

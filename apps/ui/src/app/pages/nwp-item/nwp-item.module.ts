@@ -6,8 +6,6 @@ import { NwpItemComponent } from './nwp-item.component';
 import { NwpMediaCardModule } from '../../elements/nwp-media-card/nwp-media-card.module';
 import { NwpToolbarModule } from '../../elements/nwp-toolbar/nwp-toolbar.module';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { ResolverPopoverModule } from '../../elements/resolver-popover/resolver-popover.module';
-import { SitemPopoverModule } from '../../elements/sitem-popover/sitem-popover.module';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -29,7 +27,6 @@ import { PortalModule } from '@angular/cdk/portal';
   imports: [
     CommonModule,
     TranslateModule,
-    SitemPopoverModule,
     MatSelectModule,
     MatListModule,
     MatIconModule,
@@ -47,7 +44,6 @@ import { PortalModule } from '@angular/cdk/portal';
     RouterModule,
     NwpToolbarModule,
     MatBottomSheetModule,
-    ResolverPopoverModule,
     MatToolbarModule,
     MatFormFieldModule,
     MatSelectModule,

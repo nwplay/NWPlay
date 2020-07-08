@@ -18,7 +18,6 @@ import {
   MediaSource,
   Movie,
   Person,
-  PlayProvider,
   SearchResult,
   TvEpisode,
   TvSeason,
@@ -26,8 +25,6 @@ import {
   Player, Watchlist, History
 } from '@nwplay/core';
 import { environment } from '../../environment';
-import { ResolverPopoverComponent } from '../../elements/resolver-popover/resolver-popover.component';
-import { SitemPopoverComponent } from '../../elements/sitem-popover/sitem-popover.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SettingsService } from '../../services/settings.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -134,43 +131,6 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     e.target.style.visibility = 'visible';
   }
 
-  public showResolverPopup(item: PlayProvider) {
-    if (typeof window !== 'undefined') {
-      this.zone.run(() => {
-        const bottomSheetRef = this.bottomSheet.open(ResolverPopoverComponent, {
-          ariaLabel: 'Select Resolver',
-          data: item
-        });
-        bottomSheetRef.afterDismissed().subscribe((resolver: any) => {
-          if (!resolver) {
-            return;
-          }
-          if (this.item instanceof TvEpisode) {
-            this.play(this.item, this.episodes, [resolver], true);
-          } else if (this.item instanceof Movie) {
-            this.play(this.item, [this.item], [resolver]);
-          }
-        });
-      });
-    }
-  }
-
-  public showSitemPopup(item: PlayProvider, event: any, items?: any[]) {
-    this.zone.run(() => {
-      const bottomSheetRef = this.bottomSheet.open(SitemPopoverComponent, {
-        ariaLabel: 'Select Resolver',
-        data: {
-          item: item,
-          items: items,
-          srp: () => {
-            this.showResolverPopup(item);
-          }
-        }
-      });
-      bottomSheetRef.afterDismissed().subscribe(() => {
-      });
-    });
-  }
 
   public async playBackdrop() {
     await this.playTrailer();
@@ -378,12 +338,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   }
 
   public async playMovie(item: Movie, showResolver: boolean = true) {
-    if (item.resolvers && showResolver) {
-      this.showResolverPopup(item);
-    } else {
-      await this.play(item, [item]);
-    }
-
+    await this.play(item, [item]);
   }
 
   // tslint:disable-next-line:max-line-length
@@ -414,6 +369,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       }
     }
   }
+
 
   private async loadItem(providerId: string, id: string) {
     this.item = null;
