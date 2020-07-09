@@ -1,4 +1,4 @@
-import { MediaSource, PlayProvider } from './nwp-media';
+import { Extractor, MediaSource, PlayProvider } from './nwp-media';
 import { Subject } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { History } from './history';
@@ -80,11 +80,11 @@ export class Player {
     }
   }
 
-  public async play(item?: PlayProvider) {
+  public async play(item?: PlayProvider, resolvers?: Extractor[]) {
     this.currentItem = item;
     this.loading = true;
     this.onLoading.next(this.loading);
-    this.currentSource = await item.play();
+    this.currentSource = await item.play(resolvers);
     this.loading = false;
     this.onLoading.next(this.loading);
   }

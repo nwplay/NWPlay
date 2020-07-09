@@ -63,6 +63,10 @@
       <div class="text-2">{{ player.currentItem?.subtitle }}</div>
     </div>
     <div class="spacer"></div>
+
+    <button *ngIf="player.currentItem.resolvers" [matMenuTriggerFor]="resolversMenu" mat-button>
+      <mat-icon [inline]="true">settings</mat-icon>
+    </button>
     <button [matMenuTriggerFor]="playlistMenu" mat-button>
       <mat-icon [inline]="true">playlist_play</mat-icon>
     </button>
@@ -85,4 +89,18 @@
   >
     {{ item?.title }}
   </button>
+</mat-menu>
+
+
+<mat-menu #resolversMenu="matMenu">
+  <ng-container *ngIf="player.currentItem">
+    <button
+      *ngFor="let item of player.currentItem.resolvers"
+      [disabled]="player.currentSource?.resolver === item"
+      (click)="player.play(player.currentItem, [item])"
+      mat-menu-item
+    >
+      {{ item.name }}
+    </button>
+  </ng-container>
 </mat-menu>
