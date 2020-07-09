@@ -22,12 +22,13 @@ import {
   TvEpisode,
   TvSeason,
   TvShow,
-  Player, Watchlist, History
+  Player, Watchlist, History, OnMediaItemType
 } from '@nwplay/core';
 import { environment } from '../../environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SettingsService } from '../../services/settings.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AppService } from '../../app.service';
 
 declare var nw: any;
 
@@ -77,6 +78,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
               public router: Router,
               public settings: SettingsService,
               private zone: NgZone,
+              private appService: AppService,
               public ref: ChangeDetectorRef,
               @Optional() @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -319,10 +321,15 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   public async showSeason(season: TvSeason<any>, episodeId?: string) {
     this.loadingSeason = true;
     this.currentSeason = season;
+    this.callOnMediaExtension(season);
+
     if (!this.loadedSeasons.has(season)) {
       const episodes = await season.episodes();
       this.loadedSeasons.set(season, episodes);
       this.episodes = episodes;
+      this.episodes.forEach(e => {
+        this.callOnMediaExtension(e);
+      });
     } else {
       this.episodes = this.loadedSeasons.get(season);
     }
@@ -402,11 +409,22 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private callOnMediaExtension(item: OnMediaItemType) {
+    this.appService.installedPlugins.forEach(e => {
+      e.extensions.forEach((c) => {
+        if(c.onMediaItem) {
+          c.onMediaItem(item);
+        }
+      })
+    })
+  }
+
   private async load(id: string): Promise<void> {
     let item = await this.provider.get(id);
     if (!item) {
       throw new Error('Item not found');
     }
+   this.callOnMediaExtension(item);
     let season: TvSeason<any>;
     let episode: TvEpisode<any>;
     if (item instanceof TvEpisode) {
