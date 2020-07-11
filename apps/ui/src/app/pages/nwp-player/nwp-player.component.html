@@ -64,7 +64,7 @@
     </div>
     <div class="spacer"></div>
 
-    <button *ngIf="player.currentItem.resolvers" [matMenuTriggerFor]="resolversMenu" mat-button>
+    <button *ngIf="player.currentItem?.resolvers" [matMenuTriggerFor]="resolversMenu" mat-button>
       <mat-icon [inline]="true">settings</mat-icon>
     </button>
     <button [matMenuTriggerFor]="playlistMenu" mat-button>
