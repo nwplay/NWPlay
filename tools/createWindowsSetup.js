@@ -7,7 +7,7 @@ const stream = require('stream');
 const { promisify } = require('util');
 const pipeline = promisify(stream.pipeline);
 process.chdir(__dirname);
-fs.ensureDirSync('../dist/apps/dist');
+fs.ensureDirSync('../dist');
 fs.ensureDirSync('../.cache');
 process.chdir('../dist/apps/dist');
 
