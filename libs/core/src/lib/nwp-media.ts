@@ -131,6 +131,12 @@ export interface IMediaCollectionOptions {
   offset: number;
   limit: number;
   random?: boolean;
+  sorting?: any;
+}
+
+
+export interface MediaCollection {
+  sorting?: {value: any, name: string, default?: boolean}[];
 }
 
 export abstract class MediaCollection<Provider extends MediaProvider = MediaProvider> {

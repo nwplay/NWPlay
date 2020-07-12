@@ -1,9 +1,23 @@
-
 <div #content class="page-container">
-  <h2>{{ collection?.title }}</h2>
+  <ng-container *ngIf="cacheItem">
+    <h2>{{ cacheItem.collection?.title }}</h2>
+    <mat-form-field *ngIf="cacheItem.collection.sorting"
+    >
+      <mat-select
+        placeholder="Sorting"
+        [(ngModel)]="cacheItem.sorting"
+        (ngModelChange)="sortingChanged()"
 
-  <div class="grid-container">
-
-    <nwp-media-card *ngFor="let item of items" [isWatchlist]="false" [item]="item"></nwp-media-card>
-  </div>
+      >
+        <ng-container *ngFor="let sort of cacheItem.collection.sorting">
+          <mat-option [value]="sort.value">
+            {{ sort.name }}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <div class="grid-container">
+      <nwp-media-card *ngFor="let item of cacheItem.items" [isWatchlist]="false" [item]="item"></nwp-media-card>
+    </div>
+  </ng-container>
 </div>

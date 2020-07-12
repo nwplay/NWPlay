@@ -1,25 +1,29 @@
 import { ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { getProviderById, MEDIA_TYPE, MediaCollection } from '@nwplay/core';
-
+import { getProviderById, MEDIA_TYPE, MediaCollection, MediaProvider, SearchResult } from '@nwplay/core';
 import { ActivatedRoute } from '@angular/router';
 import { ItemService } from '../../services/item.service';
 
+interface ICollectionCacheItem {
+  collection: MediaCollection;
+  items: SearchResult[];
+  provider: MediaProvider;
+  sorting?: any;
+  scrollTop: number;
+  page: number
+}
+
 @Component({
-  selector: 'nwp-page-collection',
+  selector: 'nwplay-page-collection',
   templateUrl: './nwp-collection.component.html',
   styleUrls: ['./nwp-collection.component.scss']
 })
 export class NwpCollectionComponent implements OnInit, OnDestroy {
-  public static CACHE: any = {};
-  public items: any[] = [];
+  public static cache = new Map<string, ICollectionCacheItem>();
+  public cacheItem: ICollectionCacheItem;
   public type: MEDIA_TYPE = -1;
-  public provider: any = null;
-  public collection: MediaCollection = null;
-  public offset = 0;
-  public take = 35;
-  public page = 0;
   public loading = false;
-  @ViewChild('content', { static: false }) content: ElementRef;
+
+  @ViewChild('content', { static: true }) content: ElementRef;
 
   constructor(
     private zone: NgZone,
@@ -30,77 +34,92 @@ export class NwpCollectionComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  public async sortingChanged() {
+    this.cacheItem.items = [];
+    await this.loadMore();
+    await this.loadMore();
+  }
+
   public async ngOnInit() {
     this.route.params.subscribe(async (params) => {
-      this.items = [];
-      this.provider = getProviderById(params.provider);
-      if (!this.provider) {
+      const collectionId = this.route.snapshot.params.id;
+      const providerId = params.provider;
+      const cacheKey = `${collectionId}:${providerId}`;
+      if(NwpCollectionComponent.cache.has(cacheKey)) {
+        this.cacheItem = NwpCollectionComponent.cache.get(cacheKey);
+        setTimeout(() => {
+          this.content.nativeElement.scrollTop = this.cacheItem.scrollTop;
+        }, 500);
         return;
       }
-      this.collection = await this.provider.get(this.route.snapshot.params.id);
-      if(!this.collection) {
+      const provider = getProviderById(providerId);
+      if (!provider) {
+        return;
+      }
+      const collection = await provider.get(collectionId) as MediaCollection;
+      if (!collection) {
         alert('Error loading collection');
         return;
       }
-      if (NwpCollectionComponent.CACHE[this.collection.id]) {
-        this.items = NwpCollectionComponent.CACHE[this.collection.id].items;
-        this.offset = NwpCollectionComponent.CACHE[this.collection.id].offset;
-        if (!this.ref['destroyed']) {
-          this.ref.detectChanges();
+      this.cacheItem = {
+        collection: collection,
+        provider,
+        items: [],
+        scrollTop: 0,
+        page: 0
+      };
+      if (Array.isArray(collection.sorting)) {
+        const def = collection.sorting.find(e => e.default);
+        if (def) {
+          this.cacheItem.sorting = def.value;
         }
-        try {
-          this.content.nativeElement.scrollTop = NwpCollectionComponent.CACHE[this.collection.id].scrollTop;
-        } catch (e) {
-          /**/
-        }
-      } else {
-        await this.loadMore();
-        await this.loadMore();
       }
-      this.content.nativeElement.addEventListener(
-        'scroll',
-        () => {
-          if (this.loading) {
-            return;
-          }
-          const ele = this.content.nativeElement;
-          const atBottom = ele.scrollHeight - ele.scrollTop - 300 <= ele.clientHeight;
-          if (atBottom) {
-            this.zone.run(() => {
-              this.loadMore().catch(console.error);
-            });
-          }
-        },
-        {
-          passive: true
-        }
-      );
+      NwpCollectionComponent.cache.set(cacheKey, this.cacheItem);
+      await this.loadMore();
+      await this.loadMore();
     });
+    this.content.nativeElement.addEventListener(
+      'scroll',
+      () => {
+        if (this.loading) {
+          return;
+        }
+        const ele = this.content.nativeElement;
+        const atBottom = ele.scrollHeight - ele.scrollTop - 300 <= ele.clientHeight;
+        if (atBottom) {
+          this.zone.run(() => {
+            this.loadMore().catch(console.error);
+          });
+        }
+      },
+      {
+        passive: true
+      }
+    );
   }
 
   public ngOnDestroy() {
     try {
-      NwpCollectionComponent.CACHE[this.collection.id].scrollTop = this.content.nativeElement.scrollTop;
+      this.cacheItem.scrollTop = this.content.nativeElement.scrollTop;
     } catch (e) {
     }
   }
 
   private async loadMore() {
+    if (this.loading) {
+      return;
+    }
     this.loading = true;
-    const res = await this.collection.items({
-      offset: this.offset,
-      limit: this.take
+    const res = await this.cacheItem.collection.items({
+      sorting: this.cacheItem.sorting,
+      offset: this.cacheItem.items.length,
+      limit: 25
     });
-    this.page++;
     if (res.length === 0) {
       return;
     }
-    this.items = this.items.concat(res);
-    NwpCollectionComponent.CACHE[this.collection.id] = {
-      items: this.items,
-      offset: this.offset
-    };
-    this.offset += res.length;
+    this.cacheItem.page++;
+    this.cacheItem.items.push(...res);
     this.loading = false;
     if (!this.ref['destroyed']) {
       this.ref.detectChanges();

@@ -8,7 +8,6 @@ import { VgControlsModule } from 'videogular2/compiled/controls';
 import { VgOverlayPlayModule } from 'videogular2/compiled/overlay-play';
 import { VgBufferingModule } from 'videogular2/compiled/buffering';
 import { VgStreamingModule } from 'videogular2/compiled/streaming';
-
 import { NwpToolbarModule } from '../../elements/nwp-toolbar/nwp-toolbar.module';
 import { PlayerTimePipe } from './nwp-player-time.pipe';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,10 +16,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { TranslateModule } from '@ngx-translate/core';
-import { NwpPlayerInfoComponent } from './nwp-player-info.component';
 
 @NgModule({
-  declarations: [NwpPlayerComponent, PlayerTimePipe, NwpPlayerInfoComponent],
+  declarations: [NwpPlayerComponent, PlayerTimePipe],
   imports: [
     NwpToolbarModule,
     TranslateModule,
@@ -41,7 +39,7 @@ import { NwpPlayerInfoComponent } from './nwp-player-info.component';
   ],
   providers: [],
   exports: [NwpPlayerComponent],
-  entryComponents: [NwpPlayerComponent, NwpPlayerInfoComponent],
+  entryComponents: [NwpPlayerComponent],
   schemas: []
 })
 export class NwpPlayerModule {

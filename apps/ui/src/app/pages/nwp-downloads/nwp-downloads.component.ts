@@ -9,7 +9,7 @@ class NwpDownloadItem extends SearchResult {
 }
 
 @Component({
-  selector: 'nwp-page-downloads',
+  selector: 'nwplay-page-downloads',
   templateUrl: './nwp-downloads.component.html',
   styleUrls: ['./nwp-downloads.component.scss']
 })

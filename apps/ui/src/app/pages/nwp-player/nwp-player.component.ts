@@ -27,7 +27,7 @@ export class NwpPlayerComponent implements OnInit {
   public isDesktop = environment.isDesktop;
   public isTv = environment.isTv;
   public currentTime = 0;
-  public pipSupported = false;
+  public pipSupported = true;
   public resumePosition = 0;
   public isFullscreen = false;
   public ready = false;
