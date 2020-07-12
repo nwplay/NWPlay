@@ -1,6 +1,6 @@
 {
   "productName": "NWPlay",
-  "version": "4.0.0-alpha.3",
+  "version": "4.0.0-alpha.4",
   "license": "AGPL-3.0-or-later",
   "identifier": "org.nwplay.ui",
   "description": "A Cross-platform Cloud Media Player",

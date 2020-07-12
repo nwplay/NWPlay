@@ -266,7 +266,7 @@ Mochtest du es ersetzen?
       nw.Window.get(window).menu = mb;
     }
     this.providers = providers;
-    this.loadingMessage = `Built in Extractor werden geladen.`;
+    this.loadingMessage = `Extractors werden geladen.`;
     for (const extractor of extractorService.extractors.slice(0)) {
       if (extractor.init) {
         await extractor.init();
@@ -336,7 +336,9 @@ Mochtest du es ersetzen?
       }
       this.restoreSetting(provider);
       if (provider.init) {
-        await provider.init();
+        await provider.init((e) => {
+          this.loadingMessage = e;
+        });
       }
       addProvider(provider);
       pluginInfo.providers.push(provider);

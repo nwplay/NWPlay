@@ -296,7 +296,7 @@ export abstract class MediaProvider {
     id: string
   ): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>;
 
-  abstract init(): Promise<void>;
+  abstract init(setProgress: (text: string) => void): Promise<void>;
 
   abstract search(options: ISearchOptions): Promise<SearchResult<MediaProvider>[]>;
 
