@@ -6,6 +6,7 @@ on:
       - master
 env:
   CYPRESS_INSTALL_BINARY: 0
+  NWJS_MIRROR: http://dl.nwjs.io/live-build/nw46/20200710-003549/1fc2cba92
 jobs:
   build-ui:
     runs-on: ubuntu-latest
