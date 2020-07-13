@@ -1,6 +1,6 @@
 {
   "name": "@nwplay/core",
-  "version": "0.0.1-alpha.10",
+  "version": "0.0.1-alpha.13",
   "main": "src/index.ts",
   "ngPackage": {
     "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
@@ -26,8 +26,7 @@
   "peerDependencies": {
     "rxjs": "~6.5.4"
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-multi-entry": "^3.0.1",
@@ -39,6 +38,7 @@
     "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.1",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "uuid": "^8.2.0"
   }
 }

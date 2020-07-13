@@ -35,7 +35,7 @@ exports.config = {
       __pluginId__: v5(pkg.name, 'C376823D-6C52-4F38-8EC7-9544B07EF192')
     }),
     multi(),
-    resolve({
+    resolve.default({
       customResolveOptions: {
         moduleDirectory: 'node_modules'
       },
