@@ -35,6 +35,7 @@
     "help": "nx help",
     "build:ng": "ng build -c production",
     "build:post": "node ./tools/post.build.js",
+    "nw": "node ./tools/run.js",
     "build:nw": "node node_modules/nwjs-builder-phoenix/dist/bin/build.js --tasks mac-x64,win-x86,win-x64,linux-x86,linux-x64 ./dist/apps/ui",
     "dist": "npx npm-run-all build:ng build:post build:nw"
   },

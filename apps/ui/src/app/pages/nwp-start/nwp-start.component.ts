@@ -90,8 +90,8 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   public loadWatchHistory() {
     this.historyItems = History.default.items
-      .filter(e => (!this.provider || this.provider === e.provider) && e.progress && e.progress > 0.05 && e.progress < 0.9)
-      .sort((a, b) => b.date.getDate() - a.date.getDate())
+      .filter(e => (!this.provider || this.provider === e.provider) && e.onDeck)
+      .sort((a, b) => b.date - a.date)
       .slice(0, 12)
       .map(e => {
         const r = new SearchResult(e.provider);

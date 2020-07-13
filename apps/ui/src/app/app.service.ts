@@ -314,9 +314,9 @@ Mochtest du es ersetzen?
 
   private async loadPluginFromUrl(url: string, path?: string) {
     const module = await window['System'].import(url);
-    const mediaProviders = Object.values(module.default).filter(e => e['prototype'] instanceof MediaProvider) as typeof MediaProvider[];
-    const mediaExtractors = Object.values(module.default).filter(e => e['prototype'] instanceof Extractor) as typeof Extractor[];
-    const extensions = Object.values(module.default).filter(e => e['prototype'] instanceof Extension) as typeof Extension[];
+    const mediaProviders = Object.values(module.default).filter(e => e && e['prototype'] instanceof MediaProvider) as typeof MediaProvider[];
+    const mediaExtractors = Object.values(module.default).filter(e => e && e['prototype'] instanceof Extractor) as typeof Extractor[];
+    const extensions = Object.values(module.default).filter(e => e && e['prototype'] instanceof Extension) as typeof Extension[];
     const pluginInfo: IInstalledPluginInfo = {
       minCoreVersion: module.default.pluginRequiredCoreVersion,
       name: module.default.pluginName,
