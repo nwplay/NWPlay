@@ -406,6 +406,8 @@ Mochtest du es ersetzen?
         console.error(e);
       }
     }
-    await this.checkPluginDev();
+    try {
+      await this.checkPluginDev();
+    }catch (e) {}
   }
 }
