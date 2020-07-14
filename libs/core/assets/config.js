@@ -14,6 +14,15 @@ const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
 const multi = require('@rollup/plugin-multi-entry');
 exports.pkg = pkg;
 
+const { execSync } = require('child_process');
+
+let rev = null;
+try {
+  rev = execSync('git rev-parse --short HEAD').toString('utf8').trim();
+} catch (e) {
+
+}
+
 exports.config = {
   input: [
     path.join(__dirname, 'pluginEntry.ts'),
@@ -32,7 +41,8 @@ exports.config = {
   plugins: [
     replace({
       __packagePath__: packagePath,
-      __pluginId__: v5(pkg.name, 'C376823D-6C52-4F38-8EC7-9544B07EF192')
+      __pluginId__: v5(pkg.name, 'C376823D-6C52-4F38-8EC7-9544B07EF192'),
+      __gitRev__: rev
     }),
     multi(),
     resolve.default({

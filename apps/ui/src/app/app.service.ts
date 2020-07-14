@@ -3,18 +3,25 @@ import {
   addProvider,
   currentProgressChange,
   Extension,
-  MediaProvider,
-  providers,
   Extractor,
-  extractorService, Watchlist, History, WatchlistItem, MEDIA_TYPE, version as coreVersion, Platform
+  extractorService,
+  History,
+  MEDIA_TYPE,
+  MediaProvider,
+  Platform,
+  providers,
+  version as coreVersion,
+  Watchlist,
+  WatchlistItem
 } from '@nwplay/core';
 import { environment } from './environment';
+
 import { NavigationStart, Router } from '@angular/router';
 import { throttleTime } from 'rxjs/operators';
 import { asyncScheduler } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { v5 as uuidv5 } from 'uuid';
+import { v5 as uuidV5 } from 'uuid';
 import * as semver from 'semver';
 
 declare var nw: any;
@@ -141,19 +148,23 @@ export class AppService {
   }
 
   public async checkPluginDev() {
-    const devUrl = '/plugin-dev/plugin.js'
+    const devUrl = 'http://localhost:8065/plugin.nwpjs';
     const res = await fetch(devUrl);
-    if(!res.ok) {
-      return ;
+    if (!res.ok) {
+      if (this.devPluginData) {
+        setTimeout(() => this.checkPluginDev(), 2500);
+      }
+      return;
     }
     const data = await res.text();
-    if(this.devPluginData && this.devPluginData !== data) {
+    if (this.devPluginData && this.devPluginData !== data) {
       window.location.reload();
       return;
-    }else {
-      await this.loadPluginFromUrl(devUrl);
+    } else if (!this.devPluginData) {
       this.devPluginData = data;
+      await this.loadPluginFromUrl(devUrl);
     }
+    setTimeout(() => this.checkPluginDev(), 2500);
   }
 
   public async addProviderFromString(data: string) {
@@ -332,7 +343,7 @@ Mochtest du es ersetzen?
     for (const item of mediaProviders) {
       const provider = new (item as any)() as MediaProvider;
       if (!provider.id) {
-        provider.id = uuidv5(item.name, pluginInfo.id);
+        provider.id = uuidV5(item.name, pluginInfo.id);
       }
       this.restoreSetting(provider);
       if (provider.init) {
@@ -346,7 +357,7 @@ Mochtest du es ersetzen?
     for (const item of mediaExtractors) {
       const extractor = new (item as any)() as Extractor;
       if (!extractor.id) {
-        extractor.id = uuidv5(item.name, pluginInfo.id);
+        extractor.id = uuidV5(item.name, pluginInfo.id);
       }
       this.restoreSetting(extractor);
       if (extractor.init) {
@@ -358,7 +369,7 @@ Mochtest du es ersetzen?
     for (const item of extensions) {
       const extension = new (item as any)() as Extension;
       if (!extension.id) {
-        extension.id = uuidv5(item.name, pluginInfo.id);
+        extension.id = uuidV5(item.name, pluginInfo.id);
       }
       this.restoreSetting(extension);
       if (extension.init) {
