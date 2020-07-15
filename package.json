@@ -58,7 +58,7 @@
     "overriddenProperties": {
       "main": "index.html"
     },
-    "nwVersion": "0.46.5",
+    "nwVersion": "0.47.0",
     "ffmpegIntegration": true,
     "output": "../dist",
     "win": {

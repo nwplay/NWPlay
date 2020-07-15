@@ -19,8 +19,7 @@ const downloader = new Downloader({
   useCaches: true,
   showProgress: true,
   forceCaches: true,
-  destination: cacheDir,
-  mirror: 'http://dl.nwjs.io/live-build/nw46/20200710-003549/1fc2cba92'
+  destination: cacheDir
 });
 
 const ffmpegDownloader = new FFmpegDownloader({
