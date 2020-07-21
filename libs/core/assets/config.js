@@ -42,7 +42,9 @@ exports.config = {
     replace({
       __packagePath__: packagePath,
       __pluginId__: v5(pkg.name, 'C376823D-6C52-4F38-8EC7-9544B07EF192'),
-      __gitRev__: rev
+      __gitRev__: rev,
+      __date__: Date.now(),
+      __pluginUrl__: pkg.homepage
     }),
     multi(),
     resolve.default({
@@ -62,20 +64,20 @@ exports.config = {
     }),
     license({
       banner: `
-Bundle of <%= pkg.pluginName %> (<%= pkg.name %>)
+NWPlay Plugin Bundle of <%= pkg.pluginName %> (<%= pkg.name %>)
 Generated: <%= moment().format('YYYY-MM-DD') %>
 Version: <%= pkg.version %>
 Description: <%= pkg.description %>
-Min Core Version: <%= pkg.devDependencies['@nwplay/core'] %>
+Core: <%= pkg.devDependencies['@nwplay/core'] %>
 Dependencies:
 <% _.forEach(dependencies, function (dependency) { %>
   <%= dependency.name %> -- <%= dependency.version %>
-<% }) %>
-            `.trim()
+<% }) %>`.trim()
     })
   ],
   external: [
     '@nwplay/core',
-    'cheerio'
+    'cheerio',
+    'lodash'
   ]
 };
