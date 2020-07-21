@@ -177,7 +177,7 @@ export class AppService {
     const info: IInstalledPluginInfo = {
       extensions: [],
       extractors: [],
-      minCoreVersion: module.default.pluginRequiredCoreVersion,
+      minCoreVersion: module.default.pluginMinCoreVersion,
       object: undefined,
       providers: [],
       name: module.default.pluginName,
