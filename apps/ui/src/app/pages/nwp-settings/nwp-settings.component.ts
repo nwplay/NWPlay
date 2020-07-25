@@ -60,7 +60,7 @@ export class NwpSettingsComponent {
   }
 
   public removeProvider(provider: IInstalledPluginInfo) {
-    this.appService.removeProvider(provider);
+    this.appService.removePlugin(provider);
   }
 
   public saveSettings(provider: MediaProvider) {

@@ -35,7 +35,8 @@ exports.config = {
     sourcemap: true,
     globals: {
       '@nwplay/core': '@nwplay/core',
-      'cheerio': 'cheerio'
+      'cheerio': 'cheerio',
+      'dexie': 'dexie'
     }
   },
   plugins: [
@@ -78,6 +79,7 @@ Dependencies:
   external: [
     '@nwplay/core',
     'cheerio',
-    'lodash'
+    'lodash',
+    'dexie'
   ]
 };

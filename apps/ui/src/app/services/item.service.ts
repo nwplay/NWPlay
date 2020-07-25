@@ -9,27 +9,14 @@ import { NwpItemComponent } from '../pages/nwp-item/nwp-item.component';
 
 @Injectable()
 export class ItemService {
-  public hiddenItems: string[] = [];
   public openDialog: MatDialogRef<NwpItemComponent> = null;
 
   constructor(
     public router: Router,
-    private zone: NgZone,
     public translate: TranslateService,
-    public snackBar: MatSnackBar,
     public location: Location,
     public dialog: MatDialog
   ) {
-  }
-
-  public async hideItem(item: SearchResult) {
-    this.hiddenItems.push(`${item.provider}:${item.id}`);
-    const action = await this.translate.get('hide').toPromise();
-    this.zone.run(() => {
-      this.snackBar.open('OK', action, {
-        duration: 5000
-      });
-    });
   }
 
   public async show(item: TvShow | Movie | SearchResult, showAsModal = false) {
@@ -42,7 +29,6 @@ export class ItemService {
         backdropClass: 'backdrop-blur'
       }));
       dialogRef.componentInstance.isPopover = true;
-      //await dialogRef.componentInstance.loadItem(item.provider.id, item.id);
     } else {
       if (item instanceof TvShow) {
         await this.router.navigate(['/', item.provider.id, 'tv', item.id]);

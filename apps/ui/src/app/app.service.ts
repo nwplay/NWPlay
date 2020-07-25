@@ -119,7 +119,7 @@ export class AppService {
     });
   }
 
-  public async removeProvider(p: IInstalledPluginInfo) {
+  public async removePlugin(p: IInstalledPluginInfo) {
     try {
       const fs = nw.require('fs').promises;
       if (p.path) {
@@ -127,7 +127,7 @@ export class AppService {
         window.location.reload();
       }
     } catch (e) {
-      alert('Fehler beim entfernen des Providers.');
+      alert('Error removing Plugin.\n\n' + e);
     }
   }
 
@@ -140,7 +140,7 @@ export class AppService {
       if (this.files && this.files[0]) {
         const myFile = this.files[0];
         const reader = new FileReader();
-        reader.addEventListener('load', (e) => self.addProviderFromString((e.target as any).result));
+        reader.addEventListener('load', (e) => self.installPluginFromString((e.target as any).result));
         reader.readAsText(myFile);
       }
     });
@@ -167,7 +167,7 @@ export class AppService {
     setTimeout(() => this.checkPluginDev(), 2500);
   }
 
-  public async addProviderFromString(data: string) {
+  public async installPluginFromString(data: string) {
     const fs = nw.require('fs').promises;
     const path = nw.require('path');
     const dataPath = nw.App.dataPath;
@@ -236,16 +236,7 @@ Mochtest du es ersetzen?
       mb.createMacBuiltin(environment.pkg.productName);
       mb.items[0].submenu.insert(
         new nw.MenuItem({
-          label: 'Nach Updates Suchen…',
-          enabled: false,
-          click: () => {
-          }
-        }),
-        1 as any
-      );
-      mb.items[0].submenu.insert(
-        new nw.MenuItem({
-          label: 'Einstelungen…',
+          label: this.translate.instant('settings') + '…',
           key: ',',
           modifiers: 'cmd',
           click: () => {
@@ -277,18 +268,20 @@ Mochtest du es ersetzen?
       nw.Window.get(window).menu = mb;
     }
     this.providers = providers;
-    this.loadingMessage = `Extractors werden geladen.`;
+    this.loadingMessage = `Initializing Extractors…`;
     for (const extractor of extractorService.extractors.slice(0)) {
       if (extractor.init) {
         await extractor.init();
       }
     }
 
-    this.loadingMessage = `Provider werden geladen.`;
+    this.loadingMessage = `Initializing Plugins….`;
     await this.loadPlugins();
     this.loadingMessage = null;
 
+    this.loadingMessage = `Loading Watchlist…`;
     await Watchlist.default.init();
+    this.loadingMessage = `Loading History…`;
     await History.default.init();
 
     if (localStorage['lastVersion'] !== environment.pkg.version) {
@@ -408,6 +401,7 @@ Mochtest du es ersetzen?
     }
     try {
       await this.checkPluginDev();
-    }catch (e) {}
+    } catch (e) {
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "productName": "NWPlay",
-  "version": "4.0.0-alpha.4",
+  "version": "4.0.0-alpha.5",
   "license": "AGPL-3.0-or-later",
   "identifier": "org.nwplay.ui",
   "description": "A Cross-platform Cloud Media Player",
@@ -58,7 +58,7 @@
     "overriddenProperties": {
       "main": "index.html"
     },
-    "nwVersion": "0.47.0",
+    "nwVersion": "0.47.1",
     "ffmpegIntegration": true,
     "output": "../dist",
     "win": {
@@ -98,6 +98,7 @@
     "cheerio": "^1.0.0-rc.3",
     "class-transformer": "^0.2.3",
     "dashjs": "^3.1.1",
+    "dexie": "^3.0.1",
     "dropbox": "^5.1.0",
     "hls.js": "^0.13.2",
     "lodash": "^4.17.15",
