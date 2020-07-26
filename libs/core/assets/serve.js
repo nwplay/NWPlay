@@ -2,7 +2,7 @@
 const { watch } = require('rollup');
 const { config, pkg } = require('./config');
 const serve = require('rollup-plugin-serve');
-console.log(`Serving ${pkg.name} (${pkg.version})`)
+console.log(`Serving ${pkg.name} (${pkg.version}) ----`)
 
 config.plugins.push(serve({
   port: 8065,
@@ -12,11 +12,16 @@ config.plugins.push(serve({
 }));
 
 const watcher = watch(config);
-
 watcher.on('change', (e) => {
-  console.log(`${e} changed.`)
+  console.log(`"${e}" changed.\nRebuilding now`)
+});
+
+watcher.on('event', (e) => {
+  if(e.code === 'ERROR') {
+    console.error(e.error.message);
+  }
 });
 
 watcher.on('restart', (e) => {
-  console.log(`Reloaded`);
+  console.log(`Rebuilding done`);
 });
