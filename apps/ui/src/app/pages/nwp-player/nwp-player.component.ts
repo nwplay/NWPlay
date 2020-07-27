@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { SettingsService } from '../../services/settings.service';
-import { Player } from '@nwplay/core';
+import { Player, History } from '@nwplay/core';
 import { environment } from '../../environment';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
@@ -47,7 +47,7 @@ export class NwpPlayerComponent implements OnInit {
   ) {
     this.activatedRoute.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
-        this.player.stop();
+        this.hide();
       }
     });
   }
@@ -74,6 +74,13 @@ export class NwpPlayerComponent implements OnInit {
 
   public toggleFullScreen() {
     nw.Window.get().toggleFullscreen();
+  }
+
+  public hide() {
+    this.player.hidden = true;
+    if(!this.isPip) {
+      this.mediaEle.nativeElement.pause();
+    }
   }
 
   public keyup($event: KeyboardEvent) {
@@ -143,11 +150,12 @@ export class NwpPlayerComponent implements OnInit {
     });
 
     this.mediaEle.nativeElement.addEventListener('timeupdate', () => {
-      this.player.onTimeupdate.next(this.mediaEle.nativeElement.currentTime);
+        this.player.onTimeupdate.next(this.mediaEle.nativeElement.currentTime);
     });
     // Restore watch Position
     this.mediaEle.nativeElement.addEventListener('loadedmetadata', () => {
       this.player.duration = this.mediaEle.nativeElement.duration;
+      this.restorePosition();
       this.loading = null;
     });
 
@@ -170,8 +178,10 @@ export class NwpPlayerComponent implements OnInit {
     window.addEventListener(
       'mousewheel',
       (e) => {
-        const nv = (this.settings.volume += (e as any).deltaY / 1000);
-        this.settings.volume = nv > 1 ? 1 : nv < 0 ? 0 : nv;
+        if(!this.player.hidden) {
+          const nv = (this.settings.volume += (e as any).deltaY / 1000);
+          this.settings.volume = nv > 1 ? 1 : nv < 0 ? 0 : nv;
+        }
       },
       { passive: true }
     );
@@ -209,6 +219,12 @@ export class NwpPlayerComponent implements OnInit {
   public togglePip() {
     this.mediaEle.nativeElement['requestPictureInPicture']();
     this.isPip = true;
+  }
+
+  private restorePosition() {
+    if(this.player.lastPlaybackProgress > 0.05 && this.player.lastPlaybackProgress < 0.95) {
+      this.mediaEle.nativeElement.currentTime = this.player.lastPlaybackProgress * this.player.duration;
+    }
   }
 
   public resetHideTimeout() {

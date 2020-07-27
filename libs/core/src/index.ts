@@ -1,10 +1,9 @@
 /*
  * Public API Surface of nwplay-core
  */
-import { onPlatformReady, PlatformAbstract } from './lib/platform.abstract';
+import { onPlatformReady} from './lib/platform.abstract';
 
 declare var nw: any;
-
 export * from './lib/nwp-media';
 export * from './lib/browser';
 export * from './lib/extractors';
@@ -18,6 +17,7 @@ export * from './lib/environment';
 export * from './lib/cookies';
 export * from './lib/storage';
 export * from './lib/platform.abstract';
+export * from './lib/plugin';
 export const version = '0.0.1-alpha.6';
 export let cheerio = null;
 

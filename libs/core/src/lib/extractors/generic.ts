@@ -9,15 +9,15 @@ let updated = false;
 export class GenericExtractor implements Extractor {
   public id = '28B302E7-CDEB-4364-94C9-22407C8B7C2D';
   public name = 'Generic (youtube-dl)';
-  public isAdult = false;
   private readonly binPath: string = null;
   private readonly ydlUrl: string = null;
+  public version = '0.0.1';
 
   constructor() {
     if (!updated) {
       updated = true;
     }
-    if(Platform.default.type === 'nwjs' ) {
+    if (Platform.default.type === 'nwjs') {
       const path = (window as any).nw.require('path');
       const dataPath = Platform.default.dataPath;
       this.binPath = path.join(dataPath, `ydl`);
@@ -26,13 +26,9 @@ export class GenericExtractor implements Extractor {
         this.ydlUrl += '.exe';
         this.binPath += '.exe';
       }
-    }else if(Platform.default.type === 'capacitor') {
-
     }
-
   }
 
-  public version?: string;
   public url?: string;
   public hidden?: boolean;
 
@@ -50,7 +46,7 @@ export class GenericExtractor implements Extractor {
   }
 
   async init(): Promise<void> {
-    if(Platform.default.type === 'nwjs' ) {
+    if (Platform.default.type === 'nwjs') {
       if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
         await this.updateBin();
         const res = await this.exec('--list-extractors --print-json --encoding utf8');
@@ -127,4 +123,4 @@ export class GenericExtractor implements Extractor {
 
 onPlatformReady(() => {
   extractorService.addExtractor(new GenericExtractor());
-})
+});

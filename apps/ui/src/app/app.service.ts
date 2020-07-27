@@ -1,7 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import {
   addProvider,
-  currentProgressChange,
   Extension,
   Extractor,
   extractorService,
@@ -17,8 +16,6 @@ import {
 import { environment } from './environment';
 
 import { NavigationStart, Router } from '@angular/router';
-import { throttleTime } from 'rxjs/operators';
-import { asyncScheduler } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { v5 as uuidV5 } from 'uuid';
@@ -59,24 +56,6 @@ export class AppService {
         localStorage['history'] = JSON.stringify(this.history.slice(-10));
       }
     });
-    currentProgressChange
-      .pipe(
-        throttleTime(1000, asyncScheduler, {
-          trailing: true
-        })
-      )
-      .subscribe((e) => {
-        const prog = [];
-        e.forEach((m, k) => {
-          if (m) {
-            prog.push(`${k.name}: ${m.text}`);
-          }
-        });
-        this.zone.run(() => {
-          this.loadingProgress = prog;
-        });
-      });
-
     Watchlist.default.onRemoveItem.subscribe((item) => this.watchlistRemoveItem(item));
     Watchlist.default.onAddItem.subscribe((item) => this.watchlistAddItem(item));
   }
@@ -297,6 +276,7 @@ Mochtest du es ersetzen?
     }
     this.loaded = true;
     this.loading = false;
+    this.loadingMessage = '';
     setTimeout(() => {
       this.router.navigateByUrl(localStorage['route'] || '/', {
         replaceUrl: true

@@ -1,6 +1,11 @@
+<button *ngIf="player.hidden && player.playlist?.items?.length > 0" (click)="player.hidden=false;media.play();" class="player-fab" mat-fab color="accent">
+  <mat-icon>play_arrow</mat-icon>
+
+</button>
+
 <div
   [class.fullscreen]="controlsHidden"
-  [style.display]="player.playlist.items.length > 0 ? 'inline' : 'none'"
+  [style.display]="player.hidden ? 'none':'inline'"
   class="player-container {{ platform }}"
 >
   <vg-player
@@ -54,7 +59,7 @@
 
   <div (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" *ngIf="!controlsHidden"
        class="info">
-    <button (click)="player.stop()" mat-button>
+    <button (click)="hide()" mat-button>
       <mat-icon [inline]="true">close</mat-icon>
     </button>
     <img *ngIf="player.currentItem?.poster" [src]="player.currentItem?.poster" alt=""/>

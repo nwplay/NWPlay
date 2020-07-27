@@ -35,6 +35,7 @@ export class Player {
   public currentItem: PlayProvider;
   public loading: boolean;
   public disableControls = false;
+  public hidden = true;
   public onPlay = new Subject<MediaSource>();
   public onPause = new Subject<boolean>();
   public onSeek = new Subject<number>();
@@ -42,6 +43,7 @@ export class Player {
   public onLoading = new Subject<boolean>();
   public onEnd = new Subject<boolean>();
   public onTimeupdate = new Subject<number>();
+  public lastPlaybackProgress = 0;
 
   constructor() {
     this.onTimeupdate.subscribe((pos) => {
@@ -57,6 +59,7 @@ export class Player {
   public pause() {
     this.onPause.next(true);
   }
+
 
   public seekToPosition(pos: number) {
     this.onSeek.next(pos);
@@ -81,10 +84,14 @@ export class Player {
   }
 
   public async play(item?: PlayProvider, resolvers?: Extractor[]) {
-    this.currentItem = item;
+    this.hidden = false;
     this.loading = true;
+    this.lastPlaybackProgress = History.default.getProgress(item);
     this.onLoading.next(this.loading);
-    this.currentSource = await item.play(resolvers);
+    if(this.currentItem !== item || (resolvers && resolvers.length > 0)) {
+      this.currentSource = await item.play(resolvers);
+    }
+    this.currentItem = item;
     this.loading = false;
     this.onLoading.next(this.loading);
   }
@@ -94,6 +101,5 @@ export class Player {
     this.currentSource = null;
     this.currentItem = null;
     this.onStop.next();
-
   }
 }

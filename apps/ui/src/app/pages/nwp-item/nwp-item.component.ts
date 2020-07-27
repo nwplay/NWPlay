@@ -143,7 +143,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       this.trailerLoading = true;
       try {
         const res: MediaSource = await this.item.trailer();
-        if(this.player.playlist.items.length > 0) {
+        if(!this.player.hidden) {
           return;
         }
         if (res && res.source) {
@@ -151,7 +151,6 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
           if (res.audio_track) {
             this.trailerAudioTrack = res.audio_track;
             if (this.yaudiohackEle) {
-
               this.yaudiohackEle.nativeElement.src = res.audio_track;
               this.yaudiohackEle.nativeElement.volume = 1;
             }
@@ -176,7 +175,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   public trailerTimeUpdate({ target }) {
     if (this.yaudiohackEle && this.yaudiohackEle.nativeElement.src) {
       if (this.trailerSyncFc > 7) {
-        if(this.player.playlist.items.length > 0) {
+        if(!this.player.hidden) {
           this.trailerSrc = null;
           return;
         }

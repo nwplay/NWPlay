@@ -1,4 +1,5 @@
-import { Movie, PluginSetting, TvEpisode, TvSeason, TvShow } from './nwp-media';
+import { Movie, TvEpisode, TvSeason, TvShow } from './nwp-media';
+import { PluginSetting } from './plugin';
 
 export type OnMediaItemType = Movie | TvShow | TvSeason<any> | TvEpisode<any>;
 
