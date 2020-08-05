@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { NwpSettingsComponent } from './nwp-settings.component';
 import { CommonModule } from '@angular/common';
 import { NwpMediaCardModule } from '../../elements/nwp-media-card/nwp-media-card.module';
-import { NwpToolbarModule } from '../../elements/nwp-toolbar/nwp-toolbar.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -43,12 +42,12 @@ import { MatTableModule } from '@angular/material/table';
     MatIconModule,
     MatListModule,
     NwpMediaCardModule,
-    NwpToolbarModule,
     MatTabsModule,
     MatTableModule
   ],
   providers: [],
   bootstrap: [],
+  exports: [NwpSettingsComponent],
   entryComponents: [NwpSettingsComponent],
   schemas: []
 })

@@ -27,7 +27,7 @@ export class WatchlistComponent {
   }
 
   public canShowItem(item: SearchResult): boolean {
-    if (this.selectedProvider && this.selectedProvider !== item.provider) {
+    if (!item.provider || (this.selectedProvider && this.selectedProvider !== item.provider)) {
       return false;
     }
     return !(item.provider.disabled || (item.provider.isAdult && !this.settings.showAdult));

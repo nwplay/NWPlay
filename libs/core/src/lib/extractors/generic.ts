@@ -63,7 +63,7 @@ export class GenericExtractor implements Extractor {
     }
   }
 
-  public test(url: string): boolean {
+  public test(url: string) {
     return /.*/gim.test(url);
   }
 

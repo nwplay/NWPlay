@@ -71,7 +71,7 @@
         routerLinkActive="active"
         tabindex="1"
       >
-        {{ p.name_translations[settings.defaultLang] || p.name }}
+        {{ p.name }}
       </button>
     </ng-container>
     <button
@@ -146,7 +146,7 @@
         mat-subheader
         tabindex="1"
       >
-        <span>{{ item.provider.name_translations[settings.defaultLang] || item.provider.name }} </span>
+        <span>{{ item.provider.name }} </span>
         <span class="spacer"></span>
         <span class="more">{{ 'show_more' | translate }}</span>
       </h3>
@@ -154,7 +154,7 @@
         <mat-icon matListIcon>{{ item.type === 0 ? 'movie' : 'tv' }}</mat-icon>
         <h3 matLine>{{ item.title }}</h3>
         <p matLine>
-          <span>{{ item.provider?.name_translations[settings.defaultLang] || item.provider?.name }}</span>
+          <span>{{ item.provider?.name }}</span>
         </p>
       </mat-list-item>
     </ng-container>

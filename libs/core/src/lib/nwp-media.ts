@@ -168,9 +168,9 @@ export interface ISearchOptions {
 export abstract class MediaProvider extends Plugin {
   isAdult?: boolean;
 
-  abstract get(
+  abstract get<T = TvShow | Movie | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>(
     id: string
-  ): Promise<TvShow | Movie | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>;
+  ): Promise<T>;
 
   abstract search(options: ISearchOptions): Promise<SearchResult[]>;
 
@@ -198,7 +198,7 @@ export abstract class Extractor extends Plugin {
   public icon?: string;
   public hidden?: boolean;
 
-  abstract test(url: string): boolean;
+  abstract test(url: string): boolean | Promise<boolean>;
 
   abstract init(): Promise<void>;
 

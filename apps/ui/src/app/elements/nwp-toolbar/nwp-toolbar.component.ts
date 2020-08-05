@@ -7,7 +7,7 @@ import {
   MediaCollection,
   MediaProvider,
   MediaSource,
-  Movie,
+  Movie, NWPlaySettings,
   Player,
   providers,
   SearchResult,
@@ -15,7 +15,7 @@ import {
   TvSeason,
   TvShow
 } from '@nwplay/core';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 import { MatMenu } from '@angular/material/menu';
 import { SettingsService } from '../../services/settings.service';
@@ -27,6 +27,7 @@ import { AppService } from '../../app.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 declare var nw: any;
 
@@ -38,7 +39,7 @@ class UrlProvider extends MediaProvider {
     return Promise.resolve([]);
   }
 
-  get(id: string): Promise<TvShow<MediaProvider> | Movie<MediaProvider> | TvSeason<any> | TvEpisode<any>> {
+  get(id: string) {
     return Promise.resolve(undefined);
   }
 
@@ -64,13 +65,16 @@ class UrlMovie extends Movie<any> {
   constructor(private videoUrl: string) {
     super(new UrlProvider());
     this.title = videoUrl;
+    this.subtitle = videoUrl;
     this.id = videoUrl;
     this.url = videoUrl;
   }
 
+
   async play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource> {
     const res = await extractorService.extract(this.videoUrl);
     this.title = res.title;
+    console.log(res)
     this.poster = res.image;
     return res;
   }
@@ -82,6 +86,44 @@ class UrlMovie extends Movie<any> {
   styleUrls: ['./nwp-toolbar.component.scss']
 })
 export class NwpToolbarComponent implements OnInit {
+
+  constructor(
+    private hotKeysService: HotkeysService,
+    public settings: SettingsService,
+    public zone: NgZone,
+    public location: Location,
+    public router: Router,
+    public itemService: ItemService,
+    private ref: ChangeDetectorRef,
+    public appService: AppService,
+    private matDialog: MatDialog,
+    public snackBar: MatSnackBar,
+    public translateService: TranslateService
+  ) {
+    setInterval(() => {
+      this.scanClipboard();
+    }, 2500);
+    this.hotKeysService.reset();
+    this.hotKeysService.add(
+      new Hotkey(['meta+,', 'ctrl+.'], (): boolean => {
+        this.showSettings();
+        return false; // Prevent bubbling
+      })
+    );
+    this.hotKeysService.add(
+      new Hotkey(['meta+f', 'ctrl+f'], (): boolean => {
+        (document.querySelector('.toolbar input') as any).click();
+        (document.querySelector('.toolbar input') as any).focus();
+        return false; // Prevent bubbling
+      })
+    );
+    this.hotKeysService.add(
+      new Hotkey(['meta+r', 'ctrl+r'], (): boolean => {
+        window.location.reload();
+        return false; // Prevent bubbling
+      })
+    );
+  }
   @Input() public title: string;
   @Input() public provider: any;
   @Input() public tabIndex: number;
@@ -106,43 +148,36 @@ export class NwpToolbarComponent implements OnInit {
   public searchResults: SearchResult[] = [];
   public isFullscreen = false;
   public showWindowButtons = true;
-
-  constructor(
-    private hotKeysService: HotkeysService,
-    public settings: SettingsService,
-    public zone: NgZone,
-    public location: Location,
-    public router: Router,
-    public itemService: ItemService,
-    private ref: ChangeDetectorRef,
-    public appService: AppService,
-    private matDialog: MatDialog,
-    public translateService: TranslateService
-  ) {
-    this.hotKeysService.reset();
-    this.hotKeysService.add(
-      new Hotkey(['meta+,', 'ctrl+.'], (): boolean => {
-        this.showSettings();
-        return false; // Prevent bubbling
-      })
-    );
-    this.hotKeysService.add(
-      new Hotkey(['meta+f', 'ctrl+f'], (): boolean => {
-        (document.querySelector('.toolbar input') as any).click();
-        (document.querySelector('.toolbar input') as any).focus();
-        return false; // Prevent bubbling
-      })
-    );
-    this.hotKeysService.add(
-      new Hotkey(['meta+r', 'ctrl+r'], (): boolean => {
-        window.location.reload();
-        return false; // Prevent bubbling
-      })
-    );
-  }
+  private lastClipValue = '';
 
   public showSettings() {
     this.router.navigateByUrl('/settings').catch(console.error);
+  }
+  public scanClipboard() {
+    const clipboard = nw.Clipboard.get();
+    const text: string = clipboard.get('text');
+    if(text === this.lastClipValue) {
+      return;
+    }
+    const win = nw.Window.get();
+    if(text && text.indexOf('http') === 0 && extractorService.test(text)) {
+      const regex = /https?:\/\/(.+?)\//gmi;
+      const re = regex.exec(text)
+      this.snackBar.open(re[1], this.translateService.instant('play'), {
+        politeness: 'assertive',
+        duration: 15000
+      }).onAction().subscribe(() => {
+        this.playUrl(text);
+      })
+      win.requestAttention(5);
+    }else if(text && text.indexOf('nwplay:') === 0) {
+      const url = text.slice(7);
+      if(extractorService.test(text)) {
+        this.playUrl(url);
+        win.focus();
+      }
+    }
+    this.lastClipValue = text;
   }
 
   ngOnInit() {
@@ -278,6 +313,10 @@ export class NwpToolbarComponent implements OnInit {
   }
 
   public async search(qry?: string): Promise<void> {
+    if(qry && qry.indexOf('http') === 0) {
+      this.playUrl(qry);
+      return;
+    }
     qry = qry || this.searchValue;
     this.searching = true;
     this.isSearchOpen = true;

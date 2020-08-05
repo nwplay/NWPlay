@@ -248,20 +248,22 @@ Mochtest du es ersetzen?
     }
     this.providers = providers;
     this.loadingMessage = `Initializing Extractors…`;
+    const proms: Promise<any>[] = [];
     for (const extractor of extractorService.extractors.slice(0)) {
       if (extractor.init) {
-        await extractor.init();
+        proms.push(extractor.init());
       }
     }
-
+    await Promise.all(proms);
     this.loadingMessage = `Initializing Plugins….`;
     await this.loadPlugins();
     this.loadingMessage = null;
 
     this.loadingMessage = `Loading Watchlist…`;
-    await Watchlist.default.init();
-    this.loadingMessage = `Loading History…`;
-    await History.default.init();
+    await Promise.all([
+      Watchlist.default.init(),
+      History.default.init()
+    ])
 
     if (localStorage['lastVersion'] !== environment.pkg.version) {
       this.showChangelog = true;
@@ -365,13 +367,11 @@ Mochtest du es ersetzen?
     const providersPath = Filesystem.joinPath(dataPath, 'providers');
     try {
       await Filesystem.mkdir(providersPath);
-    } catch (e) {
-    }
+    } catch (e) {}
     const files = await Filesystem.readdir(providersPath);
     const jsFiles = files.filter((e) => e.split('.').pop() === 'nwp').map(e => {
       return Filesystem.joinPath(providersPath, e);
     });
-
     for (const file of jsFiles) {
       try {
         await this.loadPlugin(file);

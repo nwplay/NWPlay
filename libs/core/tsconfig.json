@@ -5,7 +5,8 @@
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "**/*.ts"

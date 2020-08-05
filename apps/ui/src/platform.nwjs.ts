@@ -1,5 +1,4 @@
 import { IFilesystem, IFilesystemStat, PlatformAbstract, PlatformType } from '@nwplay/core';
-
 declare var nw: any;
 
 class NWjsFileSystem implements IFilesystem {
@@ -27,7 +26,7 @@ class NWjsFileSystem implements IFilesystem {
     await this.fs.mkdir(path);
   }
 
-  async readFile(path: string, encoding?: 'utf-8') {
+  async readFile(path: string, encoding?: 'utf-8' | 'base64') {
     const fs = nw.require('fs').promises;
     return (await fs.readFile(path)).toString(encoding || 'base64');
   }
@@ -48,8 +47,9 @@ class NWjsFileSystem implements IFilesystem {
     return Promise.resolve(undefined);
   }
 
-  writeFile(path: string, data: any, encoding: 'utf-8' | undefined): Promise<void> {
-    return Promise.resolve(undefined);
+  async writeFile(path: string, data: any, encoding: 'utf-8' | 'base64' = 'utf-8'): Promise<void> {
+    const fs = nw.require('fs').promises;
+    await fs.writeFile(path, data, { encoding });
   }
 
 }
@@ -62,6 +62,7 @@ export class PlatformNwjs extends PlatformAbstract {
   public dataPath = window['nw']['App'].dataPath;
   public Filesystem = new NWjsFileSystem();
   public cheerio = nw.require('cheerio');
+  public pouchdb = nw.require('pouchdb');
 
 }
 

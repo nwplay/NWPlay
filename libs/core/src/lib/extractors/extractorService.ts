@@ -60,6 +60,14 @@ class ExtractorService {
     return this.extractors.find((r) => r.test(url)) !== null;
   }
 
+  public async testAsync(url: string): Promise<boolean> {
+    for (const e of this.extractors) {
+      const r = await e.test(url);
+      if(r) return true;
+    }
+    return false;
+  }
+
   public async extract(url: string) {
     const extractor = this.extractors.find((r) => r.test(url));
     if (!extractor) {
