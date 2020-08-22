@@ -62,8 +62,6 @@ export class PlatformNwjs extends PlatformAbstract {
   public dataPath = window['nw']['App'].dataPath;
   public Filesystem = new NWjsFileSystem();
   public cheerio = nw.require('cheerio');
-  public pouchdb = nw.require('pouchdb');
-
 }
 
 export const Platform = PlatformNwjs;
