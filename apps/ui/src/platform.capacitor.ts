@@ -8,6 +8,8 @@ import * as cheerio from './cheerio';
 
 const Http = Plugins.Http as HttpPluginWeb;
 
+console.log('CAP');
+
 async function CapFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
   const opts: HttpOptions = {} as any;
   const fetchOpts: RequestInit = {};
