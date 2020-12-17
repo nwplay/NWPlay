@@ -167,6 +167,10 @@ export class NwpPlayerComponent implements OnInit {
       }
     });
 
+    this.mediaEle.nativeElement.addEventListener('pause', async () => {
+      this.player.onPause.next(true);
+    });
+
     this.mediaEle.nativeElement.addEventListener('canplay', async () => {
       await this.mediaEle.nativeElement.play();
     });
@@ -198,7 +202,7 @@ export class NwpPlayerComponent implements OnInit {
         await this.player.play();
       });
       ms.setActionHandler('pause', () => {
-        this.player.pause();
+        //this.player.pause();
       });
       ms.setActionHandler('previoustrack', async () => {
         await this.player.playPrevItem();
@@ -212,7 +216,7 @@ export class NwpPlayerComponent implements OnInit {
 
 
     this.player.onSeek.subscribe((pos) => {
-      this.mediaEle.nativeElement.currentTime = pos;
+      this.mediamediaEle.nativeElement.currentTime = pos;
     });
   }
 
