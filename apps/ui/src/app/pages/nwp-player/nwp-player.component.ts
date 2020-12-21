@@ -216,7 +216,7 @@ export class NwpPlayerComponent implements OnInit {
 
 
     this.player.onSeek.subscribe((pos) => {
-      this.mediamediaEle.nativeElement.currentTime = pos;
+      this.mediaEle.nativeElement.currentTime = pos;
     });
   }
 
