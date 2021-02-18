@@ -27,7 +27,13 @@ mat-radio-button {
 
 :host ::ng-deep .mat-list-item .mat-select,
 :host ::ng-deep .mat-list-item .mat-input-element {
-  flex-shrink: 3;
+  max-width: 25%;
+
+}
+
+
+:host ::ng-deep .mat-list-item {
+  border-bottom: rgba(255,255,255,0.1) 1px solid;
 }
 
 .dynamic_delete {
@@ -60,12 +66,21 @@ mat-radio-button {
   }
 }
 
+.search-filter {
+  width: 150px;
+  padding: 10px;
+  border-radius: 7px;
+  border: none;
+  background: #ffffff78;
+  float: right;
+  margin-top: 10px;
+}
+
 .settings-container {
-  max-width: 1024px;
-  margin-left: auto;
-  margin-right: auto;
-  height: 90%;
-  overflow: auto;
+  padding: 25px;
+  height: 100%;
+  overflow: scroll;
+  background-color: #252525;
 }
 
 .plugin-settings {
@@ -73,4 +88,8 @@ mat-radio-button {
     font-size: 1.5rem;
     padding: 15px;
   }
+}
+
+.mat-dialog-title {
+  margin: 25px;
 }

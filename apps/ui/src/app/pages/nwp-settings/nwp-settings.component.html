@@ -1,5 +1,7 @@
+<div mat-dialog-title>{{ 'settings' | translate }}</div>
+
+
 <div class="settings-container">
-  <h2>{{ 'settings' | translate }}</h2>
   <mat-tab-group [dynamicHeight]="true">
     <mat-tab label="{{ 'generally' | translate }}">
       <mat-selection-list (selectionChange)="setValue($event)">
@@ -44,7 +46,7 @@
           </mat-select>
         </mat-list-item>
         <mat-list-item>
-          <button (click)="clearCache()" color="primary" mat-raised-button style="margin-left: 15px;">
+          <button (click)="clearCache()" color="primary" mat-raised-button>
             {{ 'clear_application_cache' | translate }}
           </button>
           <button (click)="resetApp()" color="primary" mat-raised-button style="margin-left: 15px;">
@@ -101,69 +103,87 @@
       </mat-selection-list>
     </mat-tab>
 
-    <mat-tab label="{{ 'plugins' | translate }}">
-      <ul class="settings-list">
-        <li title="{{plugin.name}} - {{plugin.version}}" *ngFor="let plugin of appService.installedPlugins">
-          <div class="name">{{plugin.name}}</div>
-          <div class="actions">
-            <button (click)="showPluginSettings(plugin)">Einstellungen</button>
-          </div>
-        </li>
-      </ul>
-      <button (click)="installProvider()" color="primary" mat-raised-button style="margin-left: 15px;">
-        {{ 'add_plugin' | translate }}
+    <mat-tab label="{{ 'extensions' | translate }}">
+      <button (click)="installProvider()" color="primary" mat-stroked-button
+              style="margin-bottom: 15px;margin-top: 15px;">
+        {{ 'add_extensions' | translate }}
       </button>
+      <mat-list role="list">
+        <mat-list-item *ngFor="let plugin of appService.installedPlugins" role="listitem">
+          <mat-icon mat-list-icon>widgets</mat-icon>
+          <div mat-line>{{plugin.name}}</div>
+          <div mat-line> {{plugin.version}} </div>
+          <button (click)="showPluginSettings(plugin)" color="primary" mat-stroked-button>
+            {{ 'settings' | translate }}
+          </button>
+        </mat-list-item>
+      </mat-list>
     </mat-tab>
     <mat-tab label="{{ 'resolver' | translate }}">
-      <label>
-        <input (input)="filterExtractors($event)">
-      </label>
-      <ul cdkDropList (cdkDropListDropped)="drop($event)" class="settings-list">
-        <li [style.display]="extractorsFiltered.includes(provider) ? 'flex' : 'none'"
-            title="{{provider.name}} - {{provider.version}}" *ngFor="let provider of extractors" cdkDrag>
-          <div class="name">{{provider.name}}</div>
-          <div class="actions">
-            <button (click)="moveToTop(provider)">move to top</button>
-          </div>
-        </li>
-      </ul>
+
+      <mat-list cdkDropList (cdkDropListDropped)="drop($event)">
+        <div mat-subheader>Favoriten</div>
+        <mat-list-item *ngFor="let provider of extractorService.favorites" cdkDrag>
+          <mat-icon mat-list-icon>star</mat-icon>
+          <div mat-line>{{provider.name}}</div>
+          <div mat-line>{{provider.version}}</div>
+          <button mat-button (click)="extractorService.removeFavorite(provider);ref.detectChanges()">-</button>
+        </mat-list-item>
+      </mat-list>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Suche…</mat-label>
+        <input  (input)="filterExtractors($event)" matInput placeholder="Suche…" value="">
+      </mat-form-field>
+      <mat-list>
+        <div mat-subheader>Andere {{ 'resolver' | translate }}</div>
+        <mat-list-item *ngFor="let provider of extractorsFiltered">
+          <mat-icon mat-list-icon>widgets</mat-icon>
+          <div  mat-line>{{provider.name}}</div>
+          <div mat-line>{{provider.version}}</div>
+          <button mat-button (click)="extractorService.addFavorite(provider);ref.detectChanges()">+</button>
+        </mat-list-item>
+      </mat-list>
 
     </mat-tab>
-    <mat-tab label="{{ 'about' | translate }}">
+    <mat-tab label="{{ 'about' | translate }} {{ env.pkg.productName }}">
       <p style="text-align: center;">{{ env.pkg.productName }} is a OpenSource Cross-platform Cloud Media Player.</p>
       <p style="text-align: center;">
         <img alt="" height="45px" src="https://blockchain.info/Resources/buttons/donate_64.png"/>
         <br/>
-        {{ 'donate_bitcoin' | translate }} 1CuFoBLNFkpGztptEf3bnavyT8JsmRerhb
+        {{ 'donate_bitcoin' | translate }}
+        <br/>
+        1CuFoBLNFkpGztptEf3bnavyT8JsmRerhb
       </p>
     </mat-tab>
   </mat-tab-group>
 </div>
 
 <ng-template let-plugin #pluginSettingItem>
-  <li *ngFor="let setting of plugin.settings">
-    <div class="name">{{setting.label}}</div>
-    <div class="actions" [ngSwitch]="setting.type">
+  <mat-list-item *ngFor="let setting of plugin.settings">
+    <ng-container [ngSwitch]="setting.type">
       <div *ngSwitchCase="'input'">
-        <input [(ngModel)]="setting.value" />
+        <div mat-line>{{setting.label}}</div>
+        <input [(ngModel)]="setting.value"/>
       </div>
       <div *ngSwitchCase="'button'">
-        <button (click)="setting.click()">{{setting.label}}</button>
+        <button mat-stroked-button (click)="setting.click()">{{setting.label}}</button>
       </div>
       <div *ngSwitchCase="'checkbox'">
+        <div mat-line>{{setting.label}}</div>
         <input type="checkbox" [(ngModel)]="setting.value"/>
       </div>
-    </div>
-  </li>
+    </ng-container>
+  </mat-list-item>
+
 </ng-template>
 
 <ng-template let-modal #pluginSettings>
-  <div class="plugin-settings">
-    <span class="plugin-name">{{modal.pluginInfo?.name}}</span>
-    <ul class="settings-list">
-      <li>
-        <div class="name">Version: {{modal.pluginInfo?.version}}</div>
-      </li>
+
+  <div mat-dialog-title>{{ modal.pluginInfo?.name}}</div>
+
+  <div class="settings-container">
+    <mat-list>
       <ng-container *ngFor="let provider of modal.pluginInfo.providers">
         <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
       </ng-container>
@@ -173,7 +193,7 @@
       <ng-container *ngFor="let provider of modal.pluginInfo.extractors">
         <ng-container *ngTemplateOutlet="pluginSettingItem; context:{$implicit: provider}"></ng-container>
       </ng-container>
-    </ul>
-    <button (click)="removeProvider(modal.pluginInfo)">Uninstall</button>
+    </mat-list>
+    <button mat-button (click)="removeProvider(modal.pluginInfo)">{{'remove_extensions' | translate}}</button>
   </div>
 </ng-template>

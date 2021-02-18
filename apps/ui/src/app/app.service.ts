@@ -204,6 +204,11 @@ Mochtest du es ersetzen?
     } catch (e) {
       /*IGNORE*/
     }
+    /*if (Platform.default.type === 'nwjs') {
+      const win = nw.Window.get(window);
+      win.setPosition('center');
+      //win.focus();
+    }*/
     if (Platform.default.type === 'nwjs' && environment.platform === 'macos') {
       nw.App.on('reopen', function() {
         nw.Window.get(window).show();
@@ -247,15 +252,15 @@ Mochtest du es ersetzen?
       nw.Window.get(window).menu = mb;
     }
     this.providers = providers;
-    this.loadingMessage = `Initializing Extractors…`;
-    const proms: Promise<any>[] = [];
+    this.loadingMessage = `Loading…`;
     for (const extractor of extractorService.extractors.slice(0)) {
       if (extractor.init) {
-        proms.push(extractor.init());
+        await extractor.init((msg) => {
+          this.loadingMessage = `${extractor.name}: ${msg}`;
+        });
       }
     }
-    await Promise.all(proms);
-    this.loadingMessage = `Initializing Plugins….`;
+    this.loadingMessage = `Loading….`;
     await this.loadPlugins();
     this.loadingMessage = null;
 
@@ -263,7 +268,7 @@ Mochtest du es ersetzen?
     await Promise.all([
       Watchlist.default.init(),
       History.default.init()
-    ])
+    ]);
 
     if (localStorage['lastVersion'] !== environment.pkg.version) {
       this.showChangelog = true;
@@ -322,8 +327,8 @@ Mochtest du es ersetzen?
       }
       this.restoreSetting(provider);
       if (provider.init) {
-        await provider.init((e) => {
-          this.loadingMessage = e;
+        await provider.init((msg) => {
+          this.loadingMessage = `${provider.name}: ${msg}`;
         });
       }
       addProvider(provider);
@@ -336,7 +341,9 @@ Mochtest du es ersetzen?
       }
       this.restoreSetting(extractor);
       if (extractor.init) {
-        await extractor.init();
+        await extractor.init((msq) => {
+          this.loadingMessage = `${extractor.name}: ${msq}`;
+        });
       }
       extractorService.addExtractor(extractor);
       pluginInfo.extractors.push(extractor);
@@ -348,7 +355,9 @@ Mochtest du es ersetzen?
       }
       this.restoreSetting(extension);
       if (extension.init) {
-        await extension.init();
+        await extension.init((msg) => {
+          this.loadingMessage = `${extension.name}: ${msg}`;
+        });
       }
       pluginInfo.extensions.push(extension);
     }
@@ -367,7 +376,8 @@ Mochtest du es ersetzen?
     const providersPath = Filesystem.joinPath(dataPath, 'providers');
     try {
       await Filesystem.mkdir(providersPath);
-    } catch (e) {}
+    } catch (e) {
+    }
     const files = await Filesystem.readdir(providersPath);
     const jsFiles = files.filter((e) => e.split('.').pop() === 'nwp').map(e => {
       return Filesystem.joinPath(providersPath, e);

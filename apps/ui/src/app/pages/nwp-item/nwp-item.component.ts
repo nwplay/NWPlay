@@ -143,7 +143,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       this.trailerLoading = true;
       try {
         const res: MediaSource = await this.item.trailer();
-        if(!this.player.hidden) {
+        if (!this.player.hidden) {
           return;
         }
         if (res && res.source) {
@@ -175,7 +175,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   public trailerTimeUpdate({ target }) {
     if (this.yaudiohackEle && this.yaudiohackEle.nativeElement.src) {
       if (this.trailerSyncFc > 7) {
-        if(!this.player.hidden) {
+        if (!this.player.hidden) {
           this.trailerSrc = null;
           return;
         }
@@ -320,15 +320,12 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   public async showSeason(season: TvSeason<any>, episodeId?: string) {
     this.loadingSeason = true;
     this.currentSeason = season;
-    this.callOnMediaExtension(season);
-
+    await this.callOnMediaExtension(season);
     if (!this.loadedSeasons.has(season)) {
       const episodes = await season.episodes();
       this.loadedSeasons.set(season, episodes);
       this.episodes = episodes;
-      this.episodes.forEach(e => {
-        this.callOnMediaExtension(e);
-      });
+      await Promise.all(this.episodes.map(e => this.callOnMediaExtension(e)));
     } else {
       this.episodes = this.loadedSeasons.get(season);
     }
@@ -355,7 +352,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     }
     this.player.playlist.clear();
     this.player.playlist.add(...items);
-    await this.player.play(item);
+    await this.player.play(item, resolvers);
   }
 
   public async reset(item: any) {
@@ -408,14 +405,16 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private callOnMediaExtension(item: OnMediaItemType) {
-    this.appService.installedPlugins.forEach(e => {
-      e.extensions.forEach((c) => {
-        if(c.onMediaItem) {
-          c.onMediaItem(item);
+  private async callOnMediaExtension(item: OnMediaItemType) {
+    for (const plugin of this.appService.installedPlugins) {
+      for (const ext of plugin.extensions) {
+        if (ext.onMediaItem) {
+          await ext.onMediaItem(item);
         }
-      })
-    })
+      }
+
+    }
+
   }
 
   private async load(id: string): Promise<void> {
@@ -423,7 +422,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
     if (!item) {
       throw new Error('Item not found');
     }
-   this.callOnMediaExtension(item);
+    await this.callOnMediaExtension(item);
     let season: TvSeason<any>;
     let episode: TvEpisode<any>;
     if (item instanceof TvEpisode) {
@@ -449,11 +448,11 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
       this.type = MEDIA_TYPE.MOVIE;
     }
 
-      if(episode && item instanceof TvShow && item.autoplay) {
-        this.play(episode, await season.episodes());
-      }else if(item instanceof Movie && item.autoplay) {
-        this.play(item, [item]);
-      }
+    if (episode && item instanceof TvShow && item.autoplay) {
+      this.play(episode, await season.episodes());
+    } else if (item instanceof Movie && item.autoplay) {
+      this.play(item, [item]);
+    }
 
     if (item.suggestions) {
       item.suggestions().then((suggestions: SearchResult[]) => {

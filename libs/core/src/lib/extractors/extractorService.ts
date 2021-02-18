@@ -2,58 +2,57 @@ import { Extractor } from '../nwp-media';
 
 class ExtractorService {
   public readonly extractors: Extractor[] = [];
-  public readonly favorites = new Set<Extractor>();
-  private readonly favoriteIds = new Set<string>();
+  public favorites: Extractor[] = [];
 
   constructor() {
-    try {
-      this.favoriteIds = new Set(JSON.parse(localStorage['extractorFavorites']));
-    } catch (e) {
-    }
-    this.updateFavorites();
+    this.restoreSort();
   }
 
-  private updateFavorites() {
-    this.favorites.clear();
-    Array.from(this.favoriteIds)
-      .map(id => this.extractors.find(e => e.id === id))
-      .forEach(e => this.favorites.add(e));
-  }
-
-  public saveSort() {
-    window.localStorage['extractor_sort'] = JSON.stringify(this.extractors.map(e => e.id));
-  }
 
   public restoreSort() {
     try {
-      const ids = JSON.parse(window.localStorage['extractor_sort']);
+      const ids = JSON.parse(window.localStorage['extractorFavorites']);
+      console.log(ids);
+      this.favorites = ids
+        .map(id => this.extractors.find(e => e.id === id))
+        .filter(e => !!e);
       if (Array.isArray(ids)) {
-        const newSort = this.extractors.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
-        this.extractors.splice(0, this.extractors.length, ...newSort);//this.extractors.push(...newSort);
+        this.extractors.splice(0, this.extractors.length, ...[
+          ...this.favorites,
+          ...this.extractors.filter(e => !this.favorites.includes(e))
+        ]);
       }
     } catch (e) {
-
+      console.warn(e);
     }
+
+    console.log(this.extractors.slice(0, 10).map(e => e.name));
   }
 
-  private saveFavorites() {
-    localStorage['extractorFavorites'] = JSON.stringify(Array.from(this.favoriteIds));
+  public saveFavorites() {
+    localStorage['extractorFavorites'] = JSON.stringify(this.favorites.map(e => e.id));
   }
 
   public checkIfIsFavorite(extractor: Extractor) {
-    return this.favorites.has(extractor);
+    return this.favorites.includes(extractor);
   }
 
   public addFavorite(extractor: Extractor) {
-    this.favorites.add(extractor);
-    this.favoriteIds.add(extractor.id);
+    if (this.favorites.find(f => f.id === extractor.id)) {
+      return;
+    }
+    this.favorites.push(extractor);
     this.saveFavorites();
+    this.restoreSort();
   }
 
   public removeFavorite(extractor: Extractor) {
-    this.favorites.delete(extractor);
-    this.favoriteIds.delete(extractor.id);
-    this.saveFavorites();
+    const index = this.favorites.indexOf(extractor);
+    if (index !== -1) {
+      this.favorites.splice(index, 1);
+      this.saveFavorites();
+      this.restoreSort();
+    }
   }
 
   public test(url: string): boolean {
@@ -63,7 +62,7 @@ class ExtractorService {
   public async testAsync(url: string): Promise<boolean> {
     for (const e of this.extractors) {
       const r = await e.test(url);
-      if(r) return true;
+      if (r) return true;
     }
     return false;
   }
@@ -81,7 +80,6 @@ class ExtractorService {
     if (batch) {
       return;
     }
-    this.updateFavorites();
     this.restoreSort();
   }
 }

@@ -7,7 +7,7 @@ export abstract class Plugin {
   public description?: string;
   public disabled? = false;
   public settings?: PluginSetting[] = [];
-  public init?(setProgress: (text: string) => void): Promise<void>;
+  public init?(setMessage: (text: string) => void): Promise<void>;
 }
 
 

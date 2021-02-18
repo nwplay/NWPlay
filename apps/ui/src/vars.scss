@@ -1,4 +1,5 @@
 $accent-color: #9c27b0;
+$accent-gradient: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
 $primary-color: #151515;
 $primary-text-color: #151515;
 $toolbar-height: 39px;
@@ -52,7 +53,7 @@ body {
 
   &::-webkit-scrollbar-thumb,
   .right::-webkit-scrollbar-thumb {
-    background: $accent-color;
+    background: #fff;
     border-radius: 5px;
   }
 

@@ -35,7 +35,7 @@
   <ng-container *ngIf="platform == 'windows'">
     <button
       *ngIf="!isSmall"
-      (click)="showMenu($event)"
+      [matMenuTriggerFor]="menu"
       class="item"
       mat-icon-button
       matTooltip="{{ 'show_more' | translate }}"
@@ -202,21 +202,21 @@
 </mat-menu>
 <ng-template #urlDialog>
 
-    <mat-form-field>
-      <mat-label>Url</mat-label>
-      <label>
-        <input #urlInput matInput>
-      </label>
-    </mat-form-field>
-    <button matDialogClose mat-button (click)="playUrl(urlInput.value)">{{'play' | translate}}</button>
-    <button matDialogClose mat-button>{{'hide' | translate}}</button>
+  <mat-form-field>
+    <mat-label>Url</mat-label>
+    <label>
+      <input #urlInput matInput>
+    </label>
+  </mat-form-field>
+  <button matDialogClose mat-button (click)="playUrl(urlInput.value)">{{'play' | translate}}</button>
+  <button matDialogClose mat-button>{{'hide' | translate}}</button>
 </ng-template>
 
 <mat-menu #menu="matMenu">
   <button mat-menu-item disabled>
     <span>NWPlay v{{version}}</span>
   </button>
-  <button (click)="showSettings()" mat-menu-item >
+  <button (click)="showSettings()" mat-menu-item>
     <mat-icon>settings</mat-icon>
     <span>{{'settings' | translate}}</span>
   </button>
@@ -228,7 +228,7 @@
     <mat-icon>fullscreen</mat-icon>
     <span>{{'fullscreen_on' | translate}}</span>
   </button>
-  <button (click)="close(true)" mat-menu-item >
+  <button (click)="close(true)" mat-menu-item>
     <mat-icon>close</mat-icon>
     <span>NWPlay {{'quit' | translate}}</span>
   </button>

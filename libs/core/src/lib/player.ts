@@ -36,13 +36,13 @@ export class Player {
   public loading: boolean;
   public disableControls = false;
   public hidden = true;
-  public onPlay = new Subject<MediaSource>();
-  public onPause = new Subject<boolean>();
-  public onSeek = new Subject<number>();
-  public onStop = new Subject<any>();
-  public onLoading = new Subject<boolean>();
-  public onEnd = new Subject<boolean>();
-  public onTimeupdate = new Subject<number>();
+  public onPlay: Subject<MediaSource> = new Subject<MediaSource>();
+  public onPause: Subject<boolean> = new Subject<boolean>();
+  public onSeek: Subject<number> = new Subject<number>();
+  public onStop: Subject<any> = new Subject<any>();
+  public onLoading: Subject<boolean> = new Subject<boolean>();
+  public onEnd: Subject<boolean> = new Subject<boolean>();
+  public onTimeupdate: Subject<number> = new Subject<number>();
   public lastPlaybackProgress = 0;
 
   constructor() {
@@ -100,6 +100,7 @@ export class Player {
     this.playlist.clear();
     this.currentSource = null;
     this.currentItem = null;
+    this.hidden = true;
     this.onStop.next();
   }
 }

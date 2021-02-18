@@ -40,6 +40,8 @@ export interface BrowserCookieSet extends BrowserCookie {
 export interface BrowserConfig {
   loadImages?: boolean;
   partition?: string;
+  injectJs?: string;
+  injectCss?: string;
 }
 
 export type BrowserRedirectTestCallback = (e: BrowserRedirectEvent) => boolean;
@@ -97,20 +99,25 @@ export class Browser {
       const webview = window.document.createElement('webview') as any;
       (webview as any).addContentScripts([
         {
-          name: 'no_images',
-          matches: ['*'],
+          name: 'inject_css',
+          matches: ['<all_urls>'],
           all_frames: true,
-          css: {
-            code: `
-            img: {
-              display: none!important;
-            }
-          `
+          js: {
+            code: config.injectCss || ''
+          },
+          run_at: 'document_start'
+        },
+        {
+          name: 'inject_js',
+          matches: ['<all_urls>'],
+          all_frames: true,
+          js: {
+            code: config.injectJs || ''
           },
           run_at: 'document_start'
         }
       ]);
-      if(config && config.partition) {
+      if (config && config.partition) {
         webview.partition = 'persist:' + config.partition;
       }
       const urlInput = window.document.createElement('input');

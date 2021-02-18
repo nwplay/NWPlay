@@ -11,18 +11,19 @@ export class Environment {
   public version = '0.0.1';
 
   constructor() {
-    switch (navigator.platform) {
+    const platform = navigator.platform;
+    switch (platform) {
       case 'MacIntel':
         this.platform = 'macos';
         this.isDesktop = true;
         this.engine = 'nwjs';
-        document.body.className = navigator.platform;
+        document.body.className = platform;
         break;
       case 'Win32':
         this.platform = 'windows';
         this.isDesktop = true;
         this.engine = 'nwjs';
-        document.body.className = navigator.platform;
+        document.body.className = platform;
         break;
     }
   }

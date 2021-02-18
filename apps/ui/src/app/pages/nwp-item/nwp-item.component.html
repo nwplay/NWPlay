@@ -64,6 +64,8 @@
         </div>
       </div>
       <h1 class="name headline">{{item?.title}}</h1>
+      <h1 *ngIf="currentSeason" class="name headline name-season">{{'season' | translate}} {{currentSeason.season}}</h1>
+
       <div class="tags" *ngIf="item.tags">
         <ng-container *ngFor="let tag of item.tags">
           <div class="tag" *ngIf="tag.id"
@@ -99,6 +101,12 @@
           </mat-select>
         </mat-form-field>
       </div>
+      <table *ngIf="item.info">
+        <tr *ngFor="let info of item.info | keyvalue">
+          <td>{{info.key}}</td>
+          <td>{{info.value}}</td>
+        </tr>
+      </table>
       <div *ngIf="type === MEDIA_TYPE.TV_SHOW && currentSeason" class="list_wraper">
         <div class="nlist">
           <div *ngIf="loadingSeason" class="cab">
@@ -127,12 +135,7 @@
           </ul>
         </div>
       </div>
-      <table *ngIf="item.info">
-        <tr *ngFor="let info of item.info | keyvalue">
-          <td>{{info.key}}</td>
-          <td>{{info.value}}</td>
-        </tr>
-      </table>
+
       <ul *ngIf="cast.length > 0" @fadeAnimation class="cast justify">
         <h2>{{'cast' | translate}}</h2>
         <div class="carousel {{env.isDesktop ? 'desktop' : 'mobile'}}">
@@ -191,6 +194,10 @@
       <mat-icon>featured_play_list</mat-icon>
       <span>{{'mark_all_before_as_seen' | translate}}</span>
     </button>
+    <button [disabled]="true" [matMenuTriggerData]="{episode: episode}" [matMenuTriggerFor]="langMenu" mat-menu-item>
+      <mat-icon>featured_play_list</mat-icon>
+      <span>{{'language' | translate}}</span>
+    </button>
 
     <button *ngIf="episode.resolvers" [matMenuTriggerData]="{episode: episode}" [matMenuTriggerFor]="sourceMenu"
             mat-menu-item>
@@ -203,9 +210,18 @@
 
 <mat-menu #sourceMenu="matMenu">
   <ng-template matMenuContent let-episode="episode">
-    <button *ngFor="let reso of episode.resolvers" mat-menu-item>
+    <button (click)="play(episode, episodes, [reso])" *ngFor="let reso of episode.resolvers" mat-menu-item>
       <mat-icon>cloud</mat-icon>
       <span>{{reso.name}}</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #langMenu="matMenu">
+  <ng-template matMenuContent let-episode="episode">
+    <button *ngFor="let v of episode.versions" mat-menu-item>
+      <mat-icon>cloud</mat-icon>
+      <span>{{v.name}}</span>
     </button>
   </ng-template>
 </mat-menu>

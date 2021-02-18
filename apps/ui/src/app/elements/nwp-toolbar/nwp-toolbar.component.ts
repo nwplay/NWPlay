@@ -28,6 +28,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NwpSettingsComponent } from '../../pages/nwp-settings/nwp-settings.component';
 
 declare var nw: any;
 
@@ -74,7 +75,6 @@ class UrlMovie extends Movie<any> {
   async play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource> {
     const res = await extractorService.extract(this.videoUrl);
     this.title = res.title;
-    console.log(res)
     this.poster = res.image;
     return res;
   }
@@ -124,6 +124,7 @@ export class NwpToolbarComponent implements OnInit {
       })
     );
   }
+
   @Input() public title: string;
   @Input() public provider: any;
   @Input() public tabIndex: number;
@@ -151,28 +152,32 @@ export class NwpToolbarComponent implements OnInit {
   private lastClipValue = '';
 
   public showSettings() {
-    this.router.navigateByUrl('/settings').catch(console.error);
+    this.matDialog.open(NwpSettingsComponent, {
+      maxHeight: '90vh'
+    });
+    //this.router.navigateByUrl('/settings').catch(console.error);
   }
+
   public scanClipboard() {
     const clipboard = nw.Clipboard.get();
     const text: string = clipboard.get('text');
-    if(text === this.lastClipValue) {
+    if (text === this.lastClipValue) {
       return;
     }
     const win = nw.Window.get();
-    if(text && text.indexOf('http') === 0 && extractorService.test(text)) {
+    if (text && text.indexOf('http') === 0 && extractorService.test(text)) {
       const regex = /https?:\/\/(.+?)\//gmi;
-      const re = regex.exec(text)
+      const re = regex.exec(text);
       this.snackBar.open(re[1], this.translateService.instant('play'), {
         politeness: 'assertive',
         duration: 15000
       }).onAction().subscribe(() => {
         this.playUrl(text);
-      })
+      });
       win.requestAttention(5);
-    }else if(text && text.indexOf('nwplay:') === 0) {
+    } else if (text && text.indexOf('nwplay:') === 0) {
       const url = text.slice(7);
-      if(extractorService.test(text)) {
+      if (extractorService.test(text)) {
         this.playUrl(url);
         win.focus();
       }
@@ -245,10 +250,15 @@ export class NwpToolbarComponent implements OnInit {
     this.matDialog.open(this.urlDialogTemplate);
   }
 
-  public playUrl(url: string) {
+  public async playUrl(url: string) {
     const movie = new UrlMovie(url);
     Player.default.playlist.add(movie);
-    Player.default.play(movie);
+    try {
+      await Player.default.play(movie);
+    } catch (e) {
+      Player.default.stop();
+      alert(e);
+    }
   }
 
   public showMenu(ev: MouseEvent) {
@@ -313,8 +323,8 @@ export class NwpToolbarComponent implements OnInit {
   }
 
   public async search(qry?: string): Promise<void> {
-    if(qry && qry.indexOf('http') === 0) {
-      this.playUrl(qry);
+    if (qry && qry.indexOf('http') === 0) {
+      await this.playUrl(qry);
       return;
     }
     qry = qry || this.searchValue;

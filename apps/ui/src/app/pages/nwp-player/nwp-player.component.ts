@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { SettingsService } from '../../services/settings.service';
-import { Player, History } from '@nwplay/core';
+import { Player, History, NWPlaySettings } from '@nwplay/core';
 import { environment } from '../../environment';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
@@ -115,6 +115,20 @@ export class NwpPlayerComponent implements OnInit {
         })
       );
     }
+
+    const languages = new nw.Menu();
+    for (const item of this.player.currentItem.versions) {
+      languages.append(
+        new nw.MenuItem({
+          label: item.name,
+          click: async () => {
+            alert('TODOx')
+            //await this.player.play(item);
+          }
+        })
+      );
+    }
+
     const menu = new nw.Menu();
     menu.append(
       new nw.MenuItem({
@@ -127,6 +141,13 @@ export class NwpPlayerComponent implements OnInit {
       new nw.MenuItem({
         label: this.translateService.instant('playlist'),
         submenu: playlist
+      })
+    );
+    menu.append(
+      new nw.MenuItem({
+        label: this.translateService.instant('language'),
+        submenu: languages,
+        enabled: languages.length > 0
       })
     );
     ev.preventDefault();

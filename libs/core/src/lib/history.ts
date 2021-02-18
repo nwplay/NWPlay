@@ -1,6 +1,7 @@
-import { getProviderById, MediaProvider, PlayProvider, TvEpisode, TvShow } from './nwp-media';
-import { deserializeArray, serialize, Transform } from 'class-transformer';
-import { TransformationType } from 'class-transformer/TransformOperationExecutor';
+import {getProviderById, MediaProvider, PlayProvider, TvEpisode, TvShow} from './nwp-media';
+import {deserializeArray, serialize, Transform} from 'class-transformer';
+import {TransformationType} from 'class-transformer/TransformOperationExecutor';
+import {Subject} from 'rxjs';
 
 // @dynamic
 export class HistoryItem {
@@ -31,6 +32,11 @@ export class History {
   public items: HistoryItem[];
   private itemIndex: Record<string, HistoryItem> = {};
 
+  public onProgressChanged: Subject<{
+    item: PlayProvider,
+    progress: number
+  }> = new Subject();
+
   public async init() {
     try {
       if (localStorage[this.name]) {
@@ -47,7 +53,7 @@ export class History {
     localStorage[this.name] = serialize(this.items);
   }
 
-  public setProgress(item: PlayProvider, progress: number) {
+  public setProgress(item: PlayProvider, progress: number, emitEvent = true) {
     let historyItem = this.itemIndex[item.id] || this.items.find(e => e.id === item.id);
     if (!historyItem) {
       historyItem = new HistoryItem();
@@ -76,6 +82,12 @@ export class History {
       });
     }
     this.save();
+    if (emitEvent) {
+      this.onProgressChanged.next({
+        item,
+        progress
+      });
+    }
     return historyItem;
   }
 

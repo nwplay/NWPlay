@@ -1,7 +1,7 @@
 // TVShow
-import { Transform } from 'class-transformer';
-import { TransformationType } from 'class-transformer/TransformOperationExecutor';
-import { Plugin } from './plugin';
+import {Transform} from 'class-transformer';
+import {TransformationType} from 'class-transformer/TransformOperationExecutor';
+import {Plugin} from './plugin';
 
 export enum VIDEO_QUALITY {
   LW = 120,
@@ -50,28 +50,24 @@ export interface MediaSource {
   info?: any;
 }
 
-export interface IAudioTrack {
-  language: string;
+export interface IMediaVersion {
   name: string;
-  default?: boolean;
-}
-
-export interface ISubtitleTrack {
-  language: string;
-  name: string;
-  default?: boolean;
+  data: any;
+  id: string;
+  default: boolean;
+  sources: { name: string, id: any }[];
 }
 
 export abstract class PlayProvider {
   resolvers?: Extractor[];
   id: string;
   disabled?: boolean;
-  audioTracks?: IAudioTrack[] = null;
-  subtitleLanguages?: ISubtitleTrack[] = null;
+  versions?: IMediaVersion[] = [];
   overview?: string = null;
   poster?: string = null;
   title?: string = null;
   subtitle?: string = null;
+  public sources: { name: string, id: any, data?: Record<string, any> }[] = [];
 
   abstract play(resolvers?: Extractor[], languages?: string[]): Promise<MediaSource>;
 }
@@ -168,9 +164,9 @@ export interface ISearchOptions {
 export abstract class MediaProvider extends Plugin {
   isAdult?: boolean;
 
-  abstract get<T = TvShow | Movie | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>(
+  abstract get(
     id: string
-  ): Promise<T>;
+  ): Promise<TvShow | Movie | TvSeason<any> | TvEpisode<any> | MediaCollection<any>>;
 
   abstract search(options: ISearchOptions): Promise<SearchResult[]>;
 
@@ -200,7 +196,7 @@ export abstract class Extractor extends Plugin {
 
   abstract test(url: string): boolean | Promise<boolean>;
 
-  abstract init(): Promise<void>;
+  abstract init(setMessage: (msg: string) => void): Promise<void>;
 
   abstract extract(url: string): Promise<MediaSource>;
 }
@@ -267,7 +263,6 @@ export abstract class TvEpisode<Parent extends TvSeason = TvSeason> extends Play
   public poster?: string;
   public date?: Date;
   public episode: number;
-  public sources: { name: string, id: any }[] = [];
 
   public cast?(): Promise<Person[]>;
 

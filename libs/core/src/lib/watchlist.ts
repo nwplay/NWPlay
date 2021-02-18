@@ -8,14 +8,15 @@ export class WatchlistItem extends SearchResult {
   public lastEpisode = 0;
   public date?: Date;
   public lastCheckDate: Date = null;
+  public data: Record<string, any> = {};
 }
 
 
 export class Watchlist {
   public static default = new Watchlist();
   private name = 'default_watchlist';
-  public onAddItem = new Subject<WatchlistItem>();
-  public onRemoveItem = new Subject<WatchlistItem>();
+  public onAddItem: Subject<WatchlistItem> = new Subject<WatchlistItem>();
+  public onRemoveItem: Subject<WatchlistItem> = new Subject<WatchlistItem>();
 
 
   public items: WatchlistItem[] = [];
@@ -36,7 +37,12 @@ export class Watchlist {
     localStorage[this.name] = serialize(this.items);
   }
 
-  public async addItem(item: SearchResult | Movie | TvShow) {
+  public async clear() {
+    this.items = [];
+    await this.save();
+  }
+
+  public async addItem(item: SearchResult | Movie | TvShow, emmitEvent = true) {
     const watchlistItem = new WatchlistItem(item.provider);
     if (item instanceof SearchResult) {
       Object.assign(watchlistItem, item);
@@ -54,9 +60,13 @@ export class Watchlist {
       watchlistItem.id = item.id;
     }
     watchlistItem.date = new Date();
-    this.items.push(watchlistItem);
-    this.onAddItem.next(watchlistItem);
-    await this.save();
+    if(emmitEvent) {
+      this.items.unshift(watchlistItem);
+      this.onAddItem.next(watchlistItem);
+      await this.save();
+    }else {
+      this.items.push(watchlistItem);
+    }
     return watchlistItem;
   }
 

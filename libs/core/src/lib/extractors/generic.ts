@@ -33,7 +33,7 @@ export class GenericExtractor implements Extractor {
   public hidden?: boolean;
 
   async exec(cmd: string) {
-    const isWindows = Environment.default.platform === 'windows';
+    const isWindows = navigator.platform.toLowerCase() === 'win32';
     const util = (window as any).nw.require('util');
     const exec = util.promisify((window as any).nw.require('child_process').exec);
     const cmdArray: string[] = [];
@@ -45,10 +45,12 @@ export class GenericExtractor implements Extractor {
     return await exec(cmdArray.join(' '));
   }
 
-  async init(): Promise<void> {
+  async init(setMessage): Promise<void> {
     if (Platform.default.type === 'nwjs') {
       if (this.id === '28B302E7-CDEB-4364-94C9-22407C8B7C2D') {
+        setMessage('Updating youtube-dl…');
         await this.updateBin();
+        setMessage('Loading extractors…');
         const res = await this.exec('--list-extractors --print-json --encoding utf8');
         const extractors = res.stdout.trim().split('\n').filter(e => !e.includes(':'));
         for (const extractor of extractors) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { VIDEO_QUALITY } from '@nwplay/core';
+import { NWPlaySettings, VIDEO_QUALITY } from '@nwplay/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -59,6 +59,7 @@ export class SettingsService {
     }else {
       document.body.style.setProperty('--vibrancy-backdrop-filter', null);
     }
+    NWPlaySettings.default.preferredAudioLanguages = [this.audioLanguage as any];
   }
 
   public async clearCache(): Promise<void> {

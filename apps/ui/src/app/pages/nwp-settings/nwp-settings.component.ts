@@ -6,8 +6,9 @@ import { MediaProvider, providers, extractorService, VIDEO_QUALITY, Extractor } 
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppService, IInstalledPluginInfo } from '../../app.service';
-import { MatTableDataSource } from '@angular/material/table';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'nwp-page-settings',
@@ -15,10 +16,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   styleUrls: ['./nwp-settings.component.scss']
 })
 export class NwpSettingsComponent {
-  public extractorFavorites: Set<Extractor> = new Set<Extractor>();
   public extractorService = extractorService;
-  public extractors = extractorService.extractors;
-  public extractorsFiltered = extractorService.extractors;
+
+  public extractorsFiltered = extractorService.extractors.slice(0, 5);
 
   public settingsService: SettingsService = null;
   public VIDEO_QUALITY = VIDEO_QUALITY;
@@ -26,6 +26,8 @@ export class NwpSettingsComponent {
   public dialog: MatDialog;
   public providers = providers;
   @ViewChild('pluginSettings') public pluginSettingsTemplate: TemplateRef<any>;
+
+  public filterExtractorsSubject = new Subject<string>();
 
   constructor(
     public translate: TranslateService,
@@ -36,11 +38,15 @@ export class NwpSettingsComponent {
   ) {
     this.settingsService = _settings;
     this.dialog = _dialog;
+
+    this.filterExtractorsSubject.pipe(debounceTime(650)).subscribe((value) => {
+      this.extractorsFiltered = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value)).slice(0, 5);
+    });
+
   }
 
   public filterExtractors(v: Event) {
-    const value = (v.target as any).value
-    this.extractorsFiltered = this.extractorService.extractors.filter(e => e.name.toLowerCase().includes(value));
+    this.filterExtractorsSubject.next((v.target as any).value);
   }
 
   public showPluginSettings(pluginInfo: IInstalledPluginInfo) {
@@ -97,17 +103,17 @@ export class NwpSettingsComponent {
     }
   }
 
-  moveToTop(e: Extractor) {
-    moveItemInArray(this.extractors, this.extractors.indexOf(e), 0);
-    extractorService.saveSort()
-  }
-
   drop(event: CdkDragDrop<Extractor[]>) {
-    moveItemInArray(this.extractors, event.previousIndex, event.currentIndex);
-    extractorService.saveSort()
+    moveItemInArray(this.extractorService.favorites, event.previousIndex, event.currentIndex);
+    extractorService.saveFavorites();
   }
 
   public log(data: any) {
     console.log(data);
+  }
+
+  addToProviderFav(provider: Extractor) {
+    this.extractorService.addFavorite(provider);
+    this.ref.detectChanges();
   }
 }

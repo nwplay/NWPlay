@@ -20,7 +20,7 @@
   "can_not_play_back": "Can not play back",
   "cast": "Cast",
   "certification": "Certification",
-  "clear_application_cache": "Clear Application Cache",
+  "clear_application_cache": "Clear Cache",
   "de": "German",
   "description": "Description",
   "devices": "Devices",
@@ -129,5 +129,7 @@
   "show_all": "Show All",
   "home": "Home",
   "downloads": "Downloads",
-  "continue_watching": "Continue watching"
-}
+  "continue_watching": "Continue watching",
+  "disableVibrancy": "Disable Vibrancy",
+  "add_extensions": "Add Extension",
+  "remove_extensions": "Remove Extension"}
