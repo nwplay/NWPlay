@@ -21,7 +21,7 @@ export class GenericExtractor implements Extractor {
       const path = (window as any).nw.require('path');
       const dataPath = Platform.default.dataPath;
       this.binPath = path.join(dataPath, `ydl`);
-      this.ydlUrl = 'https://yt-dl.org/downloads/latest/youtube-dl';
+      this.ydlUrl = 'https://youtube-dl.org/downloads/latest/youtube-dl';
       if (Environment.default.platform === 'windows') {
         this.ydlUrl += '.exe';
         this.binPath += '.exe';
