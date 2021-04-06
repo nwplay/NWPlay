@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { SearchResult, Watchlist } from '@nwplay/core';
+import { getProviderById, Movie, SearchResult, TvShow, Watchlist } from '@nwplay/core';
 import { environment } from '../../environment';
 import { Router } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -20,12 +20,17 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   @Input() isWatchlist = false;
   @Input() isFavorite = false;
   @Input() showAsModal = false;
+  @Input() allowHover = false;
 
   public noImage = false;
   public smallImage = false;
   public environment = environment;
   private watchlist = Watchlist.default;
   private subs: Subscription[] = [];
+  private loadingInfo = false;
+  public info: string;
+  timeout: any;
+  showInfo = false;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -96,5 +101,37 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
     for (const sub of this.subs) {
       sub.unsubscribe();
     }
+  }
+
+  transitionend($event: TransitionEvent) {
+    //console.log(this.item.title);
+  }
+
+  private async loadInfo() {
+    if (!this.info && !this.loadingInfo) {
+      this.loadingInfo = true;
+      const ele = await this.item.provider.get(this.item.id);
+      if (ele instanceof TvShow || ele instanceof Movie) {
+        this.info = `
+<b>${[ele.title, ele.subtitle].filter(e => !!e).join(' - ')}</b>
+<b>${[ele['year'], ...ele.tags.map(e => e.name)].filter(e => !!e).join(', ')}</b>
+${ele.overview || ''}
+        `.trim();
+      }
+    }
+  }
+
+  mouseenter() {
+    this.timeout = setTimeout(async () => {
+      await this.loadInfo();
+      this.showInfo = true;
+    }, 1000);
+  }
+
+  mouseleave() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.showInfo = false;
   }
 }

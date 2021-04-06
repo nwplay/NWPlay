@@ -1,10 +1,16 @@
 <div
+  (mouseenter)="mouseenter()"
+  (mouseleave)="mouseleave()"
+
+  (transitionend)="transitionend($event)"
   (click)="itemService.show(item, this.showAsModal)"
   (contextmenu)="showContextMenu($event)"
   *ngIf="item"
   class="media-card {{ item.size }}"
+  [ngClass]="{
+    'show-info': showInfo
+}"
   tabindex="{{ tabIndex }}"
-  title="{{ item.title }}"
 >
   <div class="title-container {{ !isWatchlist && isFavorite ? 'fav' : '' }}">
     <div class="title">{{ item.title }}</div>
@@ -22,7 +28,7 @@
     src="{{ item.image }}"
   />
   <div *ngIf="smallImage" class="bimage-container">
-    <img class="bimage" referrerpolicy="no-referrer" src="{{ item.image }}"/>
+    <img alt="" class="bimage" referrerpolicy="no-referrer" src="{{ item.image }}"/>
   </div>
 
   <img
@@ -33,6 +39,11 @@
     referrerpolicy="no-referrer"
     src="https://source.unsplash.com/600x400/?movie"
   />
+
+  <div class="info">
+    <span [innerHTML]="info"></span>
+  </div>
+
   <div *ngIf="item.progress" class="progress">
     <div [ngStyle]="{width: (item.progress * 100) + '%'}"></div>
   </div>
