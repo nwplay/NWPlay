@@ -132,4 +132,6 @@
   "continue_watching": "Continue watching",
   "disableVibrancy": "Disable Vibrancy",
   "add_extensions": "Add Extension",
-  "remove_extensions": "Remove Extension"}
+  "remove_extensions": "Remove Extension",
+  "openItemWithModal": "Always open in modal"
+}

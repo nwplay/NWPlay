@@ -2,14 +2,15 @@
 @import './vars.scss';
 @import '~@angular/material/theming';
 @import '~overlayscrollbars/css/OverlayScrollbars.css';
+
 @include mat-core();
 
 
 $candy-app-primary: mat-palette($mat-purple);
-$candy-app-accent:  mat-palette($mat-purple, A200, A100, A400);
+$candy-app-accent: mat-palette($mat-purple, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$candy-app-warn:    mat-palette($mat-red);
+$candy-app-warn: mat-palette($mat-red);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as `color` or `typography`.
@@ -340,3 +341,4 @@ h3 {
 .mat-button[disabled] {
   opacity: 0.5;
 }
+

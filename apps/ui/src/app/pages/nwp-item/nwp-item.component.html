@@ -1,6 +1,6 @@
-<img *ngIf="item?.backdrop" alt="" class="backdrop-cover" src="{{item.backdrop}}"/>
+<!--<img *ngIf="item?.backdrop" alt="{{item.title}}" class="backdrop-cover" src="{{item.backdrop}}"/>-->
 
-<div class="page-container">
+<div class="page-container" [ngClass]="{'popover-container': isPopover}">
   <audio #yaudiohack [muted]="settings.autoplayTrailerMuted"></audio>
   <div *ngIf="item" class="left">
     <img @fadeAnimation [src]="currentSeason?.poster || item.poster" alt="" class="cover"
@@ -45,7 +45,7 @@
           <ng-container *ngIf="trailerSrc && visible">
             <div @fadeAnimation [hidden]="trailerLoading" class="video-controlls">
               <div (click)="trailerSrc = null;ref.detectChanges();trailerPaused()" title="Stop Trailer">
-                <mat-icon>close</mat-icon>
+                <mat-icon>pause</mat-icon>
               </div>
               <div (click)="toggleFullscreen()">
                 <mat-icon>fullscreen</mat-icon>

@@ -374,7 +374,7 @@ export class NwpItemComponent implements OnInit, AfterViewInit {
   }
 
 
-  private async loadItem(providerId: string, id: string) {
+  public async loadItem(providerId: string, id: string) {
     this.item = null;
     this.seasons = [];
     this.currentSeason = null;

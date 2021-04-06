@@ -4,6 +4,25 @@
   user-select: none;
 }
 
+.popover-container {
+  width: 75vw;
+  height: 85vh;
+  margin: auto;
+  left: 0;
+  top: $toolbar-height;
+  bottom: 0;
+  right: 0;
+  background-color: #252525;
+  border-radius: $item-border-radius;
+  padding-top: 0;
+  .right {
+    top: 0;
+  }
+  .left {
+    top: 0;
+  }
+}
+
 .btn-nlg {
   padding-left: 20px;
   padding-right: 20px;

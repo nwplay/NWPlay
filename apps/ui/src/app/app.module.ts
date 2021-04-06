@@ -15,7 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
-import { OverlayModule } from '@angular/cdk/overlay';
+import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
 import { NwpSearchModule } from './pages/nwp-search/nwp-search.module';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -28,6 +28,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NwpSetupModule } from './pages/setup/nwp-setup.module';
 import { SetupGuard } from './setup.guard';
 import { PortalModule } from '@angular/cdk/portal';
+import { PlatformModule } from '@angular/cdk/platform';
+import { InAppRootOverlayContainer } from './inAppRootOverlayContainer';
 
 registerLocaleData(localeDe, 'de');
 
@@ -55,10 +57,12 @@ registerLocaleData(localeDe, 'de');
     HotkeyModule.forRoot(),
     AppRoutingModule,
     NwpSetupModule,
-    PortalModule
+    PortalModule,
+    PlatformModule
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: OverlayContainer, useClass: InAppRootOverlayContainer },
     SettingsService,
     ItemService,
     AppService,

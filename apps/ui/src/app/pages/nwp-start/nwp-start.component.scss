@@ -27,6 +27,7 @@ h2 {
       scroll-snap-align: center;
       scroll-snap-type: x mandatory;
       padding: 10px;
+      width: auto;
       box-sizing: border-box;
 
       @media only screen and (max-width: 768px) {

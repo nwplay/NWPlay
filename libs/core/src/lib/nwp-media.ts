@@ -76,11 +76,14 @@ export abstract class PlayProvider {
 export class SearchResult<Provider extends MediaProvider = MediaProvider> {
   type: MEDIA_TYPE = MEDIA_TYPE.MOVIE;
   title: string;
+  description: string;
   image?: string;
   id: string;
   size?: IMAGE_SIZE;
   hideContext?: boolean;
   progress?: number;
+
+  getInfo?: () => Promise<string>;
 
   @Transform((value, obj, transformationType) => {
     if (transformationType === TransformationType.PLAIN_TO_CLASS) {

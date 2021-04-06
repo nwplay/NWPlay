@@ -24,6 +24,7 @@ export class SettingsService {
   public subtitleLanguage: string = null;
   public autoCropTrailer = true;
   public disableVibrancy = true;
+  public openItemWithModal = true;
 
 
 
@@ -45,7 +46,8 @@ export class SettingsService {
     'audioLanguage',
     'subtitleLanguage',
     'autoCropTrailer',
-    'disableVibrancy'
+    'disableVibrancy',
+    'openItemWithModal'
   ];
 
   constructor(private readonly router: Router, private readonly matDialog: MatDialog) {

@@ -85,6 +85,14 @@ class CapacitorFileSystem implements IFilesystem {
     return Promise.resolve(undefined);
   }
 
+  chmod(path: string, perm: any): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  exists(path: string): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
 }
 
 class PlatformCapacitor extends PlatformAbstract {

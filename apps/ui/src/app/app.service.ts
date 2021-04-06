@@ -100,9 +100,8 @@ export class AppService {
 
   public async removePlugin(p: IInstalledPluginInfo) {
     try {
-      const fs = nw.require('fs').promises;
       if (p.path) {
-        await fs.unlink(p.path);
+        await Platform.default.Filesystem.deleteFile(p.path);
         window.location.reload();
       }
     } catch (e) {
@@ -147,7 +146,6 @@ export class AppService {
   }
 
   public async installPluginFromString(data: string) {
-    const fs = nw.require('fs').promises;
     const path = nw.require('path');
     const dataPath = nw.App.dataPath;
     const providersPath = path.join(dataPath, 'providers');
@@ -187,7 +185,7 @@ Mochtest du es ersetzen?
       }
     }
     const destFile = path.join(providersPath, (info.id || info.name.replace(/\W/, '_')) + '.nwp');
-    await fs.writeFile(destFile, data);
+    await Platform.default.Filesystem.writeFile(destFile, data);
     localStorage['route'] = '/';
     window.location.reload();
     return;

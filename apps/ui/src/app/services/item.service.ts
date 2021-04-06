@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Movie, SearchResult, TvShow } from '@nwplay/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NwpItemComponent } from '../pages/nwp-item/nwp-item.component';
+import { SettingsService } from './settings.service';
 
 @Injectable()
 export class ItemService {
@@ -15,13 +16,14 @@ export class ItemService {
     public router: Router,
     public translate: TranslateService,
     public location: Location,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public settings: SettingsService
   ) {
   }
 
   public async show(item: TvShow | Movie | SearchResult, showAsModal = false) {
     this.dialog.closeAll();
-    if (false) {
+    if (this.settings.openItemWithModal || showAsModal) {
       const dialogRef = (this.openDialog = this.dialog.open(NwpItemComponent, {
         maxWidth: 800,
         maxHeight: 600,
@@ -29,6 +31,7 @@ export class ItemService {
         backdropClass: 'backdrop-blur'
       }));
       dialogRef.componentInstance.isPopover = true;
+      await dialogRef.componentInstance.loadItem(item.provider.id, item.id);
     } else {
       if (item instanceof TvShow) {
         await this.router.navigate(['/', item.provider.id, 'tv', item.id]);

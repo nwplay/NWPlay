@@ -74,19 +74,20 @@ export class GenericExtractor implements Extractor {
   }
 
   public async updateBin() {
-    const fs = (window as any).nw.require('fs');
-    if (fs.existsSync(this.binPath)) {
+    const fs = Platform.default.Filesystem;
+
+    if (await fs.exists(this.binPath)) {
       if (window.localStorage.ydld && parseInt(window.localStorage.ydld, 10) > Date.now()) {
         return;
       }
     }
     const res = await fetch(this.ydlUrl);
     try {
-      fs.unlinkSync(this.binPath);
+      await fs.deleteFile(this.binPath);
     } catch (e) {
     }
-    fs.writeFileSync(this.binPath, Buffer.from(await res.arrayBuffer()));
-    fs.chmodSync(this.binPath, 777);
+    await fs.writeFile(this.binPath, Buffer.from(await res.arrayBuffer()));
+    await fs.chmod(this.binPath, 777);
     window.localStorage.ydld = Date.now() + 1000 * 60 * 60 * 24;
   }
 

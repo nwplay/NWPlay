@@ -117,5 +117,6 @@
   "trailer_autocrop": "Trailer automatisch beschneiden (Experimentell)",
   "play_url": "Url Wiedergeben",
   "continue_watching": "Wiedergabe Fortsetzen",
-  "disableVibrancy": "Hintergrundeffekte Deaktivieren"
+  "disableVibrancy": "Hintergrundeffekte Deaktivieren",
+  "openItemWithModal": "Immer in Modal öffnen"
 }

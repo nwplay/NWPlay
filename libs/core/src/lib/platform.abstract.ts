@@ -1,11 +1,12 @@
 import { FilesystemEncoding } from '@capacitor/core';
 
 export type PlatformType = 'capacitor' | 'nwjs'
+
 export interface IFilesystemStat {
-  ctime : number;
-  mtime : number;
-  size : number;
-  type : string;
+  ctime: number;
+  mtime: number;
+  size: number;
+  type: string;
 }
 
 // @dynamic
@@ -21,6 +22,9 @@ export interface IFilesystem {
   stat: (path: string) => Promise<IFilesystemStat>;
   rename: (from: string, to: string) => Promise<void>;
   copy: (from: string, to: string) => Promise<void>;
+  exists: (path: string) => Promise<boolean>;
+  chmod: (path: string, perm: any) => Promise<void>;
+
 }
 
 // @dynamic

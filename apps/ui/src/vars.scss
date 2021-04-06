@@ -1,5 +1,5 @@
 $accent-color: #9c27b0;
-$accent-gradient: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+$accent-gradient: linear-gradient(43deg, #4158D0 0%, $accent-color 46%, #FFCC70 100%);
 $primary-color: #151515;
 $primary-text-color: #151515;
 $toolbar-height: 39px;

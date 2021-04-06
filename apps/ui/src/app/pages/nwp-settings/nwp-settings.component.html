@@ -16,6 +16,10 @@
           {{ 'show_adult_content' | translate }}
         </mat-list-option>
 
+        <mat-list-option [selected]="settingsService.openItemWithModal" value="openItemWithModal">
+          {{ 'openItemWithModal' | translate }}
+        </mat-list-option>
+
         <mat-list-option [selected]="settingsService.disableVibrancy" value="disableVibrancy">
           {{ 'disableVibrancy' | translate }}
         </mat-list-option>
@@ -148,13 +152,14 @@
     </mat-tab>
     <mat-tab label="{{ 'about' | translate }} {{ env.pkg.productName }}">
       <p style="text-align: center;">{{ env.pkg.productName }} is a OpenSource Cross-platform Cloud Media Player.</p>
-      <p style="text-align: center;">
+      <!--<p style="text-align: center;">
+        <br/>
         <img alt="" height="45px" src="https://blockchain.info/Resources/buttons/donate_64.png"/>
         <br/>
         {{ 'donate_bitcoin' | translate }}
         <br/>
-        1CuFoBLNFkpGztptEf3bnavyT8JsmRerhb
-      </p>
+
+      </p>-->
     </mat-tab>
   </mat-tab-group>
 </div>

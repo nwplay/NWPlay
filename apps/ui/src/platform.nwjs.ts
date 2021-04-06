@@ -1,4 +1,5 @@
 import { IFilesystem, IFilesystemStat, PlatformAbstract, PlatformType } from '@nwplay/core';
+
 declare var nw: any;
 
 class NWjsFileSystem implements IFilesystem {
@@ -14,8 +15,8 @@ class NWjsFileSystem implements IFilesystem {
     return Promise.resolve(undefined);
   }
 
-  deleteFile(path: string): Promise<void> {
-    return Promise.resolve(undefined);
+  async deleteFile(path: string) {
+    await this.fs.unlink(path);
   }
 
   joinPath(...path: string[]): string {
@@ -48,8 +49,20 @@ class NWjsFileSystem implements IFilesystem {
   }
 
   async writeFile(path: string, data: any, encoding: 'utf-8' | 'base64' = 'utf-8'): Promise<void> {
-    const fs = nw.require('fs').promises;
-    await fs.writeFile(path, data, { encoding });
+    await this.fs.writeFile(path, data, { encoding });
+  }
+
+  async chmod(path: string, perm: any) {
+    await this.fs.chmod(path, perm);
+  }
+
+  async exists(path: string): Promise<boolean> {
+    try {
+      await this.fs.access(path, nw.require('fs').F_OK);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
 }
