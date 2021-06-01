@@ -22,7 +22,7 @@ jobs:
           name: app-ui
           path: dist/apps/ui/**
   build-macos:
-    needs: [build-ui]
+    needs: [ build-ui ]
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
           name: macos-x64
           path: dist/apps/dist/*mac*.zip
   build-linux:
-    needs: [build-ui]
+    needs: [ build-ui ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
           name: linux-x64
           path: dist/apps/dist/*linux-x64*.zip
   build-win:
-    needs: [build-ui]
+    needs: [ build-ui ]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -92,10 +92,19 @@ jobs:
         with:
           name: windows-x86-install
           path: dist/apps/dist/*win-x86*.exe
-  copy-artifacts:
-    name: Copy Artifacts
+  create-release:
+    needs: [ build-win, build-macos, build-linux ]
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
-        id: download
+        with:
+          path: artifacts
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            artifacts/**/*.zip
+            artifacts/**/*.msi
