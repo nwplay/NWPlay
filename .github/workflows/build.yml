@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 14
       - run: npm i
-      - run: npm run build:ng
+      - run: npx nx build --prod
       - run: node ./tools/post.build.js
       - uses: actions/upload-artifact@v2
         with:
