@@ -96,7 +96,7 @@
     "@nrwl/angular": "10.4.4",
     "angular2-hotkeys": "^2.2.0",
     "cheerio": "^1.0.0-rc.3",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "dashjs": "^3.2.0",
     "dexie": "^3.0.1",
     "dropbox": "^5.1.0",
