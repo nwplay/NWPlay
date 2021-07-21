@@ -1,38 +1,45 @@
 <div #scrollView class="page-container">
   <ng-container *ngIf="data">
-    <div id="main-carousel-container">
-      <div (click)="scroll(mcont, -475)" *ngIf="env.isDesktop" class="carousel-scroll-button left" matRipple>
-        <i class="material-icons">
-          chevron_left
-        </i>
-      </div>
-      <div (click)="scroll(mcont, 475)" *ngIf="env.isDesktop" class="carousel-scroll-button right" matRipple>
-        <i class="material-icons">
-          chevron_right
-        </i>
-      </div>
-      <div #mcont class="carousel {{ env.platformType }}" id="main-carousel">
-        <div
-          (click)="showItem(item)"
-          *ngFor="let item of data.features; let i = index"
-          @fadeAnimation
-          class="item-container"
-          tabindex="1"
-        >
-          <div class="item" matRipple>
-            <img
-              (error)="data.features.splice(i, 1)"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-              src="{{ item.image }}"
-            />
-            <div class="overlay">
-              <div class="text">{{ item.title }}</div>
+    <div class="feature-container">
+      <ng-container *ngIf="featureItem">
+        <img [ngClass]="{blur: featureItemImageLow}" *ngIf="featureItemImage" class="feature-image" src="{{featureItemImage}}">
+        <h2>{{featureItem.title}}</h2>
+      </ng-container>
+      <div id="main-carousel-container">
+        <div (click)="scroll(mcont, -475)" *ngIf="env.isDesktop" class="carousel-scroll-button left" matRipple>
+          <i class="material-icons">
+            chevron_left
+          </i>
+        </div>
+        <div (click)="scroll(mcont, 475)" *ngIf="env.isDesktop" class="carousel-scroll-button right" matRipple>
+          <i class="material-icons">
+            chevron_right
+          </i>
+        </div>
+        <div #mcont class="carousel {{ env.platformType }}" id="main-carousel">
+          <div
+            (click)="showItem(item)"
+            *ngFor="let item of data.features; let i = index"
+            @fadeAnimation
+            class="item-container"
+            tabindex="1"
+          >
+            <div (mouseenter)="featureItemMouseenter(i)" class="item" matRipple>
+              <img
+                (error)="data.features.splice(i, 1)"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                src="{{ item.image }}"
+              />
+              <div class="overlay">
+                <div class="text">{{ item.title }}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
 
 
     <div *ngIf="historyItems.length > 0" class="sub-container">

@@ -61,10 +61,13 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
   public loading = true;
   public screenWidth = 0;
   public initScroll = true;
+  public featureItem: SearchResult;
   public history = History.default;
   public historyItems: SearchResult[] = [];
   @ViewChild('mcont', { static: false }) public mcont: ElementRef<HTMLDivElement>;
   @ViewChild('scrollView', { static: false }) public scrollView: ElementRef<HTMLDivElement>;
+  private featureItemImage: string;
+  private featureItemImageLow = false;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -139,10 +142,25 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     ele.scrollLeft = ele.scrollLeft + amount;
   }
 
+  public setFeatureImage(index: number = 0) {
+    if (this.data.features[index] && this.data.features[index] !== this.featureItem) {
+
+      this.featureItem = this.data.features[index];
+
+      const img = new Image();
+      const l = () => {
+        this.featureItemImageLow = !(img.width >= 900 && img.height > 600);
+        this.featureItemImage = img.src;
+        img.removeEventListener('load', l);
+      };
+      img.addEventListener('load', l);
+      img.src = this.featureItem['image'];
+    }
+  }
+
   ngAfterViewChecked(): void {
     if (this.mcont && this.initScroll) {
       this.initScroll = false;
-      this.scroll(this.mcont.nativeElement, 500);
       if (this.data) {
         this.scrollView.nativeElement.scrollTop = this.data.scrollTop;
       }
@@ -198,5 +216,13 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
     NwpStartComponent.cache.set(this.provider || NwpStartComponent.homeSymbol, data);
     await Promise.all(proms);
+    this.setFeatureImage();
+
+
+  }
+
+  featureItemMouseenter(i: number) {
+    this.setFeatureImage(i);
+    this.ref.detectChanges();
   }
 }

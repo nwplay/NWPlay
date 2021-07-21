@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { SettingsService } from '../../services/settings.service';
-import { Player, History, NWPlaySettings } from '@nwplay/core';
+import { Player, History, NWPlaySettings, TvEpisode, Movie } from '@nwplay/core';
 import { environment } from '../../environment';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { ItemService } from '../../services/item.service';
 
 declare var nw: any;
 
@@ -37,6 +38,7 @@ export class NwpPlayerComponent implements OnInit {
   public controlsTimeout = null;
   public player = Player.default;
   private isPip = false;
+  private mediaSession: any;
 
   constructor(
     public ref: ChangeDetectorRef,
@@ -78,7 +80,7 @@ export class NwpPlayerComponent implements OnInit {
 
   public hide() {
     this.player.hidden = true;
-    if(!this.isPip) {
+    if (!this.isPip) {
       this.mediaEle.nativeElement.pause();
     }
   }
@@ -122,7 +124,7 @@ export class NwpPlayerComponent implements OnInit {
         new nw.MenuItem({
           label: item.name,
           click: async () => {
-            alert('TODOx')
+            alert('TODOx');
             //await this.player.play(item);
           }
         })
@@ -171,7 +173,12 @@ export class NwpPlayerComponent implements OnInit {
     });
 
     this.mediaEle.nativeElement.addEventListener('timeupdate', () => {
-        this.player.onTimeupdate.next(this.mediaEle.nativeElement.currentTime);
+      this.player.onTimeupdate.next(this.mediaEle.nativeElement.currentTime);
+      this.mediaSession.setPositionState({
+        duration: this.player.duration,
+        playbackRate: 1,
+        position: this.mediaEle.nativeElement.currentTime
+      });
     });
     // Restore watch Position
     this.mediaEle.nativeElement.addEventListener('loadedmetadata', () => {
@@ -186,10 +193,12 @@ export class NwpPlayerComponent implements OnInit {
       } else {
         this.player.stop();
       }
+      this.mediaSession.playbackState = "none";
     });
 
     this.mediaEle.nativeElement.addEventListener('pause', async () => {
       this.player.onPause.next(true);
+      this.mediaSession.playbackState = "paused";
     });
 
     this.mediaEle.nativeElement.addEventListener('canplay', async () => {
@@ -198,12 +207,13 @@ export class NwpPlayerComponent implements OnInit {
 
     this.mediaEle.nativeElement.addEventListener('play', async () => {
       this.player.onPlay.next(this.player.currentSource);
+      this.mediaSession.playbackState = "playing";
     });
 
     window.addEventListener(
       'mousewheel',
       (e) => {
-        if(!this.player.hidden) {
+        if (!this.player.hidden) {
           const nv = (this.settings.volume += (e as any).deltaY / 1000);
           this.settings.volume = nv > 1 ? 1 : nv < 0 ? 0 : nv;
         }
@@ -212,7 +222,7 @@ export class NwpPlayerComponent implements OnInit {
     );
 
     if ((window.navigator as any).mediaSession) {
-      const ms = (window.navigator as any).mediaSession;
+      const ms = this.mediaSession = (window.navigator as any).mediaSession;
       ms.setActionHandler('seekbackward', () => {
         this.player.seekToPosition(this.player.currentTime - 10);
       });
@@ -223,7 +233,7 @@ export class NwpPlayerComponent implements OnInit {
         await this.player.play();
       });
       ms.setActionHandler('pause', () => {
-        //this.player.pause();
+        this.player.pause();
       });
       ms.setActionHandler('previoustrack', async () => {
         await this.player.playPrevItem();
@@ -247,7 +257,7 @@ export class NwpPlayerComponent implements OnInit {
   }
 
   private restorePosition() {
-    if(this.player.lastPlaybackProgress > 0.05 && this.player.lastPlaybackProgress < 0.95) {
+    if (this.player.lastPlaybackProgress > 0.05 && this.player.lastPlaybackProgress < 0.95) {
       this.mediaEle.nativeElement.currentTime = this.player.lastPlaybackProgress * this.player.duration;
     }
   }

@@ -35,13 +35,12 @@
     flex-shrink: 0;
     order: 0;
     z-index: 800;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #353535;
     display: flex;
     align-items: center;
     justify-items: center;
     justify-content: center;
     z-index: 9999;
-    @include vibrancy-dark-mixin();
 
     .item {
       margin-left: 8px;
@@ -161,12 +160,12 @@
 .macos {
   .search-input {
     border-radius: 4px;
-    height: calc(100% - 16px);
+    height: calc(100% - 23px);
     margin-left: 16px;
-    line-height: calc(100% - 16px);
+    line-height: calc(100% - 23px);
 
     input {
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.9rem;
       margin: 0;
       padding: 0 0 0 12px;
@@ -301,7 +300,7 @@
 }
 
 .search-input {
-  width: 125px;
+  width: 150px;
   height: 100%;
   overflow: hidden;
   transition: all 0.3s ease-out;
@@ -311,6 +310,8 @@
   -webkit-app-region: no-drag;
   flex-grow: 0;
   flex-shrink: 0;
+
+  font-weight: 500;
 
   .sicon {
     display: none;

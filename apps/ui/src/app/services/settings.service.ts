@@ -24,7 +24,7 @@ export class SettingsService {
   public subtitleLanguage: string = null;
   public autoCropTrailer = true;
   public disableVibrancy = true;
-  public openItemWithModal = true;
+  public openItemWithModal = false;
 
 
 

@@ -12,40 +12,18 @@
   }
 }
 
-.bg-container {
-  overflow: hidden !important;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: -1;
-  background-color: #4158D0;
-  background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
-  .bg {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    object-fit: cover;
-    object-position: center;
-    height: 100%;
-    width: 100%;
-  }
-}
-
 .container {
   overflow: hidden !important;
   position: absolute;
+  background-color: #000;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  -webkit-app-region: drag;
 
   p {
     margin-bottom: 16px;
@@ -61,7 +39,11 @@
     -webkit-overflow-scrolling: touch;
     font-size: 0.9rem;
     white-space: pre;
+    border: 1px solid #fff;
+    color: #fff;
+    border-radius: $item-border-radius;
     @include nwp-scroller();
+
     ::ng-deep li {
       display: inline;
     }
@@ -73,21 +55,18 @@
   }
 
   .center {
-    -webkit-app-region: no-drag;
     padding: 30px;
     text-align: center;
     width: 75vw;
-    border-radius: 12px;
     max-width: 925px;
-    background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
     //noinspection CssInvalidPropertyValue
     -webkit-font-smoothing: auto;
 
     .logo {
       img {
-        height: 75px;
-        box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.35);
+        height: 115px;
+        box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.50);
         border-radius: 18px;
       }
 
@@ -103,11 +82,11 @@
         flex-direction: column;
 
         .logo-name {
-          font-size: 2rem;
+          font-size: 3rem;
         }
 
         .logo-text {
-          font-size: 1rem;
+          font-size: 2rem;
         }
       }
     }

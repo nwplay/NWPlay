@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { getProviderById, Movie, SearchResult, TvShow, Watchlist } from '@nwplay/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { getProviderById, Movie, SearchResult, TvEpisode, TvShow, Watchlist } from '@nwplay/core';
 import { environment } from '../../environment';
 import { Router } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -31,6 +31,7 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   public info: string;
   timeout: any;
   showInfo = false;
+  isHover = false;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -38,7 +39,8 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     public itemService: ItemService,
     private zone: NgZone,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private ele: ElementRef<HTMLDivElement>
   ) {
   }
 
@@ -104,7 +106,9 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
   }
 
   transitionend($event: TransitionEvent) {
-    //console.log(this.item.title);
+    if (this.isHover) {
+      this.ele.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
   }
 
   private async loadInfo() {
@@ -117,21 +121,28 @@ export class NwpMediaCardComponent implements OnInit, OnDestroy {
 <b>${[ele['year'], ...ele.tags.map(e => e.name)].filter(e => !!e).join(', ')}</b>
 ${ele.overview || ''}
         `.trim();
+      } else if (ele instanceof TvEpisode) {
+        this.info = `
+<b>${[ele.title, ele.subtitle].filter(e => !!e).join(' - ')}</b>
+${ele.overview || ''}
+        `.trim();
       }
     }
   }
 
   mouseenter() {
+    this.isHover = true;
     this.timeout = setTimeout(async () => {
       await this.loadInfo();
-      this.showInfo = true;
-    }, 1000);
+      this.showInfo = !!this.info;
+    }, 1500);
   }
 
   mouseleave() {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
+    this.isHover = false;
     this.showInfo = false;
   }
 }
