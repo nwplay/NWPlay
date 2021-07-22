@@ -21,5 +21,5 @@ export abstract class Extension {
   public name: string;
   public settings: PluginSetting[] = [];
 
-  public abstract async init(setMessage: (msg: string) => void): Promise<void>;
+  public abstract init(setMessage: (msg: string) => void): Promise<void>;
 }

@@ -2,6 +2,7 @@
   <ng-container *ngIf="data">
     <div class="feature-container">
       <ng-container *ngIf="featureItem">
+        <video *ngIf="featureItemVideo" autoplay [src]="featureItemVideo"></video>
         <img [ngClass]="{blur: featureItemImageLow}" *ngIf="featureItemImage" class="feature-image" src="{{featureItemImage}}">
         <h2>{{featureItem.title}}</h2>
       </ng-container>

@@ -1,3 +1,8 @@
+process['setUncaughtExceptionCaptureCallback']((e) => {
+  alert(e.message);
+  console.log(e);
+});
+
 import { setPlatform } from '@nwplay/core';
 import { Platform } from './platform.nwjs';
 

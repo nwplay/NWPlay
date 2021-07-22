@@ -49,7 +49,7 @@ const ffmpegDownloader = new FFmpegDownloader({
   }
   await chmod(executable, 0o555);
   await spawnAsync(executable, [resolve(cacheDir, '..')], {
-    detached: true
+    detached: false,
+    stdio: 'inherit'
   });
-  process.exit(0);
 })();

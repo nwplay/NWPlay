@@ -1,4 +1,4 @@
-import { Extractor, MediaSource, SOURCE_TYPE } from '../nwp-media';
+import { Extractor, MediaSource, SOURCE_TYPE, VIDEO_QUALITY } from '../nwp-media';
 import { Environment } from '../environment';
 import { v5 as uuidV5 } from 'uuid';
 import { extractorService } from './extractorService';
@@ -99,13 +99,22 @@ export class GenericExtractor implements Extractor {
     if (!res) {
       throw new Error('not supported');
     }
+
+
+    const quality = {
+      '720p': VIDEO_QUALITY.HD,
+      '1080p': VIDEO_QUALITY.FULL_HD,
+      '2160p': VIDEO_QUALITY.ULTRA_HD
+    }[res.format_note] || VIDEO_QUALITY.MD;
+
     if (res.protocol === 'http_dash_segments') {
       return {
         source: res.manifest_url,
         type: SOURCE_TYPE.DASH,
         resolver: self,
         title: res.title,
-        image: res.thumbnail
+        image: res.thumbnail,
+        video_quality: quality
       };
     } else if (res.protocol === 'm3u8') {
       return {
@@ -113,7 +122,8 @@ export class GenericExtractor implements Extractor {
         type: SOURCE_TYPE.HLS,
         resolver: self,
         title: res.title,
-        image: res.thumbnail
+        image: res.thumbnail,
+        video_quality: quality
       };
     } else if (res.url) {
       return {
@@ -121,7 +131,8 @@ export class GenericExtractor implements Extractor {
         type: SOURCE_TYPE.HTTP,
         resolver: self,
         title: res.title,
-        image: res.thumbnail
+        image: res.thumbnail,
+        video_quality: quality
       };
     }
     throw new Error('not supported');

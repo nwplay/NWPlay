@@ -15,8 +15,12 @@ import {
   MEDIA_TYPE,
   MediaCollection,
   MediaProvider,
+  Movie,
   providers,
-  SearchResult
+  SearchResult,
+  SOURCE_TYPE,
+  TvShow,
+  VIDEO_QUALITY
 } from '@nwplay/core';
 import { screen } from './nwp-start.helpers';
 import { environment } from '../../environment';
@@ -25,6 +29,8 @@ import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../../services/settings.service';
 import { ItemService } from '../../services/item.service';
 import _ from 'lodash';
+import { merge, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, multicast, skip, take } from 'rxjs/operators';
 
 interface IHomeData {
   rows: { items: SearchResult[]; collection: MediaCollection }[];
@@ -66,8 +72,10 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
   public historyItems: SearchResult[] = [];
   @ViewChild('mcont', { static: false }) public mcont: ElementRef<HTMLDivElement>;
   @ViewChild('scrollView', { static: false }) public scrollView: ElementRef<HTMLDivElement>;
+  public featureChange = new Subject<number>();
   private featureItemImage: string;
   private featureItemImageLow = false;
+  private featureItemVideo: string;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -89,6 +97,7 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.data) {
       this.data.scrollTop = this.scrollView.nativeElement.scrollTop;
     }
+    this.featureChange.unsubscribe();
   }
 
   public loadWatchHistory() {
@@ -136,15 +145,22 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
         console.error(e);
       }
     });
+
+    this.featureChange.pipe(distinctUntilChanged(), multicast(new Subject(), s => merge(
+      s.pipe(take(1)),
+      s.pipe(skip(1), debounceTime(500))
+    ))).subscribe((i) => {
+      this.setFeature(i);
+    });
   }
 
   public scroll(ele: any, amount: number): void {
     ele.scrollLeft = ele.scrollLeft + amount;
   }
 
-  public setFeatureImage(index: number = 0) {
+  public async setFeature(index: number = 0) {
     if (this.data.features[index] && this.data.features[index] !== this.featureItem) {
-
+      this.featureItemVideo = null;
       this.featureItem = this.data.features[index];
 
       const img = new Image();
@@ -155,6 +171,17 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
       };
       img.addEventListener('load', l);
       img.src = this.featureItem['image'];
+      if (this.featureItem.provider) {
+        const item = await this.featureItem.provider.get(this.featureItem.id);
+        if ((item instanceof TvShow || item instanceof Movie) && item.trailer) {
+          const t = await item.trailer();
+          if (t.type === SOURCE_TYPE.HTTP) {
+            if ([VIDEO_QUALITY.HD, VIDEO_QUALITY.FULL_HD, VIDEO_QUALITY.ULTRA_HD].includes(t.video_quality)) {
+              this.featureItemVideo = t.source;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -216,13 +243,12 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
     NwpStartComponent.cache.set(this.provider || NwpStartComponent.homeSymbol, data);
     await Promise.all(proms);
-    this.setFeatureImage();
+    this.featureChange.next(0);
 
 
   }
 
   featureItemMouseenter(i: number) {
-    this.setFeatureImage(i);
-    this.ref.detectChanges();
+    this.featureChange.next(i);
   }
 }
