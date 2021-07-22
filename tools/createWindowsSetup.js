@@ -6,8 +6,10 @@ const got = require('got');
 const stream = require('stream');
 const { promisify } = require('util');
 const pipeline = promisify(stream.pipeline);
+const pwd = process.cwd();
 process.chdir(__dirname);
 fs.ensureDirSync('../dist');
+const distWinPath = path.win32.resolve('../dist')
 fs.ensureDirSync('../.cache');
 process.chdir('../dist/apps/dist');
 
@@ -16,7 +18,10 @@ async function createIssFile(ta = 'x64') {
     console.log('Downloading vcredist_x86');
     await pipeline(got.stream('https://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe'), fs.createWriteStream('../../../.cache/vcredist_x86.exe'));
   }
-  const filesToCopy = ['../../../.cache/vcredist_x86.exe', ...(await fs.readdir(`NWPlay-${pkg.version}-win-${ta}`)).map((e) => path.join(`NWPlay-${pkg.version}-win-${ta}`, e))];
+  const filesToCopy = [
+    '../../../.cache/vcredist_x86.exe',
+    ...(await fs.readdir(`NWPlay-${pkg.version}-win-${ta}`)).map((e) => path.join(`NWPlay-${pkg.version}-win-${ta}`, e))
+  ];
   const fcpStrings = [];
   for (const f of filesToCopy) {
     const p = path.win32.resolve(f);
@@ -47,7 +52,8 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=nwplay-win-${ta}
+OutputBaseFilename=nwplay-${pkg.version}-win-${ta}
+OutputDir=${distWinPath}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -103,6 +109,8 @@ async function main() {
   child.stdout.on('data', function(data) {
     console.log(data.toString());
   });
+  await new Promise((r) => child.addListener('exit', r));
+  process.chdir(pwd);
 }
 
-main().catch(console.error);  
+main().catch(console.error);
