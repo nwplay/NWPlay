@@ -53,7 +53,8 @@
     "appId": "org.nwplay.ui",
     "packed": false,
     "targets": [
-      "zip"
+      "zip",
+      "nsis"
     ],
     "overriddenProperties": {
       "main": "index.html"

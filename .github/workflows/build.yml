@@ -87,7 +87,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-x64-install
-          path: dist/apps/dist/**/*win-x64*.msi
+          path: dist/apps/dist/**/*win-x64*.exe
       - uses: actions/upload-artifact@v2
         with:
           name: windows-x86-install
@@ -109,4 +109,4 @@ jobs:
           title: "Development Build"
           files: |
             artifacts/**/*.zip
-            artifacts/**/*.msi
+            artifacts/**/*.exe
