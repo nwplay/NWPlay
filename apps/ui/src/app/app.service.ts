@@ -268,9 +268,9 @@ Mochtest du es ersetzen?
       History.default.init()
     ]);
 
-    if (localStorage['lastVersion'] !== environment.pkg.version) {
+    /*if (localStorage['lastVersion'] !== environment.pkg.version) {
       this.showChangelog = true;
-    }
+    }*/
 
     if (localStorage['tosVersion'] !== '1') {
       this.showTos = true;
