@@ -1,4 +1,5 @@
 import { IFilesystem, IFilesystemStat, PlatformAbstract, PlatformType } from '@nwplay/core';
+import * as cheerio from './cheerio';
 
 declare var nw: any;
 
@@ -74,7 +75,7 @@ export class PlatformNwjs extends PlatformAbstract {
   public fetch = fetch.bind(window);
   public dataPath = window['nw']['App'].dataPath;
   public Filesystem = new NWjsFileSystem();
-  public cheerio = nw.require('cheerio');
+  public cheerio = cheerio;
 }
 
 export const Platform = PlatformNwjs;

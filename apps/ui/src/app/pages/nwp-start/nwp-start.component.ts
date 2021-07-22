@@ -171,14 +171,18 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
       };
       img.addEventListener('load', l);
       img.src = this.featureItem['image'];
-      if (this.featureItem.provider) {
+      if (this.featureItem.provider && this.settings.autoplayTrailer) {
         const item = await this.featureItem.provider.get(this.featureItem.id);
         if ((item instanceof TvShow || item instanceof Movie) && item.trailer) {
-          const t = await item.trailer();
-          if (t.type === SOURCE_TYPE.HTTP) {
-            if ([VIDEO_QUALITY.HD, VIDEO_QUALITY.FULL_HD, VIDEO_QUALITY.ULTRA_HD].includes(t.video_quality)) {
-              this.featureItemVideo = t.source;
+          try {
+            const t = await item.trailer();
+            if (t && t.type === SOURCE_TYPE.HTTP) {
+              if ([VIDEO_QUALITY.HD, VIDEO_QUALITY.FULL_HD, VIDEO_QUALITY.ULTRA_HD].includes(t.video_quality)) {
+                this.featureItemVideo = t.source;
+              }
             }
+          } catch (e) {
+            console.warn(e);
           }
         }
       }

@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
-    "enableIvy": false
+    "enableIvy": true
   },
   "files": [],
   "include": [],
