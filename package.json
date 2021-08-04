@@ -5,7 +5,7 @@
   "identifier": "org.nwplay.ui",
   "description": "A Cross-platform Cloud Media Player",
   "name": "nwplay",
-  "chromium-args": "--mixed-context --disable-web-security",
+  "chromium-args": "--disable-web-security",
   "main": "http://localhost:4200",
   "node-remote": "<all_urls>",
   "nodejs": true,
@@ -58,7 +58,7 @@
     "overriddenProperties": {
       "main": "index.html"
     },
-    "nwVersion": "0.47.2",
+    "nwVersion": "0.55.0",
     "ffmpegIntegration": true,
     "output": "../dist",
     "win": {

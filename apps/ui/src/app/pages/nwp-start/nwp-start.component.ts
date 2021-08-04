@@ -20,6 +20,7 @@ import {
   SearchResult,
   SOURCE_TYPE,
   TvShow,
+  MediaSource,
   VIDEO_QUALITY
 } from '@nwplay/core';
 import { screen } from './nwp-start.helpers';
@@ -76,6 +77,7 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
   private featureItemImage: string;
   private featureItemImageLow = false;
   private featureItemVideo: string;
+  private trailerCache = new WeakMap<SearchResult, Promise<MediaSource>>();
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -158,11 +160,34 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
     ele.scrollLeft = ele.scrollLeft + amount;
   }
 
+  public async preloadTrailer(s: SearchResult) {
+    let trailer = this.trailerCache.get(s);
+    if (!trailer) {
+      const item = await s.provider.get(s.id);
+      if ((item instanceof TvShow || item instanceof Movie) && item.trailer) {
+        try {
+          trailer = item.trailer();
+          this.trailerCache.set(s, trailer);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+    return trailer;
+  }
+
+  public async preloadFeatureTrailers() {
+    if (this.data.features && this.settings.autoplayTrailer) {
+      for (const t of this.data.features) {
+        await this.preloadTrailer(t);
+      }
+    }
+  }
+
   public async setFeature(index: number = 0) {
     if (this.data.features[index] && this.data.features[index] !== this.featureItem) {
       this.featureItemVideo = null;
-      this.featureItem = this.data.features[index];
-
+      const featureItem = this.featureItem = this.data.features[index];
       const img = new Image();
       const l = () => {
         this.featureItemImageLow = !(img.width >= 900 && img.height > 600);
@@ -170,19 +195,12 @@ export class NwpStartComponent implements OnInit, AfterViewChecked, OnDestroy {
         img.removeEventListener('load', l);
       };
       img.addEventListener('load', l);
-      img.src = this.featureItem['image'];
-      if (this.featureItem.provider && this.settings.autoplayTrailer) {
-        const item = await this.featureItem.provider.get(this.featureItem.id);
-        if ((item instanceof TvShow || item instanceof Movie) && item.trailer) {
-          try {
-            const t = await item.trailer();
-            if (t && t.type === SOURCE_TYPE.HTTP) {
-              if ([VIDEO_QUALITY.HD, VIDEO_QUALITY.FULL_HD, VIDEO_QUALITY.ULTRA_HD].includes(t.video_quality)) {
-                this.featureItemVideo = t.source;
-              }
-            }
-          } catch (e) {
-            console.warn(e);
+      img.src = featureItem['image'];
+      if (featureItem.provider && false) {
+        const trailer = await this.preloadTrailer(featureItem);
+        if (trailer && trailer.type === SOURCE_TYPE.HTTP) {
+          if ([VIDEO_QUALITY.HD, VIDEO_QUALITY.FULL_HD, VIDEO_QUALITY.ULTRA_HD].includes(trailer.video_quality)) {
+            this.featureItemVideo = trailer.source;
           }
         }
       }

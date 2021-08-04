@@ -91,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-x86-install
-          path: dist/apps/dist/*win-x64*.exe
+          path: dist/apps/dist/*win-x86*.exe
   create-release:
     needs: [ build-win, build-macos, build-linux ]
     name: "Pre Release"
